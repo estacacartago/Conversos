@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ministrar a nuestros Nuevos Conversos - Estaca Cartago</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .scrollbar-thin::-webkit-scrollbar {
+            width: 6px;
+        }
+        .scrollbar-thin::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        .scrollbar-thin::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 10px;
+        }
+        .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+        .typing-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .typing-indicator span {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: #6b7280;
+            animation: typing 1.4s infinite;
+        }
+        .typing-indicator span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+        .typing-indicator span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+        @keyframes typing {
+            0%, 60%, 100% {
+                transform: translateY(0);
+            }
+            30% {
+                transform: translateY(-10px);
+            }
+        }
+        .message-fade-in {
+            animation: fadeIn 0.3s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 h-screen flex flex-col">
+    <!-- Header -->
+    <header class="bg-gradient-to-r from-blue-600 to-cyan-600 text-white p-4 shadow-lg">
+        <div class="max-w-4xl mx-auto">
+            <div class="flex items-center gap-3">
+                <div class="p-2 bg-white/20 rounded-lg backdrop-blur-sm">
+                    <i class="fas fa-comments text-2xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-2xl font-bold">Ministrar a nuestros Nuevos Conversos</h1>
+                    <p class="text-blue-100 text-sm">Estaca Cartago - Asistente impulsado por NotebookLM</p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Messages Area -->
+    <div class="flex-1 overflow-hidden">
+        <div class="h-full overflow-y-auto scrollbar-thin" id="messagesContainer">
+            <div class="max-w-4xl mx-auto p-4">
+                <div class="space-y-4" id="messagesList">
+                    <!-- Welcome Message -->
+                    <div class="flex gap-3 justify-start message-fade-in">
+                        <div class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white flex-shrink-0">
+                            <i class="fas fa-robot text-sm"></i>
+                        </div>
+                        <div class="max-w-[80%]">
+                            <div class="bg-gray-100 rounded-lg p-4 shadow-sm">
+                                <p class="text-sm whitespace-pre-wrap leading-relaxed text-gray-800">
+                                    ¡Bienvenido! Soy tu asistente basado en el NotebookLM de la Estaca Cartago. Estoy aquí para ayudarte con cualquier pregunta sobre la ministración a nuevos conversos. ¿En qué puedo ayudarte hoy?
+                                </p>
+                            </div>
+                            <div class="text-xs text-gray-500 mt-1 px-2">
+                                <span id="welcomeTime"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Input Area -->
+    <div class="border-t bg-white p-4 shadow-lg">
+        <div class="max-w-4xl mx-auto">
+            <div class="flex gap-2">
+                <textarea 
+                    id="messageInput"
+                    placeholder="Escribe tu pregunta sobre la ministración a nuevos conversos..."
+                    class="flex-1 min-h-[44px] max-h-32 resize-none border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    rows="1"
+                ></textarea>
+                <button 
+                    id="sendButton"
+                    class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors duration-200 flex items-center justify-center min-w-[44px]"
+                >
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+            <p class="text-xs text-gray-500 mt-2 text-center">
+                <i class="fas fa-link mr-1"></i>
+                Conectado a NotebookLM: https://notebooklm.google.com/notebook/1bb5a088-974c-41de-a4ff-0a5c4407e67d
+            </p>
+        </div>
+    </div>
+
+    <script>
+        class NotebookLMChat {
+            constructor() {
+                this.messages = [];
+                this.isLoading = false;
+                this.init();
+            }
+
+            init() {
+                this.setupEventListeners();
+                this.updateWelcomeTime();
+                this.autoResizeTextarea();
+            }
+
+            setupEventListeners() {
+                const sendButton = document.getElementById('sendButton');
+                const messageInput = document.getElementById('messageInput');
+
+                sendButton.addEventListener('click', () => this.sendMessage());
+                messageInput.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        this.sendMessage();
+                    }
+                });
+
+                messageInput.addEventListener('input', () => {
+                    this.autoResizeTextarea();
+                });
+            }
+
+            autoResizeTextarea() {
+                const textarea = document.getElementById('messageInput');
+                textarea.style.height = 'auto';
+                textarea.style.height = Math.min(textarea.scrollHeight, 128) + 'px';
+            }
+
+            updateWelcomeTime() {
+                const welcomeTime = document.getElementById('welcomeTime');
+                const now = new Date();
+                welcomeTime.textContent = now.toLocaleTimeString('es-ES', {
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+            }
+
+            async sendMessage() {
+                const messageInput = document.getElementById('messageInput');
+                const message = messageInput.value.trim();
+
+                if (!message || this.isLoading) return;
+
+                // Add user message
+                this.addMessage(message, 'user');
+                messageInput.value = '';
+                this.autoResizeTextarea();
+                this.isLoading = true;
+
+                // Show typing indicator
+                this.showTypingIndicator();
+
+                try {
+                    // Simulate API call to NotebookLM
+                    const response = await this.callNotebookLM(message);
+                    this.hideTypingIndicator();
+                    this.addMessage(response, 'assistant');
+                } catch (error) {
+                    this.hideTypingIndicator();
+                    this.addMessage('Lo siento, ha ocurrido un error al conectar con el NotebookLM. Por favor, intenta nuevamente en unos momentos.', 'assistant');
+                } finally {
+                    this.isLoading = false;
+                }
+            }
+
+            async callNotebookLM(message) {
+                // Simulate API delay
+                await new Promise(resolve => setTimeout(resolve, 1500));
+
+                // Mock responses based on common questions about ministering to new converts
+                const responses = {
+                    'hola': '¡Hola! Es un placer saludarte. Como asistente de la Estaca Cartago, estoy aquí para ayudarte con todo lo relacionado a la ministración de nuevos conversos. ¿Sobre qué tema específico te gustaría conversar hoy?',
+                    'ayuda': 'Claro que sí. Para ministrar efectivamente a nuevos conversos, es importante: 1) Orar por ellos diariamente, 2) Visitarles regularmente, 3) Invitarles a actividades, 4) Asignarles un compañero fiel, 5) Enseñarles sobre el Evangelio gradualmente. ¿Qué aspecto te gustaría profundizar?',
+                    'conversos': 'La ministración a nuevos conversos es fundamental en nuestra Estaca Cartago. Los principios clave incluyen: amor cristiano genuino, acompañamiento espiritual constante, integración en la comunidad, y enseñanza progresiva de las doctrinas. Cada nuevo conversos necesita sentirse bienvenido y apoyado en su jornada espiritual.',
+                    'default': `Como asistente basado en el NotebookLM de la Estaca Cartago, entiendo tu pregunta: "${message}". 
+
+Basado en los principios del Evangelio y las enseñanzas para ministrar a nuevos conversos, te ofrezco esta guía:
+
+📖 **Enseñanzas Clave**:
+- La importancia del amor cristiano al recibir a nuevos miembros
+- El acompañamiento espiritual en los primeros meses
+- La integración en la comunidad de barrio y rama
+
+🙏 **Principios de Ministración**:
+- Orar por cada nuevo converso individualmente
+- Visitarles regularmente con su familia ministerial
+- Invitarles a participar en actividades y clases
+
+💡 **Consejos Prácticos**:
+- Asignar un compañero miembro fiel como guía
+- Enseñarles sobre las bendiciones del diezmo y la ofrenda de ayuno
+- Ayudarles a entender la organización de la Iglesia
+
+¿Hay algún aspecto específico de la ministración a nuevos conversos sobre el que te gustaría profundizar?`
+                };
+
+                const lowerMessage = message.toLowerCase();
+                for (const [key, response] of Object.entries(responses)) {
+                    if (lowerMessage.includes(key)) {
+                        return response;
+                    }
+                }
+                return responses.default;
+            }
+
+            addMessage(content, role) {
+                const messagesList = document.getElementById('messagesList');
+                const messageDiv = document.createElement('div');
+                const messageId = `msg-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+                const timestamp = new Date();
+
+                messageDiv.id = messageId;
+                messageDiv.className = `flex gap-3 ${role === 'user' ? 'justify-end' : 'justify-start'} message-fade-in`;
+
+                if (role === 'user') {
+                    messageDiv.innerHTML = `
+                        <div class="max-w-[80%] order-first">
+                            <div class="bg-blue-600 text-white rounded-lg p-4 shadow-sm">
+                                <p class="text-sm whitespace-pre-wrap leading-relaxed">${this.escapeHtml(content)}</p>
+                            </div>
+                            <div class="text-xs text-gray-500 mt-1 px-2 text-right">
+                                ${timestamp.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}
+                            </div>
+                        </div>
+                        <div class="w-8 h-8 rounded-full bg-gray-600 flex items-center justify-center text-white flex-shrink-0">
+                            <i class="fas fa-user text-sm"></i>
+                        </div>
+                    `;
+                } else {
+                    messageDiv.innerHTML = `
+                        <div class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white flex-shrink-0">
+                            <i class="fas fa-robot text-sm"></i>
+                        </div>
+                        <div class="max-w-[80%]">
+                            <div class="bg-gray-100 rounded-lg p-4 shadow-sm">
+                                <p class="text-sm whitespace-pre-wrap leading-relaxed text-gray-800">${content}</p>
+                            </div>
+                            <div class="text-xs text-gray-500 mt-1 px-2">
+                                ${timestamp.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}
+                            </div>
+                        </div>
+                    `;
+                }
+
+                messagesList.appendChild(messageDiv);
+                this.scrollToBottom();
+            }
+
+            showTypingIndicator() {
+                const messagesList = document.getElementById('messagesList');
+                const typingDiv = document.createElement('div');
+                typingDiv.id = 'typingIndicator';
+                typingDiv.className = 'flex gap-3 justify-start message-fade-in';
+                typingDiv.innerHTML = `
+                    <div class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white flex-shrink-0">
+                        <i class="fas fa-robot text-sm"></i>
+                    </div>
+                    <div class="max-w-[80%]">
+                        <div class="bg-gray-100 rounded-lg p-4 shadow-sm">
+                            <div class="typing-indicator">
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                messagesList.appendChild(typingDiv);
+                this.scrollToBottom();
+            }
+
+            hideTypingIndicator() {
+                const typingIndicator = document.getElementById('typingIndicator');
+                if (typingIndicator) {
+                    typingIndicator.remove();
+                }
+            }
+
+            scrollToBottom() {
+                const container = document.getElementById('messagesContainer');
+                container.scrollTop = container.scrollHeight;
+            }
+
+            escapeHtml(text) {
+                const div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
+            }
+        }
+
+        // Initialize the chat when DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            new NotebookLMChat();
+        });
+    </script>
+</body>
+</html>
