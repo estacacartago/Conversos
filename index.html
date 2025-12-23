@@ -369,7 +369,7 @@
                 <p>Estaca Cartago</p>
             </div>
             <p style="color: #64748b; margin-bottom: 20px;">
-                Inicia sesión para acceder al sistema de ministerio inteligente
+                Inicia sesión para acceder tu ayuda en la Ministración de Conversos de la Estaca Cartago
             </p>
             <button class="google-btn" onclick="handleGoogleLogin()">
                 <i class="fab fa-google"></i>
@@ -429,7 +429,7 @@
         <div class="chat-header">
             <h1>💬 Chat Ministrar a los Conversos de la Estaca Cartago</h1>
             <p style="margin: 0; opacity: 0.9; font-size: 14px;">
-                Asistente inteligente para el ministerio de conversos
+                Asistente inteligente para la Ministración de conversos
             </p>
         </div>
 
@@ -448,8 +448,8 @@
         <div class="chat-messages" id="chatMessages">
             <div class="message assistant">
                 <div class="message-content">
-                    <strong>👋 ¡Hola!</strong> Soy tu asistente inteligente para el ministerio de conversos de la Estaca Cartago. 
-                    Estoy aquí para ayudarte con información sobre nuevos conversos, casos críticos, y orientación para el ministerio.
+                    <strong>👋 ¡Hola!</strong> Soy tu asistente inteligente para la Ministración de conversos de la Estaca Cartago. 
+                    Estoy aquí para ayudarte con información sobre nuevos conversos, casos críticos, y orientación para La Ministración.
                     <br><br>
                     <strong>¿En qué puedo ayudarte hoy?</strong>
                     <ul style="margin: 10px 0; padding-left: 20px;">
@@ -823,7 +823,7 @@
                 const currentDate = new Date().toLocaleDateString('es-ES');
                 const data = this.notebookSync.currentData;
                 
-                let context = `Eres un asistente inteligente para el ministerio de conversos de la Estaca Cartago. Fecha: ${currentDate}.\n\n`;
+                let context = `Eres un asistente inteligente para la Ministración de conversos de la Estaca Cartago. Fecha: ${currentDate}.\n\n`;
                 context += `Datos actuales:\n`;
                 context += `- Bautismos 2024: ${data.bautismos2024}\n`;
                 context += `- Bautismos 2025: ${data.bautismos2025}\n`;
@@ -837,7 +837,7 @@
                     context += '\n';
                 }
                 
-                context += `Responde de manera útil y empática, enfocándote en el ministerio de conversos.\n`;
+                context += `Responde de manera útil y empática, enfocándote en la ministración de conversos.\n`;
                 context += `Usuario: ${userMessage}\nAsistente:`;
                 
                 return context;
@@ -859,7 +859,7 @@
                     return `Para ministrar efectivamente a los conversos, te sugiero:\n1. Orar por ellos diariamente\n2. Visitarles regularmente\n3. Invitarles a actividades\n4. Presentarles a otros miembros\n5. Seguir su progreso espiritual\n\n¿Hay algún converso específico en mente que necesite atención?`;
                 }
                 
-                return `Entiendo tu consulta. Como asistente de ministerio, estoy aquí para ayudarte con información sobre conversos, bautismos, y orientación para el ministerio. ¿Podrías darme más detalles sobre lo que necesitas?`;
+                return `Entiendo tu consulta. Como asistente en la Ministración, estoy aquí para ayudarte con información sobre conversos, bautismos, y orientación para la Ministración. ¿Podrías darme más detalles sobre lo que necesitas?`;
             }
 
             getErrorResponse() {
