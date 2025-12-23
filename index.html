@@ -68,6 +68,7 @@
             padding: 15px;
             border-radius: 15px;
             position: relative;
+            line-height: 1.5;
         }
         
         .message.user .message-content {
@@ -369,7 +370,7 @@
                 <p>Estaca Cartago</p>
             </div>
             <p style="color: #64748b; margin-bottom: 20px;">
-                Inicia sesión para acceder tu ayuda en la Ministración de Conversos de la Estaca Cartago
+                Inicia sesión para acceder al sistema de ministerio inteligente
             </p>
             <button class="google-btn" onclick="handleGoogleLogin()">
                 <i class="fab fa-google"></i>
@@ -429,7 +430,7 @@
         <div class="chat-header">
             <h1>💬 Chat Ministrar a los Conversos de la Estaca Cartago</h1>
             <p style="margin: 0; opacity: 0.9; font-size: 14px;">
-                Asistente inteligente para la Ministración de conversos
+                Asistente inteligente para el ministerio de conversos
             </p>
         </div>
 
@@ -448,8 +449,8 @@
         <div class="chat-messages" id="chatMessages">
             <div class="message assistant">
                 <div class="message-content">
-                    <strong>👋 ¡Hola!</strong> Soy tu asistente inteligente para la Ministración de conversos de la Estaca Cartago. 
-                    Estoy aquí para ayudarte con información sobre nuevos conversos, casos críticos, y orientación para La Ministración.
+                    <strong>👋 ¡Hola!</strong> Soy tu asistente inteligente para el ministerio de conversos de la Estaca Cartago. 
+                    Estoy aquí para ayudarte con información sobre nuevos conversos, casos críticos, y orientación para el ministerio.
                     <br><br>
                     <strong>¿En qué puedo ayudarte hoy?</strong>
                     <ul style="margin: 10px 0; padding-left: 20px;">
@@ -496,7 +497,52 @@
                 this.currentData = {
                     bautismos2024: 214,
                     bautismos2025: 171,
-                    casosCriticos: [],
+                    casosCriticos: [
+                        {
+                            nombre: "Andrey Calvo Gonzalez",
+                            barrio: "Paraíso",
+                            inasistencias: 3,
+                            antiguedad: "28 días",
+                            contacto: "6154-1266",
+                            email: "andreycalvog@gmail.com",
+                            ministrantes: [],
+                            amigos: 0,
+                            estado: "alerta"
+                        },
+                        {
+                            nombre: "Juan Carlos Valverde Chacón",
+                            barrio: "Tres Ríos",
+                            inasistencias: 3,
+                            antiguedad: "1 mes",
+                            contacto: "7020-7839",
+                            email: "valverdejuancarlos468@gmail.com",
+                            ministrantes: ["Heber Nathan Campos", "Carlos Darío García"],
+                            amigos: 0,
+                            estado: "alerta"
+                        },
+                        {
+                            nombre: "Moisés Monge Nuñez",
+                            barrio: "Los Santos",
+                            inasistencias: 3,
+                            antiguedad: "2 meses",
+                            contacto: "8888-8888",
+                            llamamiento: "Presidente del quórum de diáconos",
+                            ministrantes: [],
+                            amigos: 2,
+                            estado: "alerta"
+                        },
+                        {
+                            nombre: "Carlos Rodríguez",
+                            barrio: "Cartago",
+                            inasistencias: 0,
+                            antiguedad: "2 días",
+                            contacto: "7777-7777",
+                            email: "carlos@ejemplo.com",
+                            ministrantes: ["Hermano A", "Hermano B"],
+                            amigos: 1,
+                            estado: "estable"
+                        }
+                    ],
                     lastUpdated: null
                 };
                 this.syncHistory = [];
@@ -584,52 +630,7 @@
                 const simulatedData = {
                     bautismos2024: 214,
                     bautismos2025: newBautismos2025,
-                    casosCriticos: [
-                        {
-                            nombre: "Andrey Calvo Gonzalez",
-                            barrio: "Paraíso",
-                            inasistencias: 3,
-                            antiguedad: "28 días",
-                            contacto: "6154-1266",
-                            email: "andreycalvog@gmail.com",
-                            ministrantes: [],
-                            amigos: 0,
-                            estado: "alerta"
-                        },
-                        {
-                            nombre: "Juan Carlos Valverde Chacón",
-                            barrio: "Tres Ríos",
-                            inasistencias: 3,
-                            antiguedad: "1 mes",
-                            contacto: "7020-7839",
-                            email: "valverdejuancarlos468@gmail.com",
-                            ministrantes: ["Heber Nathan Campos", "Carlos Darío García"],
-                            amigos: 0,
-                            estado: "alerta"
-                        },
-                        {
-                            nombre: "Moisés Monge Nuñez",
-                            barrio: "Los Santos",
-                            inasistencias: 3,
-                            antiguedad: "2 meses",
-                            contacto: "8888-8888",
-                            llamamiento: "Presidente del quórum de diáconos",
-                            ministrantes: [],
-                            amigos: 2,
-                            estado: "alerta"
-                        },
-                        {
-                            nombre: "Nuevo Converso " + currentMonth,
-                            barrio: "Cartago",
-                            inasistencias: 0,
-                            antiguedad: "2 días",
-                            contacto: "7777-7777",
-                            email: "nuevo@ejemplo.com",
-                            ministrantes: ["Hermano A", "Hermano B"],
-                            amigos: 1,
-                            estado: "estable"
-                        }
-                    ],
+                    casosCriticos: this.currentData.casosCriticos,
                     lastUpdated: now.toISOString()
                 };
                 
@@ -748,11 +749,9 @@
             }
         }
 
-        // Sistema de Chat con Hugging Face
+        // Sistema de Chat Inteligente con datos del NotebookLM
         class ChatSystem {
             constructor() {
-                this.apiKey = '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';
-                this.apiUrl = 'https://api-inference.huggingface.co/models/microsoft/DialoGPT-medium';
                 this.conversationHistory = [];
                 this.notebookSync = null;
             }
@@ -774,43 +773,20 @@
                     // Mostrar indicador de escritura
                     this.showTypingIndicator();
                     
-                    // Construir contexto para el modelo
-                    const context = this.buildContext(message);
+                    // Esperar un momento para simular procesamiento
+                    await new Promise(resolve => setTimeout(resolve, 1000));
                     
-                    // Llamar a la API de Hugging Face
-                    const response = await fetch(this.apiUrl, {
-                        method: 'POST',
-                        headers: {
-                            'Authorization': `Bearer ${this.apiKey}`,
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            inputs: context,
-                            parameters: {
-                                max_length: 100,
-                                temperature: 0.7,
-                                do_sample: true,
-                                top_p: 0.9,
-                                return_full_text: false
-                            }
-                        })
-                    });
-
-                    if (!response.ok) {
-                        throw new Error(`Error en la API: ${response.status}`);
-                    }
-
-                    const data = await response.json();
-                    const botResponse = data[0]?.generated_text || this.getDefaultResponse(message);
+                    // Generar respuesta basada en los datos del NotebookLM
+                    const response = this.generateResponse(message);
                     
                     // Ocultar indicador de escritura
                     this.hideTypingIndicator();
                     
                     // Agregar al historial
                     this.conversationHistory.push({ role: 'user', content: message });
-                    this.conversationHistory.push({ role: 'assistant', content: botResponse });
+                    this.conversationHistory.push({ role: 'assistant', content: response });
                     
-                    return botResponse;
+                    return response;
                     
                 } catch (error) {
                     console.error('Error al enviar mensaje:', error);
@@ -819,47 +795,217 @@
                 }
             }
 
-            buildContext(userMessage) {
-                const currentDate = new Date().toLocaleDateString('es-ES');
+            generateResponse(message) {
+                const lowerMessage = message.toLowerCase();
                 const data = this.notebookSync.currentData;
                 
-                let context = `Eres un asistente inteligente para la Ministración de conversos de la Estaca Cartago. Fecha: ${currentDate}.\n\n`;
-                context += `Datos actuales:\n`;
-                context += `- Bautismos 2024: ${data.bautismos2024}\n`;
-                context += `- Bautismos 2025: ${data.bautismos2025}\n`;
-                context += `- Casos críticos: ${data.casosCriticos.length}\n\n`;
-                
-                if (data.casosCriticos.length > 0) {
-                    context += `Casos críticos recientes:\n`;
-                    data.casosCriticos.forEach((caso, index) => {
-                        context += `${index + 1}. ${caso.nombre} - ${caso.barrio} - ${caso.estado}\n`;
-                    });
-                    context += '\n';
-                }
-                
-                context += `Responde de manera útil y empática, enfocándote en la ministración de conversos.\n`;
-                context += `Usuario: ${userMessage}\nAsistente:`;
-                
-                return context;
-            }
-
-            getDefaultResponse(message) {
-                const lowerMessage = message.toLowerCase();
+                // Respuestas específicas basadas en los datos del NotebookLM
                 
                 if (lowerMessage.includes('bautismo') || lowerMessage.includes('bautismos')) {
-                    return `Según los datos actualizados, hemos registrado ${this.notebookSync.currentData.bautismos2024} bautismos en 2024 y ${this.notebookSync.currentData.bautismos2025} en 2025. ¡Gracias por tu interés en el progreso del reino!`;
+                    return this.generateBautismosResponse();
                 }
                 
-                if (lowerMessage.includes('crítico') || lowerMessage.includes('casos')) {
-                    const casosCount = this.notebookSync.currentData.casosCriticos.length;
-                    return `Actualmente hay ${casosCount} casos que requieren atención especial. Te recomiendo visitar a estos conversos y fortalecer la relación con ellos. ¿Te gustaría los detalles de algún caso específico?`;
+                if (lowerMessage.includes('crítico') || lowerMessage.includes('casos') || lowerMessage.includes('alerta')) {
+                    return this.generateCasosCriticosResponse();
                 }
                 
-                if (lowerMessage.includes('ministrar') || lowerMessage.includes('ayudar')) {
-                    return `Para ministrar efectivamente a los conversos, te sugiero:\n1. Orar por ellos diariamente\n2. Visitarles regularmente\n3. Invitarles a actividades\n4. Presentarles a otros miembros\n5. Seguir su progreso espiritual\n\n¿Hay algún converso específico en mente que necesite atención?`;
+                if (lowerMessage.includes('andrey')) {
+                    return this.generateCasoEspecificoResponse('Andrey Calvo Gonzalez');
                 }
                 
-                return `Entiendo tu consulta. Como asistente en la Ministración, estoy aquí para ayudarte con información sobre conversos, bautismos, y orientación para la Ministración. ¿Podrías darme más detalles sobre lo que necesitas?`;
+                if (lowerMessage.includes('juan carlos') || lowerMessage.includes('valverde')) {
+                    return this.generateCasoEspecificoResponse('Juan Carlos Valverde Chacón');
+                }
+                
+                if (lowerMessage.includes('moisés') || lowerMessage.includes('monge')) {
+                    return this.generateCasoEspecificoResponse('Moisés Monge Nuñez');
+                }
+                
+                if (lowerMessage.includes('carlos') || lowerMessage.includes('rodríguez')) {
+                    return this.generateCasoEspecificoResponse('Carlos Rodríguez');
+                }
+                
+                if (lowerMessage.includes('ministrar') || lowerMessage.includes('ayudar') || lowerMessage.includes('orientación')) {
+                    return this.generateMinisterioResponse();
+                }
+                
+                if (lowerMessage.includes('barrio') || lowerMessage.includes('paraíso') || lowerMessage.includes('tres ríos')) {
+                    return this.generateBarriosResponse();
+                }
+                
+                if (lowerMessage.includes('contacto') || lowerMessage.includes('teléfono') || lowerMessage.includes('email')) {
+                    return this.generateContactoResponse();
+                }
+                
+                if (lowerMessage.includes('estadística') || lowerMessage.includes('números') || lowerMessage.includes('datos')) {
+                    return this.generateEstadisticasResponse();
+                }
+                
+                return this.generateDefaultResponse();
+            }
+
+            generateBautismosResponse() {
+                const data = this.notebookSync.currentData;
+                const crecimiento = ((data.bautismos2025 / data.bautismos2024) * 100).toFixed(1);
+                
+                return `📊 **Estadísticas de Bautismos - Estaca Cartago**\n\n` +
+                       `• **Bautismos 2024:** ${data.bautismos2024} conversos\n` +
+                       `• **Bautismos 2025:** ${data.bautismos2025} conversos\n` +
+                       `• **Tasa de crecimiento:** ${crecimiento}%\n\n` +
+                       `¡Excelente progreso! El trabajo de ministerio está dando frutos. ` +
+                       `Continúa orando y trabajando con los nuevos conversos.\n\n` +
+                       `¿Te gustaría ver detalles de algún caso específico?`;
+            }
+
+            generateCasosCriticosResponse() {
+                const casos = this.notebookSync.currentData.casosCriticos;
+                const casosAlerta = casos.filter(c => c.estado === 'alerta');
+                const casosEstables = casos.filter(c => c.estado === 'estable');
+                
+                let response = `⚠️ **Casos Críticos - Requieren Atención Inmediata**\n\n`;
+                
+                if (casosAlerta.length > 0) {
+                    response += `🔴 **Casos en Alerta (${casosAlerta.length}):**\n`;
+                    casosAlerta.forEach((caso, index) => {
+                        response += `${index + 1}. **${caso.nombre}** - ${caso.barrio}\n`;
+                        response += `   • Inasistencias: ${caso.inasistencias}\n`;
+                        response += `   • Contacto: ${caso.contacto}\n\n`;
+                    });
+                }
+                
+                if (casosEstables.length > 0) {
+                    response += `✅ **Casos Estables (${casosEstables.length}):**\n`;
+                    casosEstables.forEach((caso, index) => {
+                        response += `${index + 1}. **${caso.nombre}** - ${caso.barrio}\n\n`;
+                    });
+                }
+                
+                response += `**Acción recomendada:** Visitar a los casos en alerta esta semana.`;
+                
+                return response;
+            }
+
+            generateCasoEspecificoResponse(nombre) {
+                const caso = this.notebookSync.currentData.casosCriticos.find(
+                    c => c.nombre.toLowerCase().includes(nombre.toLowerCase())
+                );
+                
+                if (!caso) {
+                    return `No encontré información sobre "${nombre}". ¿Podrías verificar el nombre?`;
+                }
+                
+                const estadoIcon = caso.estado === 'alerta' ? '⚠️' : '✅';
+                
+                return `${estadoIcon} **Ficha del Converso: ${caso.nombre}**\n\n` +
+                       `• **Barrio:** ${caso.barrio}\n` +
+                       `• **Antigüedad:** ${caso.antiguedad}\n` +
+                       `• **Inasistencias:** ${caso.inasistencias}\n` +
+                       `• **Contacto:** ${caso.contacto}\n` +
+                       `• **Email:** ${caso.email}\n` +
+                       `• **Estado:** ${caso.estado.toUpperCase()}\n` +
+                       `• **Amigos:** ${caso.amigos}\n` +
+                       `• **Ministrantes:** ${caso.ministrantes.length > 0 ? caso.ministrantes.join(', ') : 'No asignados'}\n\n` +
+                       `**Recomendación:** ${caso.estado === 'alerta' ? 
+                           'Visitar urgente esta semana y fortalecer la relación.' : 
+                           'Mantener contacto regular y continuar el apoyo.'}`;
+            }
+
+            generateMinisterioResponse() {
+                return `🤝 **Orientación para Ministrar a Conversos**\n\n` +
+                       `**Principios básicos:**\n` +
+                       `1. **Oración diaria** por cada converso\n` +
+                       `2. **Visitas semanales** durante los primeros 3 meses\n` +
+                       `3. **Integración** en actividades y barrios\n` +
+                       `4. **Amistad** - asignar 2-3 amigos por converso\n` +
+                       `5. **Seguimiento** de progreso espiritual\n\n` +
+                       `**Casos actuales que necesitan ministerio:**\n` +
+                       `• ${this.notebookSync.currentData.casosCriticos.filter(c => c.estado === 'alerta').length} casos requieren atención urgente\n` +
+                       `• ${this.notebookSync.currentData.casosCriticos.filter(c => c.estado === 'estable').length} casos en seguimiento regular\n\n` +
+                       `¿Te gustaría que te dé detalles específicos de algún caso?`;
+            }
+
+            generateBarriosResponse() {
+                const casos = this.notebookSync.currentData.casosCriticos;
+                const barrios = {};
+                
+                casos.forEach(caso => {
+                    if (!barrios[caso.barrio]) {
+                        barrios[caso.barrio] = [];
+                    }
+                    barrios[caso.barrio].push(caso);
+                });
+                
+                let response = `🏘️ **Distribución por Barrios**\n\n`;
+                
+                Object.entries(barrios).forEach(([barrio, casosBarrio]) => {
+                    const alertas = casosBarrio.filter(c => c.estado === 'alerta').length;
+                    response += `**${barrio}:** ${casosBarrio.length} conversos (${alertas} en alerta)\n`;
+                    casosBarrio.forEach(caso => {
+                        response += `  • ${caso.nombre} - ${caso.estado}\n`;
+                    });
+                    response += `\n`;
+                });
+                
+                return response;
+            }
+
+            generateContactoResponse() {
+                const casos = this.notebookSync.currentData.casosCriticos;
+                
+                let response = `📞 **Información de Contacto - Conversos**\n\n`;
+                
+                casos.forEach((caso, index) => {
+                    const estadoIcon = caso.estado === 'alerta' ? '⚠️' : '✅';
+                    response += `${estadoIcon} **${caso.nombre}**\n`;
+                    response += `• Teléfono: ${caso.contacto}\n`;
+                    response += `• Email: ${caso.email}\n`;
+                    response += `• Barrio: ${caso.barrio}\n\n`;
+                });
+                
+                response += `**Nota:** Recordar llamar preferentemente en horarios apropiados y siempre con respeto.`;
+                
+                return response;
+            }
+
+            generateEstadisticasResponse() {
+                const data = this.notebookSync.currentData;
+                const casos = data.casosCriticos;
+                const casosAlerta = casos.filter(c => c.estado === 'alerta').length;
+                const casosEstables = casos.filter(c => c.estado === 'estable').length;
+                
+                return `📈 **Resumen Estadístico - Estaca Cartago**\n\n` +
+                       `**Bautismos:**\n` +
+                       `• 2024: ${data.bautismos2024} conversos\n` +
+                       `• 2025: ${data.bautismos2025} conversos\n` +
+                       `• Crecimiento: ${((data.bautismos2025 / data.bautismos2024) * 100).toFixed(1)}%\n\n` +
+                       `**Casos Activos:**\n` +
+                       `• Total: ${casos.length} casos\n` +
+                       `• En alerta: ${casosAlerta} (${((casosAlerta / casos.length) * 100).toFixed(1)}%)\n` +
+                       `• Estables: ${casosEstables} (${((casosEstables / casos.length) * 100).toFixed(1)}%)\n\n` +
+                       `**Acciones recomendadas:**\n` +
+                       `• Priorizar los ${casosAlerta} casos en alerta\n` +
+                       `• Fortalecer ministerio preventivo\n` +
+                       `• Continuar con el seguimiento regular`;
+            }
+
+            generateDefaultResponse() {
+                return `🤖 **Asistente de Ministerio - Estaca Cartago**\n\n` +
+                       `Puedo ayudarte con:\n\n` +
+                       `📊 **Estadísticas:**\n` +
+                       `• "¿Cuántos bautismos hemos tenido?"\n` +
+                       `• "Muéstrame las estadísticas"\n\n` +
+                       `⚠️ **Casos Críticos:**\n` +
+                       `• "¿Cuáles son los casos críticos?"\n` +
+                       `• "Muéstrame los casos en alerta"\n\n` +
+                       `👥 **Conversos Específicos:**\n` +
+                       `• "¿Cómo está Andrey?"\n` +
+                       `• "Información de Juan Carlos"\n\n` +
+                       `📍 **Ubicación:**\n` +
+                       `• "¿Qué conversos hay en Paraíso?"\n` +
+                       `• "Muéstrame por barrios"\n\n` +
+                       `📞 **Contacto:**\n` +
+                       `• "¿Cuál es el teléfono de...?"\n\n` +
+                       `**¿Qué información necesitas específicamente?**`;
             }
 
             getErrorResponse() {
@@ -883,9 +1029,13 @@
                 const chatMessages = document.getElementById('chatMessages');
                 const messageDiv = document.createElement('div');
                 messageDiv.className = `message ${isUser ? 'user' : 'assistant'}`;
+                
+                // Formatear el contenido para que preserve los saltos de línea
+                const formattedContent = content.replace(/\n/g, '<br>');
+                
                 messageDiv.innerHTML = `
                     <div class="message-content">
-                        ${content}
+                        ${formattedContent}
                     </div>
                 `;
                 chatMessages.appendChild(messageDiv);
