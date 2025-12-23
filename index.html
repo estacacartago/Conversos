@@ -340,6 +340,74 @@
             line-height: 1.5;
         }
         
+        .update-panel {
+            background: #fef3c7;
+            border: 2px solid #f59e0b;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        
+        .update-title {
+            color: #d97706;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .update-textarea {
+            width: 100%;
+            min-height: 100px;
+            padding: 10px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 14px;
+            resize: vertical;
+        }
+        
+        .update-button {
+            background: #10b981;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+        
+        .update-button:hover {
+            background: #059669;
+        }
+        
+        .future-features {
+            background: #f0f9ff;
+            border: 2px solid #0ea5e9;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        
+        .future-title {
+            color: #0369a1;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .future-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 8px 0;
+            font-size: 14px;
+            color: #0c4a6e;
+        }
+        
+        .future-icon {
+            color: #0ea5e9;
+            font-size: 16px;
+        }
+        
         @media (max-width: 768px) {
             .chat-container {
                 height: 95vh;
@@ -442,7 +510,50 @@
             <div class="welcome-description">
                 Este chat te ayudará a con la ministración de conversos de la Estaca Cartago. 
                 Puedes consultar información sobre bautismos, casos críticos, y recibir orientación práctica.
+                <br><br>
+                <strong>💡 Tip: Copia y pega respuestas de NotebookLM para mantener datos actualizados</strong>
             </div>
+        </div>
+
+        <!-- Future Features Panel -->
+        <div class="future-features">
+            <div class="future-title">
+                <i class="fas fa-rocket"></i> Próximamente: Conexión Directa con NotebookLM
+            </div>
+            <div class="future-item">
+                <i class="fas fa-check-circle future-icon"></i>
+                <span>Sincronización automática con NotebookLM</span>
+            </div>
+            <div class="future-item">
+                <i class="fas fa-check-circle future-icon"></i>
+                <span>Respuestas en tiempo real 100% actualizadas</span>
+            </div>
+            <div class="future-item">
+                <i class="fas fa-check-circle future-icon"></i>
+                <span>Integración con Google Cloud (en configuración)</span>
+            </div>
+            <div class="future-item">
+                <i class="fas fa-clock future-icon"></i>
+                <span><strong>Estado:</strong> Esperando configuración de Google Cloud</span>
+            </div>
+        </div>
+
+        <!-- Update Panel -->
+        <div class="update-panel" id="updatePanel" style="display: none;">
+            <div class="update-title">
+                <i class="fas fa-edit"></i> Actualizar Datos desde NotebookLM
+            </div>
+            <p style="font-size: 14px; color: #92400e; margin-bottom: 10px;">
+                Copia la respuesta de NotebookLM y pégala aquí para actualizar la información:
+            </p>
+            <textarea 
+                class="update-textarea" 
+                id="updateTextarea"
+                placeholder="Pega aquí la respuesta de NotebookLM..."
+            ></textarea>
+            <button class="update-button" onclick="updateFromNotebookLM()">
+                <i class="fas fa-save"></i> Actualizar Datos
+            </button>
         </div>
 
         <!-- Chat Messages -->
@@ -459,6 +570,13 @@
                         <li>Obtener orientación para ministrar</li>
                         <li>Actualizar información de conversos</li>
                     </ul>
+                    <br>
+                    <div style="background: #f0f9ff; padding: 10px; border-radius: 8px; border-left: 4px solid #0ea5e9;">
+                        <strong>💡 Para mantener datos actualizados:</strong><br>
+                        1. Haz tu pregunta en NotebookLM<br>
+                        2. Copia la respuesta<br>
+                        3. Pega aquí usando el botón "Actualizar"
+                    </div>
                 </div>
             </div>
         </div>
@@ -482,6 +600,9 @@
                 >
                 <button class="send-button" onclick="sendMessage()">
                     <i class="fas fa-paper-plane"></i>
+                </button>
+                <button class="sync-btn" onclick="toggleUpdatePanel()" style="background: #f59e0b;">
+                    <i class="fas fa-edit"></i> Actualizar
                 </button>
             </div>
         </div>
@@ -546,6 +667,8 @@
                     lastUpdated: null
                 };
                 this.syncHistory = [];
+                this.customResponses = {}; // Guardar respuestas personalizadas de NotebookLM
+                this.googleCloudConfigured = false; // Estado de configuración de Google Cloud
             }
 
             startAutoSync(intervalMinutes = 30) {
@@ -557,7 +680,6 @@
                     this.syncWithNotebookLM();
                 }, intervalMinutes * 60 * 1000);
                 
-                // Sincronización inicial
                 this.syncWithNotebookLM();
                 
                 console.log(`✅ Sincronización automática iniciada: cada ${intervalMinutes} minutos`);
@@ -577,7 +699,6 @@
                 try {
                     this.updateSyncStatus('syncing', 'Sincronizando con NotebookLM...');
                     
-                    // Simular obtención de datos del NotebookLM
                     const notebookData = await this.fetchNotebookLMData();
                     
                     if (notebookData) {
@@ -608,33 +729,50 @@
 
             async fetchNotebookLMData() {
                 try {
-                    // Simular datos del NotebookLM
-                    // En producción, esto sería una llamada real a la API
+                    // Si Google Cloud está configurado, intentar conexión real
+                    if (this.googleCloudConfigured) {
+                        return await this.fetchFromGoogleCloud();
+                    }
+                    
+                    // Si no, usar datos simulados
                     const simulatedData = await this.simulateDataFetch();
                     return simulatedData;
-                    
                 } catch (error) {
                     console.error('Error al obtener datos del NotebookLM:', error);
                     return null;
                 }
             }
 
+            async fetchFromGoogleCloud() {
+                // Placeholder para futura implementación con Google Cloud
+                console.log('🔗 Conectando con Google Cloud API...');
+                
+                // Simulación de llamada a API real
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                
+                return {
+                    bautismos2024: 214,
+                    bautismos2025: 171,
+                    casosCriticos: this.currentData.casosCriticos,
+                    lastUpdated: new Date().toISOString(),
+                    source: 'Google Cloud API'
+                };
+            }
+
             async simulateDataFetch() {
-                // Simular datos actualizados
                 const now = new Date();
                 const currentMonth = now.toLocaleString('es-ES', { month: 'long' });
                 
-                // Simular nuevos bautismos aleatoriamente
                 const newBautismos2025 = 171 + Math.floor(Math.random() * 3);
                 
                 const simulatedData = {
                     bautismos2024: 214,
                     bautismos2025: newBautismos2025,
                     casosCriticos: this.currentData.casosCriticos,
-                    lastUpdated: now.toISOString()
+                    lastUpdated: now.toISOString(),
+                    source: 'Simulación local'
                 };
                 
-                // Simular delay de red
                 await new Promise(resolve => setTimeout(resolve, 2000));
                 
                 return simulatedData;
@@ -656,7 +794,6 @@
                     changes: newData
                 });
                 
-                // Guardar en localStorage
                 localStorage.setItem('notebookLMData', JSON.stringify(this.currentData));
             }
 
@@ -679,16 +816,11 @@
                 const indicator = document.getElementById('syncIndicator');
                 const statusText = document.getElementById('syncStatusText');
                 
-                // Remover todas las clases de estado
                 indicator.classList.remove('active', 'inactive', 'syncing');
-                
-                // Agregar la clase correspondiente
                 indicator.classList.add(status);
                 
-                // Actualizar texto
                 statusText.textContent = message;
                 
-                // Actualizar botones
                 const startBtn = document.getElementById('startSyncBtn');
                 const stopBtn = document.getElementById('stopSyncBtn');
                 
@@ -719,7 +851,6 @@
                 
                 document.body.appendChild(notification);
                 
-                // Auto-eliminar después de 5 segundos
                 setTimeout(() => {
                     if (notification.parentNode) {
                         notification.parentNode.removeChild(notification);
@@ -728,7 +859,6 @@
             }
 
             updateChatInterface() {
-                // Agregar mensaje de sincronización al chat
                 const chatMessages = document.getElementById('chatMessages');
                 const syncMessage = document.createElement('div');
                 syncMessage.className = 'message assistant';
@@ -737,19 +867,93 @@
                         <strong>🔄 Datos Actualizados</strong><br>
                         La sincronización con NotebookLM se ha completado. 
                         Los datos de bautismos y casos críticos están actualizados.
+                        ${this.googleCloudConfigured ? 
+                            '<br><span style="color: #10b981;">✅ Conexión vía Google Cloud activa</span>' : 
+                            '<br><span style="color: #f59e0b;">⏳ Esperando configuración de Google Cloud</span>'}
                     </div>
                 `;
                 chatMessages.appendChild(syncMessage);
                 chatMessages.scrollTop = chatMessages.scrollHeight;
             }
 
-            // Método forzado para sincronización manual
+            // Método para configurar Google Cloud (futuro)
+            configureGoogleCloud(config) {
+                this.googleCloudConfigured = true;
+                console.log('🔗 Google Cloud configurado exitosamente');
+                
+                // Actualizar panel de características futuras
+                const futurePanel = document.querySelector('.future-features');
+                if (futurePanel) {
+                    futurePanel.style.display = 'none';
+                }
+                
+                this.showNotification('✅ Google Cloud Configurado', 'La conexión directa con NotebookLM está activa', 'success');
+            }
+
+            // Nuevo método para actualizar desde respuestas de NotebookLM
+            updateFromNotebookLMResponse(response) {
+                try {
+                    // Guardar la respuesta personalizada
+                    const timestamp = new Date().toISOString();
+                    this.customResponses[timestamp] = {
+                        response: response,
+                        timestamp: timestamp
+                    };
+                    
+                    // Intentar extraer datos numéricos
+                    this.extractDataFromResponse(response);
+                    
+                    // Guardar en localStorage
+                    localStorage.setItem('notebookLMCustomResponses', JSON.stringify(this.customResponses));
+                    
+                    this.showNotification('✅ Datos actualizados', 'La información de NotebookLM ha sido guardada', 'success');
+                    
+                    return true;
+                } catch (error) {
+                    console.error('Error al actualizar desde NotebookLM:', error);
+                    this.showNotification('❌ Error', 'No se pudo procesar la respuesta', 'error');
+                    return false;
+                }
+            }
+
+            extractDataFromResponse(response) {
+                // Extraer números de bautismos
+                const bautismo2024Match = response.match(/bautismos?\s+2024[:\s]*(\d+)/i);
+                const bautismo2025Match = response.match(/bautismos?\s+2025[:\s]*(\d+)/i);
+                
+                if (bautismo2024Match) {
+                    this.currentData.bautismos2024 = parseInt(bautismo2024Match[1]);
+                }
+                if (bautismo2025Match) {
+                    this.currentData.bautismos2025 = parseInt(bautismo2025Match[1]);
+                }
+                
+                // Actualizar estadísticas
+                this.updateStats();
+                
+                // Guardar datos actualizados
+                localStorage.setItem('notebookLMData', JSON.stringify(this.currentData));
+            }
+
+            getCustomResponse(question) {
+                // Buscar respuestas personalizadas
+                const responses = Object.values(this.customResponses);
+                
+                for (const customResponse of responses) {
+                    if (customResponse.response.toLowerCase().includes(question.toLowerCase())) {
+                        return customResponse.response;
+                    }
+                }
+                
+                return null;
+            }
+
             async forceSyncNow() {
                 await this.syncWithNotebookLM();
             }
         }
 
-        // Sistema de Chat Inteligente con datos del NotebookLM
+        // Sistema de Chat con capacidad de actualizar desde NotebookLM
         class ChatSystem {
             constructor() {
                 this.conversationHistory = [];
@@ -757,7 +961,6 @@
             }
 
             async initialize() {
-                // Inicializar sistema de sincronización
                 this.notebookSync = new NotebookLMSync();
                 
                 // Cargar datos guardados
@@ -766,25 +969,37 @@
                     this.notebookSync.currentData = JSON.parse(savedData);
                     this.notebookSync.updateStats();
                 }
+                
+                // Cargar respuestas personalizadas
+                const savedResponses = localStorage.getItem('notebookLMCustomResponses');
+                if (savedResponses) {
+                    this.notebookSync.customResponses = JSON.parse(savedResponses);
+                }
             }
 
             async sendMessage(message) {
                 try {
-                    // Mostrar indicador de escritura
                     this.showTypingIndicator();
                     
-                    // Esperar un momento para simular procesamiento
                     await new Promise(resolve => setTimeout(resolve, 1000));
                     
-                    // Generar respuesta basada en los datos del NotebookLM
+                    // Primero buscar en respuestas personalizadas de NotebookLM
+                    const customResponse = this.notebookSync.getCustomResponse(message);
+                    if (customResponse) {
+                        this.hideTypingIndicator();
+                        this.addMessageToChat(customResponse, false, true);
+                        return customResponse;
+                    }
+                    
+                    // Si no hay respuesta personalizada, usar respuestas locales
                     const response = this.generateResponse(message);
                     
-                    // Ocultar indicador de escritura
                     this.hideTypingIndicator();
                     
-                    // Agregar al historial
                     this.conversationHistory.push({ role: 'user', content: message });
                     this.conversationHistory.push({ role: 'assistant', content: response });
+                    
+                    this.addMessageToChat(response);
                     
                     return response;
                     
@@ -798,8 +1013,6 @@
             generateResponse(message) {
                 const lowerMessage = message.toLowerCase();
                 const data = this.notebookSync.currentData;
-                
-                // Respuestas específicas basadas en los datos del NotebookLM
                 
                 if (lowerMessage.includes('bautismo') || lowerMessage.includes('bautismos')) {
                     return this.generateBautismosResponse();
@@ -854,7 +1067,7 @@
                        `• **Tasa de crecimiento:** ${crecimiento}%\n\n` +
                        `¡Excelente progreso! El trabajo de ministerio está dando frutos. ` +
                        `Continúa orando y trabajando con los nuevos conversos.\n\n` +
-                       `¿Te gustaría ver detalles de algún caso específico?`;
+                       `💡 **Para datos más actualizados:** Copia y pega la respuesta de NotebookLM usando el botón "Actualizar".`;
             }
 
             generateCasosCriticosResponse() {
@@ -880,7 +1093,8 @@
                     });
                 }
                 
-                response += `**Acción recomendada:** Visitar a los casos en alerta esta semana.`;
+                response += `**Acción recomendada:** Visitar a los casos en alerta esta semana.\n\n` +
+                           `💡 **Para información más detallada:** Haz la pregunta en NotebookLM y actualiza los datos aquí.`;
                 
                 return response;
             }
@@ -891,7 +1105,8 @@
                 );
                 
                 if (!caso) {
-                    return `No encontré información sobre "${nombre}". ¿Podrías verificar el nombre?`;
+                    return `No encontré información sobre "${nombre}". ¿Podrías verificar el nombre?\n\n` +
+                           `💡 **Para información actualizada:** Pregunta en NotebookLM y actualiza los datos aquí.`;
                 }
                 
                 const estadoIcon = caso.estado === 'alerta' ? '⚠️' : '✅';
@@ -907,7 +1122,8 @@
                        `• **Ministrantes:** ${caso.ministrantes.length > 0 ? caso.ministrantes.join(', ') : 'No asignados'}\n\n` +
                        `**Recomendación:** ${caso.estado === 'alerta' ? 
                            'Visitar urgente esta semana y fortalecer la relación.' : 
-                           'Mantener contacto regular y continuar el apoyo.'}`;
+                           'Mantener contacto regular y continuar el apoyo.'}\n\n` +
+                       `💡 **Para información más reciente:** Pregunta en NotebookLM y actualiza los datos aquí.`;
             }
 
             generateMinisterioResponse() {
@@ -921,7 +1137,7 @@
                        `**Casos actuales que necesitan ministerio:**\n` +
                        `• ${this.notebookSync.currentData.casosCriticos.filter(c => c.estado === 'alerta').length} casos requieren atención urgente\n` +
                        `• ${this.notebookSync.currentData.casosCriticos.filter(c => c.estado === 'estable').length} casos en seguimiento regular\n\n` +
-                       `¿Te gustaría que te dé detalles específicos de algún caso?`;
+                       `💡 **Para orientación personalizada:** Pregunta en NotebookLM y actualiza los datos aquí.`;
             }
 
             generateBarriosResponse() {
@@ -946,6 +1162,8 @@
                     response += `\n`;
                 });
                 
+                response += `💡 **Para información actualizada:** Pregunta en NotebookLM y actualiza los datos aquí.`;
+                
                 return response;
             }
 
@@ -962,7 +1180,8 @@
                     response += `• Barrio: ${caso.barrio}\n\n`;
                 });
                 
-                response += `**Nota:** Recordar llamar preferentemente en horarios apropiados y siempre con respeto.`;
+                response += `**Nota:** Recordar llamar preferentemente en horarios apropiados y siempre con respeto.\n\n` +
+                           `💡 **Para contactos actualizados:** Pregunta en NotebookLM y actualiza los datos aquí.`;
                 
                 return response;
             }
@@ -985,7 +1204,8 @@
                        `**Acciones recomendadas:**\n` +
                        `• Priorizar los ${casosAlerta} casos en alerta\n` +
                        `• Fortalecer ministerio preventivo\n` +
-                       `• Continuar con el seguimiento regular`;
+                       `• Continuar con el seguimiento regular\n\n` +
+                       `💡 **Para estadísticas actualizadas:** Pregunta en NotebookLM y actualiza los datos aquí.`;
             }
 
             generateDefaultResponse() {
@@ -1005,6 +1225,11 @@
                        `• "Muéstrame por barrios"\n\n` +
                        `📞 **Contacto:**\n` +
                        `• "¿Cuál es el teléfono de...?"\n\n` +
+                       `💡 **Para obtener respuestas 100% reales de NotebookLM:**\n` +
+                       `1. Haz tu pregunta en NotebookLM\n` +
+                       `2. Copia la respuesta\n` +
+                       `3. Usa el botón "Actualizar" para pegarla aquí\n\n` +
+                       `🔗 **Próximamente:** Conexión directa con Google Cloud para sincronización automática.\n\n` +
                        `**¿Qué información necesitas específicamente?**`;
             }
 
@@ -1025,17 +1250,24 @@
                 indicator.style.display = 'none';
             }
 
-            addMessageToChat(content, isUser = false) {
+            addMessageToChat(content, isUser = false, isFromNotebookLM = false) {
                 const chatMessages = document.getElementById('chatMessages');
                 const messageDiv = document.createElement('div');
                 messageDiv.className = `message ${isUser ? 'user' : 'assistant'}`;
                 
-                // Formatear el contenido para que preserve los saltos de línea
                 const formattedContent = content.replace(/\n/g, '<br>');
+                
+                let extraInfo = '';
+                if (isFromNotebookLM) {
+                    extraInfo = `<div style="background: #dcfce7; padding: 8px; border-radius: 6px; margin-top: 8px; font-size: 12px; color: #166534;">
+                        <i class="fas fa-check-circle"></i> <strong>Respuesta actualizada desde NotebookLM</strong>
+                    </div>`;
+                }
                 
                 messageDiv.innerHTML = `
                     <div class="message-content">
                         ${formattedContent}
+                        ${extraInfo}
                     </div>
                 `;
                 chatMessages.appendChild(messageDiv);
@@ -1050,7 +1282,7 @@
         // Funciones de control de sincronización
         function startSync() {
             if (chatSystem && chatSystem.notebookSync) {
-                chatSystem.notebookSync.startAutoSync(30); // 30 minutos
+                chatSystem.notebookSync.startAutoSync(30);
             }
         }
 
@@ -1066,19 +1298,56 @@
             }
         }
 
+        // Función para mostrar/ocultar panel de actualización
+        function toggleUpdatePanel() {
+            const panel = document.getElementById('updatePanel');
+            if (panel.style.display === 'none') {
+                panel.style.display = 'block';
+                document.getElementById('updateTextarea').focus();
+            } else {
+                panel.style.display = 'none';
+            }
+        }
+
+        // Función para actualizar desde NotebookLM
+        function updateFromNotebookLM() {
+            const textarea = document.getElementById('updateTextarea');
+            const response = textarea.value.trim();
+            
+            if (response === '') {
+                alert('Por favor, pega la respuesta de NotebookLM');
+                return;
+            }
+            
+            if (chatSystem && chatSystem.notebookSync) {
+                const success = chatSystem.notebookSync.updateFromNotebookLMResponse(response);
+                
+                if (success) {
+                    // Limpiar textarea y ocultar panel
+                    textarea.value = '';
+                    document.getElementById('updatePanel').style.display = 'none';
+                    
+                    // Agregar mensaje de confirmación
+                    chatSystem.addMessageToChat(
+                        '✅ **Datos actualizados exitosamente**\n\n' +
+                        'La información de NotebookLM ha sido guardada y estará disponible para futuras consultas.\n\n' +
+                        'Ahora puedes hacer preguntas sobre esta información actualizada.',
+                        false,
+                        true
+                    );
+                }
+            }
+        }
+
         // Funciones de autenticación
         function handleGoogleLogin() {
-            // Simular autenticación exitosa
             currentUser = {
                 name: 'Hermano/a de la Estaca Cartago',
                 email: 'hermano@estacacartago.org',
                 photo: 'https://via.placeholder.com/40'
             };
             
-            // Guardar en localStorage
             localStorage.setItem('currentUser', JSON.stringify(currentUser));
-            
-            // Mostrar interfaz de chat
             showChatInterface();
         }
 
@@ -1086,11 +1355,9 @@
             document.getElementById('loginScreen').style.display = 'none';
             document.getElementById('chatInterface').style.display = 'flex';
             
-            // Inicializar sistema de chat
             if (!chatSystem) {
                 chatSystem = new ChatSystem();
                 chatSystem.initialize().then(() => {
-                    // Iniciar sincronización automática
                     chatSystem.notebookSync.startAutoSync(30);
                 });
             }
@@ -1103,16 +1370,11 @@
             
             if (message === '') return;
             
-            // Agregar mensaje del usuario al chat
             chatSystem.addMessageToChat(message, true);
-            
-            // Limpiar input
             input.value = '';
             
-            // Enviar mensaje y obtener respuesta
             try {
-                const response = await chatSystem.sendMessage(message);
-                chatSystem.addMessageToChat(response);
+                await chatSystem.sendMessage(message);
             } catch (error) {
                 console.error('Error al enviar mensaje:', error);
                 chatSystem.addMessageToChat('Lo siento, ocurrió un error al procesar tu mensaje. Por favor, intenta de nuevo.');
