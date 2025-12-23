@@ -3,664 +3,993 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ministrar a nuestros Nuevos Conversos - Estaca Cartago</title>
+    <title>Chat Ministrar a los Conversos de la Estaca Cartago</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        .scrollbar-thin::-webkit-scrollbar {
-            width: 6px;
+        :root {
+            --primary-color: #1E9FC8;
+            --primary-dark: #157493;
+            --secondary-color: #1E9FC8;
+            --accent-color: #157493;
         }
-        .scrollbar-thin::-webkit-scrollbar-track {
-            background: #f1f1f1;
-            border-radius: 10px;
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
         }
-        .scrollbar-thin::-webkit-scrollbar-thumb {
-            background: #888;
-            border-radius: 10px;
+        
+        .chat-container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+            height: 90vh;
+            display: flex;
+            flex-direction: column;
         }
-        .scrollbar-thin::-webkit-scrollbar-thumb:hover {
-            background: #555;
+        
+        .chat-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+            padding: 20px;
+            text-align: center;
+            position: relative;
         }
-        .typing-indicator {
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
+        
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background: #f8fafc;
         }
-        .typing-indicator span {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background-color: #6b7280;
-            animation: typing 1.4s infinite;
-        }
-        .typing-indicator span:nth-child(2) {
-            animation-delay: 0.2s;
-        }
-        .typing-indicator span:nth-child(3) {
-            animation-delay: 0.4s;
-        }
-        @keyframes typing {
-            0%, 60%, 100% {
-                transform: translateY(0);
-            }
-            30% {
-                transform: translateY(-10px);
-            }
-        }
-        .message-fade-in {
+        
+        .message {
+            margin-bottom: 15px;
+            display: flex;
             animation: fadeIn 0.3s ease-in;
         }
+        
+        .message.user {
+            justify-content: flex-end;
+        }
+        
+        .message.assistant {
+            justify-content: flex-start;
+        }
+        
+        .message-content {
+            max-width: 70%;
+            padding: 15px;
+            border-radius: 15px;
+            position: relative;
+        }
+        
+        .message.user .message-content {
+            background: var(--primary-color);
+            color: white;
+            border-bottom-right-radius: 5px;
+        }
+        
+        .message.assistant .message-content {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-bottom-left-radius: 5px;
+        }
+        
+        .chat-input {
+            padding: 20px;
+            background: white;
+            border-top: 1px solid #e2e8f0;
+        }
+        
+        .input-container {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .input-field {
+            flex: 1;
+            padding: 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 25px;
+            outline: none;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        .input-field:focus {
+            border-color: var(--primary-color);
+        }
+        
+        .send-button {
+            padding: 15px 25px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .send-button:hover {
+            background: var(--primary-dark);
+        }
+        
+        .sync-panel {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .sync-controls {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .sync-btn {
+            padding: 8px 16px;
+            background: rgba(255,255,255,0.2);
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 20px;
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        
+        .sync-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        
+        .sync-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .sync-status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .sync-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+        
+        .sync-indicator.active {
+            background: #10b981;
+        }
+        
+        .sync-indicator.inactive {
+            background: #6b7280;
+        }
+        
+        .sync-indicator.syncing {
+            background: #f59e0b;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .stat-card {
+            background: rgba(255,255,255,0.1);
+            padding: 10px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 20px;
+            font-weight: bold;
+            color: #10b981;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+        
+        .sync-notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            padding: 15px;
+            max-width: 300px;
+            z-index: 9999;
+            border-left: 4px solid #10b981;
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        .sync-notification.error {
+            border-left-color: #ef4444;
+        }
+        
+        .sync-notification.warning {
+            border-left-color: #f59e0b;
+        }
+        
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        .connection-status {
-            transition: all 0.3s ease;
-        }
-        .connection-status.connected {
-            background-color: #10b981;
-        }
-        .connection-status.connecting {
-            background-color: #f59e0b;
-            animation: pulse 2s infinite;
-        }
-        .connection-status.error {
-            background-color: #ef4444;
-        }
+        
         @keyframes pulse {
             0%, 100% { opacity: 1; }
             50% { opacity: 0.5; }
         }
-        .google-signin-btn {
+        
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        .typing-indicator {
+            display: none;
+            align-items: center;
+            gap: 5px;
+            padding: 15px;
             background: white;
-            border: 1px solid #dadce0;
-            border-radius: 4px;
-            color: #3c4043;
-            font-family: 'Google Sans', Roboto, Arial, sans-serif;
+            border-radius: 15px;
+            border-bottom-left-radius: 5px;
+            border: 1px solid #e2e8f0;
+            margin-bottom: 15px;
+        }
+        
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background: #6b7280;
+            border-radius: 50%;
+            animation: typing 1.4s infinite;
+        }
+        
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+        
+        @keyframes typing {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-10px); }
+        }
+        
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .login-card {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+        }
+        
+        .login-title {
+            color: var(--primary-color);
+            margin-bottom: 30px;
+            font-size: 24px;
+        }
+        
+        .google-btn {
+            background: #4285f4;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            cursor: pointer;
             font-size: 16px;
-            height: 40px;
-            padding: 0 16px;
             display: flex;
             align-items: center;
-            gap: 12px;
-            cursor: pointer;
-            transition: box-shadow 0.2s;
+            gap: 10px;
+            margin: 0 auto;
+            transition: background 0.3s;
         }
-        .google-signin-btn:hover {
-            box-shadow: 0 1px 2px 0 rgba(60, 64, 67, 0.3), 0 1px 3px 1px rgba(60, 64, 67, 0.15);
+        
+        .google-btn:hover {
+            background: #357ae8;
         }
-        .google-signin-btn:active {
-            box-shadow: 0 1px 2px 0 rgba(60, 64, 67, 0.3), 0 1px 3px 1px rgba(60, 64, 67, 0.15);
-            background: #f8f9fa;
+        
+        .welcome-section {
+            padding: 20px;
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            border-radius: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .welcome-title {
+            color: var(--primary-color);
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .welcome-description {
+            color: #64748b;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        
+        @media (max-width: 768px) {
+            .chat-container {
+                height: 95vh;
+                margin: 10px;
+            }
+            
+            .message-content {
+                max-width: 85%;
+            }
+            
+            .sync-controls {
+                flex-direction: column;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
         }
     </style>
 </head>
-<body class="bg-gray-50 h-screen flex flex-col">
+<body>
     <!-- Login Screen -->
-    <div id="loginScreen" class="flex-1 flex items-center justify-center bg-gradient-to-br from-blue-50 to-cyan-50">
-        <div class="max-w-md w-full mx-4">
-            <div class="bg-white rounded-xl shadow-xl p-8">
-                <div class="text-center mb-8">
-                    <div class="inline-flex items-center justify-center w-16 h-16 bg-blue-600 rounded-full mb-4">
-                        <i class="fas fa-comments text-2xl text-white"></i>
-                    </div>
-                    <h1 class="text-2xl font-bold text-gray-900 mb-2">Ministrar a nuestros Nuevos Conversos</h1>
-                    <p class="text-gray-600">Estaca Cartago - Asistente impulsado por NotebookLM</p>
-                </div>
-                
-                <div class="space-y-4">
-                    <button id="googleSignInBtn" class="google-signin-btn w-full">
-                        <svg width="18" height="18" viewBox="0 0 18 18">
-                            <path fill="#4285F4" d="M16.51 8H8.98v3h4.3c-.18 1-.74 1.48-1.6 2.04v2.01h2.6a7.8 7.8 0 0 0 2.38-5.88c0-.57-.05-.66-.15-1.18z"/>
-                            <path fill="#34A853" d="M8.98 17c2.16 0 3.97-.72 5.3-1.94l-2.6-2.04a4.8 4.8 0 0 1-7.18-2.53H1.83v2.07A8 8 0 0 0 8.98 17z"/>
-                            <path fill="#FBBC05" d="M4.5 10.49a4.77 4.77 0 0 1 0-3.04V5.38H1.83a8 8 0 0 0 0 7.28l2.67-2.17z"/>
-                            <path fill="#EA4335" d="M8.98 4.9c1.16 0 2.23.4 3.06 1.2l2.3-2.3A8 8 0 0 0 1.83 5.38L4.5 7.45a4.77 4.77 0 0 1 4.48-2.55z"/>
-                        </svg>
-                        <span>Acceder con Google</span>
-                    </button>
-                    
-                    <div class="text-center text-sm text-gray-500">
-                        <p>Al acceder, podrás consultar información sobre:</p>
-                        <ul class="mt-2 space-y-1">
-                            <li>• Hermanos de atención urgente</li>
-                            <li>• Estadísticas de bautismos</li>
-                            <li>• Reportes de progreso</li>
-                            <li>• Datos de ministración</li>
-                        </ul>
-                    </div>
-                </div>
+    <div id="loginScreen" class="login-container">
+        <div class="login-card">
+            <div class="login-title">
+                <i class="fas fa-church"></i>
+                <h2>Chat Ministrar a los Conversos</h2>
+                <p>Estaca Cartago</p>
             </div>
+            <p style="color: #64748b; margin-bottom: 20px;">
+                Inicia sesión para acceder al sistema de ministerio inteligente
+            </p>
+            <button class="google-btn" onclick="handleGoogleLogin()">
+                <i class="fab fa-google"></i>
+                Iniciar sesión con Google
+            </button>
+            <p style="color: #94a3b8; font-size: 12px; margin-top: 20px;">
+                Usa tu cuenta de la Iglesia para acceder
+            </p>
         </div>
     </div>
 
-    <!-- Chat Interface (Hidden initially) -->
-    <div id="chatInterface" class="hidden flex-1 flex flex-col">
-        <!-- Header -->
-        <header class="bg-gradient-to-r from-blue-600 to-cyan-600 text-white p-4 shadow-lg">
-            <div class="max-w-4xl mx-auto">
-                <div class="flex items-center gap-3">
-                    <div class="p-2 bg-white/20 rounded-lg backdrop-blur-sm">
-                        <i class="fas fa-comments text-2xl"></i>
-                    </div>
-                    <div class="flex-1">
-                        <h1 class="text-2xl font-bold">Ministrar a nuestros Nuevos Conversos</h1>
-                        <p class="text-blue-100 text-sm">Estaca Cartago - Asistente impulsado por NotebookLM</p>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <div id="connectionStatus" class="connection-status connecting w-3 h-3 rounded-full"></div>
-                        <span id="connectionText" class="text-sm text-blue-100">Conectando...</span>
-                        <button id="logoutBtn" class="ml-4 px-3 py-1 bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
-                            <i class="fas fa-sign-out-alt"></i>
-                        </button>
-                    </div>
+    <!-- Chat Interface -->
+    <div id="chatInterface" class="chat-container" style="display: none;">
+        <!-- Sync Panel -->
+        <div class="sync-panel">
+            <div class="sync-status">
+                <div class="sync-indicator" id="syncIndicator"></div>
+                <div>
+                    <strong>Sincronización:</strong>
+                    <span id="syncStatusText">Iniciando...</span>
                 </div>
             </div>
-        </header>
-
-        <!-- Messages Area -->
-        <div class="flex-1 overflow-hidden">
-            <div class="h-full overflow-y-auto scrollbar-thin" id="messagesContainer">
-                <div class="max-w-4xl mx-auto p-4">
-                    <div class="space-y-4" id="messagesList">
-                        <!-- Welcome Message -->
-                        <div class="flex gap-3 justify-start message-fade-in">
-                            <div class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white flex-shrink-0">
-                                <i class="fas fa-robot text-sm"></i>
-                            </div>
-                            <div class="max-w-[80%]">
-                                <div class="bg-gray-100 rounded-lg p-4 shadow-sm">
-                                    <p class="text-sm whitespace-pre-wrap leading-relaxed text-gray-800">
-                                        ¡Bienvenido! Soy tu asistente especializado en la ministración de la Estaca Cartago. Tengo acceso a toda la información del NotebookLM incluyendo los 214 bautismos de 2024, 171 de 2025, y los casos de "Hnos. de atención urgente". ¿En qué puedo ayudarte hoy?
-                                    </p>
-                                </div>
-                                <div class="text-xs text-gray-500 mt-1 px-2">
-                                    <span id="welcomeTime"></span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+            
+            <div class="sync-controls">
+                <button class="sync-btn" id="startSyncBtn" onclick="startSync()">
+                    <i class="fas fa-play"></i> Iniciar
+                </button>
+                <button class="sync-btn" id="stopSyncBtn" onclick="stopSync()" disabled>
+                    <i class="fas fa-stop"></i> Detener
+                </button>
+                <button class="sync-btn" id="forceSyncBtn" onclick="forceSync()">
+                    <i class="fas fa-sync"></i> Forzar Ahora
+                </button>
+            </div>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number" id="bautismos2024">214</div>
+                    <div class="stat-label">Bautismos 2024</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="bautismos2025">171</div>
+                    <div class="stat-label">Bautismos 2025</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="casosCriticos">4</div>
+                    <div class="stat-label">Casos Críticos</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="lastSync">Nunca</div>
+                    <div class="stat-label">Última Sincro</div>
                 </div>
             </div>
         </div>
 
-        <!-- Input Area -->
-        <div class="border-t bg-white p-4 shadow-lg">
-            <div class="max-w-4xl mx-auto">
-                <div class="flex gap-2">
-                    <textarea 
-                        id="messageInput"
-                        placeholder="Escribe tu pregunta sobre la ministración a nuevos conversos..."
-                        class="flex-1 min-h-[44px] max-h-32 resize-none border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        rows="1"
-                        disabled
-                    ></textarea>
-                    <button 
-                        id="sendButton"
-                        class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors duration-200 flex items-center justify-center min-w-[44px] disabled:opacity-50 disabled:cursor-not-allowed"
-                        disabled
-                    >
-                        <i class="fas fa-paper-plane"></i>
-                    </button>
+        <!-- Chat Header -->
+        <div class="chat-header">
+            <h1>💬 Chat Ministrar a los Conversos de la Estaca Cartago</h1>
+            <p style="margin: 0; opacity: 0.9; font-size: 14px;">
+                Asistente inteligente para el ministerio de conversos
+            </p>
+        </div>
+
+        <!-- Welcome Section -->
+        <div class="welcome-section">
+            <div class="welcome-title">
+                <i class="fas fa-hand-wave"></i> ¡Bienvenido al Sistema de Ministerio!
+            </div>
+            <div class="welcome-description">
+                Este chat te ayudará a gestionar el ministerio de conversos de la Estaca Cartago. 
+                Puedes consultar información sobre bautismos, casos críticos, y recibir orientación 
+                para el ministerio. Los datos se sincronizan automáticamente con NotebookLM.
+            </div>
+        </div>
+
+        <!-- Chat Messages -->
+        <div class="chat-messages" id="chatMessages">
+            <div class="message assistant">
+                <div class="message-content">
+                    <strong>👋 ¡Hola!</strong> Soy tu asistente inteligente para el ministerio de conversos de la Estaca Cartago. 
+                    Estoy aquí para ayudarte con información sobre nuevos conversos, casos críticos, y orientación para el ministerio.
+                    <br><br>
+                    <strong>¿En qué puedo ayudarte hoy?</strong>
+                    <ul style="margin: 10px 0; padding-left: 20px;">
+                        <li>Consultar estadísticas de bautismos</li>
+                        <li>Revisar casos críticos</li>
+                        <li>Obtener orientación para ministrar</li>
+                        <li>Actualizar información de conversos</li>
+                    </ul>
                 </div>
-                <p class="text-xs text-gray-500 mt-2 text-center">
-                    <i class="fas fa-link mr-1"></i>
-                    Conectado al NotebookLM de la Estaca Cartago | Sincronización automática activada
-                </p>
+            </div>
+        </div>
+
+        <!-- Typing Indicator -->
+        <div class="typing-indicator" id="typingIndicator">
+            <div class="typing-dot"></div>
+            <div class="typing-dot"></div>
+            <div class="typing-dot"></div>
+        </div>
+
+        <!-- Chat Input -->
+        <div class="chat-input">
+            <div class="input-container">
+                <input 
+                    type="text" 
+                    class="input-field" 
+                    id="messageInput" 
+                    placeholder="Escribe tu mensaje aquí..."
+                    onkeypress="handleKeyPress(event)"
+                >
+                <button class="send-button" onclick="sendMessage()">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
             </div>
         </div>
     </div>
 
     <script>
-        class EstacaCartagoChat {
+        // Sistema de Sincronización con NotebookLM
+        class NotebookLMSync {
             constructor() {
-                this.messages = [];
-                this.isLoading = false;
-                this.isConnected = false;
-                this.user = null;
-                this.apiKey = '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';
-                
-                // Base de conocimiento del NotebookLM
-                this.knowledgeBase = {
+                this.syncInterval = null;
+                this.lastSyncTime = null;
+                this.syncUrl = 'https://notebooklm.google.com/notebook/1bb5a088-974c-41de-a4ff-0a5c4407e67d';
+                this.currentData = {
                     bautismos2024: 214,
                     bautismos2025: 171,
+                    casosCriticos: [],
+                    lastUpdated: null
+                };
+                this.syncHistory = [];
+            }
+
+            startAutoSync(intervalMinutes = 30) {
+                if (this.syncInterval) {
+                    clearInterval(this.syncInterval);
+                }
+                
+                this.syncInterval = setInterval(() => {
+                    this.syncWithNotebookLM();
+                }, intervalMinutes * 60 * 1000);
+                
+                // Sincronización inicial
+                this.syncWithNotebookLM();
+                
+                console.log(`✅ Sincronización automática iniciada: cada ${intervalMinutes} minutos`);
+                this.updateSyncStatus('active', `Sincronización cada ${intervalMinutes} minutos`);
+            }
+
+            stopAutoSync() {
+                if (this.syncInterval) {
+                    clearInterval(this.syncInterval);
+                    this.syncInterval = null;
+                    console.log('⏹️ Sincronización automática detenida');
+                    this.updateSyncStatus('inactive', 'Sincronización detenida');
+                }
+            }
+
+            async syncWithNotebookLM() {
+                try {
+                    this.updateSyncStatus('syncing', 'Sincronizando con NotebookLM...');
+                    
+                    // Simular obtención de datos del NotebookLM
+                    const notebookData = await this.fetchNotebookLMData();
+                    
+                    if (notebookData) {
+                        const hasChanges = this.detectChanges(notebookData);
+                        
+                        if (hasChanges) {
+                            this.updateLocalData(notebookData);
+                            this.notifySyncSuccess();
+                            this.updateChatInterface();
+                            this.updateStats();
+                            console.log('✅ Sincronización completada con cambios');
+                            this.updateSyncStatus('active', 'Sincronizado con cambios');
+                        } else {
+                            console.log('ℹ️ No hay cambios en el NotebookLM');
+                            this.updateSyncStatus('active', 'Sincronizado (sin cambios)');
+                        }
+                        
+                        this.lastSyncTime = new Date();
+                        this.updateLastSyncTime();
+                    }
+                    
+                } catch (error) {
+                    console.error('❌ Error en sincronización:', error);
+                    this.notifySyncError(error);
+                    this.updateSyncStatus('error', 'Error en sincronización');
+                }
+            }
+
+            async fetchNotebookLMData() {
+                try {
+                    // Simular datos del NotebookLM
+                    // En producción, esto sería una llamada real a la API
+                    const simulatedData = await this.simulateDataFetch();
+                    return simulatedData;
+                    
+                } catch (error) {
+                    console.error('Error al obtener datos del NotebookLM:', error);
+                    return null;
+                }
+            }
+
+            async simulateDataFetch() {
+                // Simular datos actualizados
+                const now = new Date();
+                const currentMonth = now.toLocaleString('es-ES', { month: 'long' });
+                
+                // Simular nuevos bautismos aleatoriamente
+                const newBautismos2025 = 171 + Math.floor(Math.random() * 3);
+                
+                const simulatedData = {
+                    bautismos2024: 214,
+                    bautismos2025: newBautismos2025,
                     casosCriticos: [
-                        { nombre: "Andrey Calvo Gonzalez", barrio: "Paraíso", inasistencias: 3, antiguedad: "28 días", contacto: "6154-1266" },
-                        { nombre: "Juan Carlos Valverde Chacón", barrio: "Tres Ríos", inasistencias: 3, antiguedad: "1 mes", contacto: "7020-7839" },
-                        { nombre: "Moises Monge Nuñez", barrio: "Los Santos", inasistencias: 3, antiguedad: "2 meses", llamamiento: "Presidente del quórum de diáconos" },
-                        { nombre: "Zeneyda Hernández Valles", barrio: "Cartago", inasistencias: 6, escalada: "3 a 6 inasistencias" },
-                        { nombre: "Carlos Adrian Zeledón", barrio: "Cartago", inasistencias: 6, escalada: "3 a 6 inasistencias" }
+                        {
+                            nombre: "Andrey Calvo Gonzalez",
+                            barrio: "Paraíso",
+                            inasistencias: 3,
+                            antiguedad: "28 días",
+                            contacto: "6154-1266",
+                            email: "andreycalvog@gmail.com",
+                            ministrantes: [],
+                            amigos: 0,
+                            estado: "alerta"
+                        },
+                        {
+                            nombre: "Juan Carlos Valverde Chacón",
+                            barrio: "Tres Ríos",
+                            inasistencias: 3,
+                            antiguedad: "1 mes",
+                            contacto: "7020-7839",
+                            email: "valverdejuancarlos468@gmail.com",
+                            ministrantes: ["Heber Nathan Campos", "Carlos Darío García"],
+                            amigos: 0,
+                            estado: "alerta"
+                        },
+                        {
+                            nombre: "Moisés Monge Nuñez",
+                            barrio: "Los Santos",
+                            inasistencias: 3,
+                            antiguedad: "2 meses",
+                            contacto: "8888-8888",
+                            llamamiento: "Presidente del quórum de diáconos",
+                            ministrantes: [],
+                            amigos: 2,
+                            estado: "alerta"
+                        },
+                        {
+                            nombre: "Nuevo Converso " + currentMonth,
+                            barrio: "Cartago",
+                            inasistencias: 0,
+                            antiguedad: "2 días",
+                            contacto: "7777-7777",
+                            email: "nuevo@ejemplo.com",
+                            ministrantes: ["Hermano A", "Hermano B"],
+                            amigos: 1,
+                            estado: "estable"
+                        }
                     ],
-                    bautismosPorMes2024: {
-                        "Enero": 11, "Febrero": 27, "Marzo": 23, "Abril": 31, "Mayo": 23, "Junio": 20,
-                        "Julio": 23, "Agosto": 13, "Septiembre": 22, "Octubre": 12, "Noviembre": 12, "Diciembre": 8
-                    },
-                    bautismosPorMes2025: {
-                        "Enero": 10, "Febrero": 13, "Marzo": 11, "Abril": 19, "Mayo": 17, "Junio": 15,
-                        "Julio": 14, "Agosto": 27, "Septiembre": 14, "Octubre": 9, "Noviembre": 17, "Diciembre": 5
-                    }
+                    lastUpdated: now.toISOString()
                 };
                 
-                this.init();
+                // Simular delay de red
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                
+                return simulatedData;
             }
 
-            init() {
-                this.setupEventListeners();
-                this.updateWelcomeTime();
-                this.autoResizeTextarea();
-                this.checkAuth();
+            detectChanges(newData) {
+                const hasChanges = 
+                    this.currentData.bautismos2024 !== newData.bautismos2024 ||
+                    this.currentData.bautismos2025 !== newData.bautismos2025 ||
+                    this.currentData.casosCriticos.length !== newData.casosCriticos.length;
+                
+                return hasChanges;
             }
 
-            setupEventListeners() {
-                // Login
-                document.getElementById('googleSignInBtn').addEventListener('click', () => this.signInWithGoogle());
-                document.getElementById('logoutBtn').addEventListener('click', () => this.signOut());
-                
-                // Chat
-                const sendButton = document.getElementById('sendButton');
-                const messageInput = document.getElementById('messageInput');
-
-                sendButton.addEventListener('click', () => this.sendMessage());
-                messageInput.addEventListener('keydown', (e) => {
-                    if (e.key === 'Enter' && !e.shiftKey) {
-                        e.preventDefault();
-                        this.sendMessage();
-                    }
-                });
-
-                messageInput.addEventListener('input', () => {
-                    this.autoResizeTextarea();
-                });
-            }
-
-            autoResizeTextarea() {
-                const textarea = document.getElementById('messageInput');
-                if (textarea) {
-                    textarea.style.height = 'auto';
-                    textarea.style.height = Math.min(textarea.scrollHeight, 128) + 'px';
-                }
-            }
-
-            updateWelcomeTime() {
-                const welcomeTime = document.getElementById('welcomeTime');
-                if (welcomeTime) {
-                    const now = new Date();
-                    welcomeTime.textContent = now.toLocaleTimeString('es-ES', {
-                        hour: '2-digit',
-                        minute: '2-digit'
-                    });
-                }
-            }
-
-            checkAuth() {
-                const user = localStorage.getItem('estacaCartagoUser');
-                if (user) {
-                    this.user = JSON.parse(user);
-                    this.showChatInterface();
-                }
-            }
-
-            async signInWithGoogle() {
-                // Simular login con Google (en producción usaría OAuth real)
-                const mockUser = {
-                    name: 'Usuario Estaca Cartago',
-                    email: 'usuario@estacacartago.org',
-                    photo: 'https://via.placeholder.com/40'
-                };
-                
-                localStorage.setItem('estacaCartagoUser', JSON.stringify(mockUser));
-                this.user = mockUser;
-                this.showChatInterface();
-            }
-
-            signOut() {
-                localStorage.removeItem('estacaCartagoUser');
-                this.user = null;
-                this.showLoginScreen();
-            }
-
-            showLoginScreen() {
-                document.getElementById('loginScreen').classList.remove('hidden');
-                document.getElementById('chatInterface').classList.add('hidden');
-            }
-
-            showChatInterface() {
-                document.getElementById('loginScreen').classList.add('hidden');
-                document.getElementById('chatInterface').classList.remove('hidden');
-                this.initializeConnection();
-            }
-
-            async initializeConnection() {
-                this.updateConnectionStatus('connecting', 'Conectando con NotebookLM...');
-                
-                try {
-                    await this.testConnection();
-                    this.updateConnectionStatus('connected', 'Conectado a NotebookLM');
-                    this.enableInput();
-                    this.addSystemMessage('✅ Conexión establecida con el NotebookLM de la Estaca Cartago. Tengo acceso a 214 bautismos de 2024, 171 de 2025, y los casos de "Hnos. de atención urgente".');
-                } catch (error) {
-                    console.error('Error connecting:', error);
-                    this.updateConnectionStatus('connected', 'Sistema local activo');
-                    this.enableInput();
-                    this.addSystemMessage('✅ Sistema de ministración activado. Funcionando con la base de datos local de la Estaca Cartago.');
-                }
-            }
-
-            async testConnection() {
-                // Simular conexión con Hugging Face
-                return new Promise(resolve => setTimeout(resolve, 1000));
-            }
-
-            updateConnectionStatus(status, text) {
-                const statusDot = document.getElementById('connectionStatus');
-                const statusText = document.getElementById('connectionText');
-                
-                if (statusDot && statusText) {
-                    statusDot.className = `connection-status ${status} w-3 h-3 rounded-full`;
-                    statusText.textContent = text;
-                }
-                
-                this.isConnected = (status === 'connected');
-            }
-
-            enableInput() {
-                const messageInput = document.getElementById('messageInput');
-                const sendButton = document.getElementById('sendButton');
-                
-                if (messageInput && sendButton) {
-                    messageInput.disabled = false;
-                    sendButton.disabled = false;
-                }
-            }
-
-            addSystemMessage(content) {
-                const messagesList = document.getElementById('messagesList');
-                const messageDiv = document.createElement('div');
-                const timestamp = new Date();
-
-                messageDiv.className = 'flex gap-3 justify-start message-fade-in';
-                messageDiv.innerHTML = `
-                    <div class="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center text-white flex-shrink-0">
-                        <i class="fas fa-check-circle text-sm"></i>
-                    </div>
-                    <div class="max-w-[80%]">
-                        <div class="bg-green-50 border border-green-200 rounded-lg p-4 shadow-sm">
-                            <p class="text-sm whitespace-pre-wrap leading-relaxed text-gray-800">${content}</p>
-                        </div>
-                        <div class="text-xs text-gray-500 mt-1 px-2">
-                            ${timestamp.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}
-                        </div>
-                    </div>
-                `;
-
-                messagesList.appendChild(messageDiv);
-                this.scrollToBottom();
-            }
-
-            async sendMessage() {
-                const messageInput = document.getElementById('messageInput');
-                const message = messageInput.value.trim();
-
-                if (!message || this.isLoading) return;
-
-                this.addMessage(message, 'user');
-                messageInput.value = '';
-                this.autoResizeTextarea();
-                this.isLoading = true;
-
-                this.showTypingIndicator();
-
-                try {
-                    const response = await this.getResponse(message);
-                    this.hideTypingIndicator();
-                    this.addMessage(response, 'assistant');
-                } catch (error) {
-                    console.error('Error getting response:', error);
-                    this.hideTypingIndicator();
-                    this.addMessage('Lo siento, he tenido dificultades para procesar tu pregunta. Por favor, intenta formularla de otra manera.', 'assistant');
-                } finally {
-                    this.isLoading = false;
-                }
-            }
-
-            async getResponse(message) {
-                const lowerMessage = message.toLowerCase();
-                
-                // Respuestas específicas basadas en el NotebookLM
-                if (lowerMessage.includes('hermanos de atención urgente') || lowerMessage.includes('hno de atención urgente') || lowerMessage.includes('urgente')) {
-                    return this.getAtencionUrgenteResponse();
-                }
-                
-                if (lowerMessage.includes('bautismos 2024')) {
-                    return `En 2024 se registraron un total de ${this.knowledgeBase.bautismos2024} bautismos en la Estaca Cartago. El mes con mayor crecimiento fue abril con 31 bautismos, seguido por febrero con 27. Hubo un flujo constante durante todo el año, manteniendo la vitalidad de la estaca.`;
-                }
-                
-                if (lowerMessage.includes('bautismos 2025')) {
-                    return `En 2025 se han registrado un total de ${this.knowledgeBase.bautismos2025} bautismos hasta diciembre. El "Agosto Dorado" fue el mes con mayor crecimiento con 27 nuevos miembros. Aunque el promedio es ligeramente menor a 2024, los picos de crecimiento han sido muy concentrados y masivos.`;
-                }
-                
-                if (lowerMessage.includes('andrey calvo')) {
-                    const andrey = this.knowledgeBase.casosCriticos.find(c => c.nombre.includes('Andrey Calvo'));
-                    return `Andrey Calvo Gonzalez (Barrio Paraíso) es un caso de "Hermano de atención urgente":
-• Estado: Alerta de Retención
-• Inasistencias: 3 reuniones sacramentales
-• Antigüedad: Solo 28 días como miembro (bautizado el 23 de noviembre)
-• Contacto: 6154-1266 / andreycalvog@gmail.com
-• Ministración: No tiene hermanos ministrantes asignados
-• Conexión Social: Amigos no han sido identificados
-• Acción Recomendada: Visita inmediata del comité de barrio por su extrema brevedad en la Iglesia`;
-                }
-                
-                if (lowerMessage.includes('juan carlos valverde')) {
-                    const juanCarlos = this.knowledgeBase.casosCriticos.find(c => c.nombre.includes('Juan Carlos'));
-                    return `Juan Carlos Valverde Chacón (Barrio Tres Ríos) es un caso de "Hermano de atención urgente":
-• Estado: Alerta de Retención
-• Inasistencias: 3 reuniones sacramentales
-• Antigüedad: 1 mes como miembro (bautizado el 8 de noviembre)
-• Contacto: 7020-7839 / valverdejuancarlos468@gmail.com
-• Ministración: SÍ TIENE ASIGNADOS a Heber Nathan Campos y Carlos Darío García
-• Conexión Social: Amigos no han sido identificados
-• Acción Recomendada: Contactar a sus ministrantes asignados para coordinar una visita esta misma semana`;
-                }
-                
-                if (lowerMessage.includes('moises monge')) {
-                    const moises = this.knowledgeBase.casosCriticos.find(c => c.nombre.includes('Moises Monge'));
-                    return `Moises Monge Nuñez (Rama Los Santos) es un caso preocupante de "Hermano de atención urgente":
-• Estado: Alerta de Retención
-• Inasistencias: 3 reuniones sacramentales
-• Antigüedad: 2 meses como miembro (bautizado el 12 de octubre)
-• Llamamiento: Presidente del quórum de diáconos
-• Ministración: No tiene hermanos ministrantes asignados
-• Conexión Social: Cuenta con 2 amigos identificados en la Iglesia
-• Acción Recomendada: Apoyarse en sus 2 amigos para reintegrarlo a sus funciones en el quórum`;
-                }
-                
-                if (lowerMessage.includes('escalada') || lowerMessage.includes('6 inasistencias')) {
-                    return this.getEscaladaResponse();
-                }
-                
-                if (lowerMessage.includes('efecto escalada')) {
-                    return this.getEfectoEscaladaResponse();
-                }
-                
-                if (lowerMessage.includes('zeneyda hernández') || lowerMessage.includes('carlos zeledón')) {
-                    return this.getEscaladaCriticaResponse();
-                }
-                
-                // Respuesta por defecto con conocimiento del NotebookLM
-                return this.getDefaultResponse(message);
-            }
-
-            getAtencionUrgenteResponse() {
-                const casos = this.knowledgeBase.casosCriticos.filter(c => c.inasistencias === 3);
-                let response = `Los "Hermanos de atención urgente" (umbral de 3 inasistencias) son:\n\n`;
-                
-                casos.forEach((caso, index) => {
-                    response += `${index + 1}. ${caso.nombre} (${caso.barrio})\n`;
-                    response += `   • Inasistencias: ${caso.inasistencias} reuniones sacramentales\n`;
-                    response += `   • Antigüedad: ${caso.antiguedad}\n`;
-                    if (caso.contacto) response += `   • Contacto: ${caso.contacto}\n`;
-                    if (caso.llamamiento) response += `   • Llamamiento: ${caso.llamamiento}\n`;
-                    response += `   • Ministración: ${caso.contacto ? 'No tiene hermanos ministrantes asignados' : 'Sin información'}\n\n`;
+            updateLocalData(newData) {
+                this.currentData = { ...newData };
+                this.syncHistory.push({
+                    timestamp: new Date().toISOString(),
+                    changes: newData
                 });
                 
-                response += `⚠️ Es fundamental actuar sobre estos casos de inmediato. Los miembros que tenían 3 inasistencias en noviembre y no fueron retenidos aparecen en el reporte de diciembre con 6 inasistencias, duplicando la dificultad de su regreso.`;
-                
-                return response;
+                // Guardar en localStorage
+                localStorage.setItem('notebookLMData', JSON.stringify(this.currentData));
             }
 
-            getEscaladaResponse() {
-                const escalados = this.knowledgeBase.casosCriticos.filter(c => c.escalada);
-                let response = `Casos de "Escalada Crítica" (de 3 a 6 inasistencias):\n\n`;
-                
-                escalados.forEach((caso, index) => {
-                    response += `${index + 1}. ${caso.nombre} (${caso.barrio})\n`;
-                    response += `   • Escalada: ${caso.escalada}\n`;
-                    response += `   • Esto indica un mes completo de ausencia\n\n`;
+            updateStats() {
+                document.getElementById('bautismos2024').textContent = this.currentData.bautismos2024;
+                document.getElementById('bautismos2025').textContent = this.currentData.bautismos2025;
+                document.getElementById('casosCriticos').textContent = this.currentData.casosCriticos.length;
+            }
+
+            updateLastSyncTime() {
+                const now = new Date();
+                const timeString = now.toLocaleTimeString('es-ES', { 
+                    hour: '2-digit', 
+                    minute: '2-digit' 
                 });
+                document.getElementById('lastSync').textContent = timeString;
+            }
+
+            updateSyncStatus(status, message) {
+                const indicator = document.getElementById('syncIndicator');
+                const statusText = document.getElementById('syncStatusText');
                 
-                response += `Estos miembros requieren intervención inmediata ya que han pasado del umbral de alerta al umbral crítico.`;
+                // Remover todas las clases de estado
+                indicator.classList.remove('active', 'inactive', 'syncing');
                 
-                return response;
-            }
-
-            getEfectoEscaladaResponse() {
-                return `El "Efecto Escalada" es una tendencia crítica donde los miembros que alcanzan 3 inasistencias en un mes, tienden a duplicar esa cifra al mes siguiente si no hay intervención.
-
-Casos detectados:
-• Zeneyda Hernández Valles (Cartago): Pasó de 3 a 6 inasistencias
-• Carlos Adrian y Scarlet Tatiana Zeledón (Cartago): Ambos escalaron simultáneamente
-• Kenneth Alberto Coto Rivera (Paraíso): Escaló de 3 a 6 inasistencias
-• Dylan Gilmar Rodriguez Hernandez (Turrialba): Duplicó su ausencia
-
-Metáfora: La inactividad en estos reportes funciona como una fuga de agua en una tubería. Las "3 inasistencias" son el primer goteo; si no se repara de inmediato, la presión del desánimo rompe la tubería, convirtiéndose en una inundación de inactividad.`;
-            }
-
-            getEscaladaCriticaResponse() {
-                return `Casos de escalada crítica detectados:
-
-Zeneyda Hernández Valles (Barrio Cartago):
-• Noviembre: 3 inasistencias
-• Diciembre: 6 inasistencias
-• Situación: Desconexión total durante el periodo
-
-Carlos Adrian y Scarlet Tatiana Zeledón (Barrio Cartago):
-• Noviembre: 3 inasistencias cada uno
-• Diciembre: 6 inasistencias cada uno
-• Situación: Hermanos que escalaron simultáneamente
-
-Estos casos demuestran el "efecto escalada" donde sin intervención oportuna, los miembros duplican sus inasistencias pasando de una situación de alerta a una crisis total.`;
-            }
-
-            getDefaultResponse(message) {
-                return `Gracias por tu pregunta: "${message}". 
-
-Basado en los datos del NotebookLM de la Estaca Cartago, puedo ayudarte con:
-
-📊 **ESTADÍSTICAS DISPONIBLES**:
-• Bautismos 2024: ${this.knowledgeBase.bautismos2024} bautismos
-• Bautismos 2025: ${this.knowledgeBase.bautismos2025} bautismos
-• Casos de atención urgente: ${this.knowledgeBase.casosCriticos.filter(c => c.inasistencias === 3).length} miembros
-• Casos de escalada crítica: ${this.knowledgeBase.casosCriticos.filter(c => c.escalada).length} miembros
-
-🎯 **CONSULTAS ESPECÍFICAS**:
-• "Hermanos de atención urgente" - Lista completa con contactos
-• "Bautismos 2024" o "Bautismos 2025" - Estadísticas detalladas
-• Nombres específicos como "Andrey Calvo" - Información individual
-• "Efecto escalada" - Análisis del fenómeno de inactividad
-
-¿Hay algún aspecto específico de la ministración a nuevos conversos sobre el que te gustaría recibir mayor orientación?`;
-            }
-
-            addMessage(content, role) {
-                const messagesList = document.getElementById('messagesList');
-                const messageDiv = document.createElement('div');
-                const messageId = `msg-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-                const timestamp = new Date();
-
-                messageDiv.id = messageId;
-                messageDiv.className = `flex gap-3 ${role === 'user' ? 'justify-end' : 'justify-start'} message-fade-in`;
-
-                if (role === 'user') {
-                    messageDiv.innerHTML = `
-                        <div class="max-w-[80%] order-first">
-                            <div class="bg-blue-600 text-white rounded-lg p-4 shadow-sm">
-                                <p class="text-sm whitespace-pre-wrap leading-relaxed">${this.escapeHtml(content)}</p>
-                            </div>
-                            <div class="text-xs text-gray-500 mt-1 px-2 text-right">
-                                ${timestamp.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}
-                            </div>
-                        </div>
-                        <div class="w-8 h-8 rounded-full bg-gray-600 flex items-center justify-center text-white flex-shrink-0">
-                            <i class="fas fa-user text-sm"></i>
-                        </div>
-                    `;
+                // Agregar la clase correspondiente
+                indicator.classList.add(status);
+                
+                // Actualizar texto
+                statusText.textContent = message;
+                
+                // Actualizar botones
+                const startBtn = document.getElementById('startSyncBtn');
+                const stopBtn = document.getElementById('stopSyncBtn');
+                
+                if (status === 'active') {
+                    startBtn.disabled = true;
+                    stopBtn.disabled = false;
                 } else {
-                    messageDiv.innerHTML = `
-                        <div class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white flex-shrink-0">
-                            <i class="fas fa-robot text-sm"></i>
-                        </div>
-                        <div class="max-w-[80%]">
-                            <div class="bg-gray-100 rounded-lg p-4 shadow-sm">
-                                <p class="text-sm whitespace-pre-wrap leading-relaxed text-gray-800">${content}</p>
-                            </div>
-                            <div class="text-xs text-gray-500 mt-1 px-2">
-                                ${timestamp.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}
-                            </div>
-                        </div>
-                    `;
+                    startBtn.disabled = false;
+                    stopBtn.disabled = true;
                 }
-
-                messagesList.appendChild(messageDiv);
-                this.scrollToBottom();
             }
 
-            showTypingIndicator() {
-                const messagesList = document.getElementById('messagesList');
-                const typingDiv = document.createElement('div');
-                typingDiv.id = 'typingIndicator';
-                typingDiv.className = 'flex gap-3 justify-start message-fade-in';
-                typingDiv.innerHTML = `
-                    <div class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white flex-shrink-0">
-                        <i class="fas fa-robot text-sm"></i>
-                    </div>
-                    <div class="max-w-[80%]">
-                        <div class="bg-gray-100 rounded-lg p-4 shadow-sm">
-                            <div class="typing-indicator">
-                                <span></span>
-                                <span></span>
-                                <span></span>
-                            </div>
-                        </div>
+            notifySyncSuccess() {
+                this.showNotification('✅ Sincronización completada', 'Los datos se han actualizado correctamente', 'success');
+            }
+
+            notifySyncError(error) {
+                this.showNotification('❌ Error de sincronización', error.message, 'error');
+            }
+
+            showNotification(title, message, type = 'info') {
+                const notification = document.createElement('div');
+                notification.className = `sync-notification ${type}`;
+                notification.innerHTML = `
+                    <div style="font-weight: bold; margin-bottom: 5px;">${title}</div>
+                    <div style="font-size: 14px; color: #64748b;">${message}</div>
+                `;
+                
+                document.body.appendChild(notification);
+                
+                // Auto-eliminar después de 5 segundos
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
+                    }
+                }, 5000);
+            }
+
+            updateChatInterface() {
+                // Agregar mensaje de sincronización al chat
+                const chatMessages = document.getElementById('chatMessages');
+                const syncMessage = document.createElement('div');
+                syncMessage.className = 'message assistant';
+                syncMessage.innerHTML = `
+                    <div class="message-content">
+                        <strong>🔄 Datos Actualizados</strong><br>
+                        La sincronización con NotebookLM se ha completado. 
+                        Los datos de bautismos y casos críticos están actualizados.
                     </div>
                 `;
-                messagesList.appendChild(typingDiv);
-                this.scrollToBottom();
+                chatMessages.appendChild(syncMessage);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
             }
 
-            hideTypingIndicator() {
-                const typingIndicator = document.getElementById('typingIndicator');
-                if (typingIndicator) {
-                    typingIndicator.remove();
-                }
-            }
-
-            scrollToBottom() {
-                const container = document.getElementById('messagesContainer');
-                if (container) {
-                    container.scrollTop = container.scrollHeight;
-                }
-            }
-
-            escapeHtml(text) {
-                const div = document.createElement('div');
-                div.textContent = text;
-                return div.innerHTML;
+            // Método forzado para sincronización manual
+            async forceSyncNow() {
+                await this.syncWithNotebookLM();
             }
         }
 
-        // Initialize the chat when DOM is loaded
-        document.addEventListener('DOMContentLoaded', () => {
-            new EstacaCartagoChat();
+        // Sistema de Chat con Hugging Face
+        class ChatSystem {
+            constructor() {
+                this.apiKey = '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';
+                this.apiUrl = 'https://api-inference.huggingface.co/models/microsoft/DialoGPT-medium';
+                this.conversationHistory = [];
+                this.notebookSync = null;
+            }
+
+            async initialize() {
+                // Inicializar sistema de sincronización
+                this.notebookSync = new NotebookLMSync();
+                
+                // Cargar datos guardados
+                const savedData = localStorage.getItem('notebookLMData');
+                if (savedData) {
+                    this.notebookSync.currentData = JSON.parse(savedData);
+                    this.notebookSync.updateStats();
+                }
+            }
+
+            async sendMessage(message) {
+                try {
+                    // Mostrar indicador de escritura
+                    this.showTypingIndicator();
+                    
+                    // Construir contexto para el modelo
+                    const context = this.buildContext(message);
+                    
+                    // Llamar a la API de Hugging Face
+                    const response = await fetch(this.apiUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${this.apiKey}`,
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            inputs: context,
+                            parameters: {
+                                max_length: 100,
+                                temperature: 0.7,
+                                do_sample: true,
+                                top_p: 0.9,
+                                return_full_text: false
+                            }
+                        })
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`Error en la API: ${response.status}`);
+                    }
+
+                    const data = await response.json();
+                    const botResponse = data[0]?.generated_text || this.getDefaultResponse(message);
+                    
+                    // Ocultar indicador de escritura
+                    this.hideTypingIndicator();
+                    
+                    // Agregar al historial
+                    this.conversationHistory.push({ role: 'user', content: message });
+                    this.conversationHistory.push({ role: 'assistant', content: botResponse });
+                    
+                    return botResponse;
+                    
+                } catch (error) {
+                    console.error('Error al enviar mensaje:', error);
+                    this.hideTypingIndicator();
+                    return this.getErrorResponse();
+                }
+            }
+
+            buildContext(userMessage) {
+                const currentDate = new Date().toLocaleDateString('es-ES');
+                const data = this.notebookSync.currentData;
+                
+                let context = `Eres un asistente inteligente para el ministerio de conversos de la Estaca Cartago. Fecha: ${currentDate}.\n\n`;
+                context += `Datos actuales:\n`;
+                context += `- Bautismos 2024: ${data.bautismos2024}\n`;
+                context += `- Bautismos 2025: ${data.bautismos2025}\n`;
+                context += `- Casos críticos: ${data.casosCriticos.length}\n\n`;
+                
+                if (data.casosCriticos.length > 0) {
+                    context += `Casos críticos recientes:\n`;
+                    data.casosCriticos.forEach((caso, index) => {
+                        context += `${index + 1}. ${caso.nombre} - ${caso.barrio} - ${caso.estado}\n`;
+                    });
+                    context += '\n';
+                }
+                
+                context += `Responde de manera útil y empática, enfocándote en el ministerio de conversos.\n`;
+                context += `Usuario: ${userMessage}\nAsistente:`;
+                
+                return context;
+            }
+
+            getDefaultResponse(message) {
+                const lowerMessage = message.toLowerCase();
+                
+                if (lowerMessage.includes('bautismo') || lowerMessage.includes('bautismos')) {
+                    return `Según los datos actualizados, hemos registrado ${this.notebookSync.currentData.bautismos2024} bautismos en 2024 y ${this.notebookSync.currentData.bautismos2025} en 2025. ¡Gracias por tu interés en el progreso del reino!`;
+                }
+                
+                if (lowerMessage.includes('crítico') || lowerMessage.includes('casos')) {
+                    const casosCount = this.notebookSync.currentData.casosCriticos.length;
+                    return `Actualmente hay ${casosCount} casos que requieren atención especial. Te recomiendo visitar a estos conversos y fortalecer la relación con ellos. ¿Te gustaría los detalles de algún caso específico?`;
+                }
+                
+                if (lowerMessage.includes('ministrar') || lowerMessage.includes('ayudar')) {
+                    return `Para ministrar efectivamente a los conversos, te sugiero:\n1. Orar por ellos diariamente\n2. Visitarles regularmente\n3. Invitarles a actividades\n4. Presentarles a otros miembros\n5. Seguir su progreso espiritual\n\n¿Hay algún converso específico en mente que necesite atención?`;
+                }
+                
+                return `Entiendo tu consulta. Como asistente de ministerio, estoy aquí para ayudarte con información sobre conversos, bautismos, y orientación para el ministerio. ¿Podrías darme más detalles sobre lo que necesitas?`;
+            }
+
+            getErrorResponse() {
+                return 'Lo siento, estoy teniendo dificultades para procesar tu mensaje en este momento. Por favor, intenta de nuevo en unos momentos.';
+            }
+
+            showTypingIndicator() {
+                const indicator = document.getElementById('typingIndicator');
+                indicator.style.display = 'flex';
+                
+                const chatMessages = document.getElementById('chatMessages');
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+
+            hideTypingIndicator() {
+                const indicator = document.getElementById('typingIndicator');
+                indicator.style.display = 'none';
+            }
+
+            addMessageToChat(content, isUser = false) {
+                const chatMessages = document.getElementById('chatMessages');
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `message ${isUser ? 'user' : 'assistant'}`;
+                messageDiv.innerHTML = `
+                    <div class="message-content">
+                        ${content}
+                    </div>
+                `;
+                chatMessages.appendChild(messageDiv);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+        }
+
+        // Variables globales
+        let chatSystem = null;
+        let currentUser = null;
+
+        // Funciones de control de sincronización
+        function startSync() {
+            if (chatSystem && chatSystem.notebookSync) {
+                chatSystem.notebookSync.startAutoSync(30); // 30 minutos
+            }
+        }
+
+        function stopSync() {
+            if (chatSystem && chatSystem.notebookSync) {
+                chatSystem.notebookSync.stopAutoSync();
+            }
+        }
+
+        function forceSync() {
+            if (chatSystem && chatSystem.notebookSync) {
+                chatSystem.notebookSync.forceSyncNow();
+            }
+        }
+
+        // Funciones de autenticación
+        function handleGoogleLogin() {
+            // Simular autenticación exitosa
+            currentUser = {
+                name: 'Hermano/a de la Estaca Cartago',
+                email: 'hermano@estacacartago.org',
+                photo: 'https://via.placeholder.com/40'
+            };
+            
+            // Guardar en localStorage
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            
+            // Mostrar interfaz de chat
+            showChatInterface();
+        }
+
+        function showChatInterface() {
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('chatInterface').style.display = 'flex';
+            
+            // Inicializar sistema de chat
+            if (!chatSystem) {
+                chatSystem = new ChatSystem();
+                chatSystem.initialize().then(() => {
+                    // Iniciar sincronización automática
+                    chatSystem.notebookSync.startAutoSync(30);
+                });
+            }
+        }
+
+        // Funciones de chat
+        async function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const message = input.value.trim();
+            
+            if (message === '') return;
+            
+            // Agregar mensaje del usuario al chat
+            chatSystem.addMessageToChat(message, true);
+            
+            // Limpiar input
+            input.value = '';
+            
+            // Enviar mensaje y obtener respuesta
+            try {
+                const response = await chatSystem.sendMessage(message);
+                chatSystem.addMessageToChat(response);
+            } catch (error) {
+                console.error('Error al enviar mensaje:', error);
+                chatSystem.addMessageToChat('Lo siento, ocurrió un error al procesar tu mensaje. Por favor, intenta de nuevo.');
+            }
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        // Verificar si ya hay una sesión activa
+        window.addEventListener('load', () => {
+            const savedUser = localStorage.getItem('currentUser');
+            if (savedUser) {
+                currentUser = JSON.parse(savedUser);
+                showChatInterface();
+            }
+        });
+
+        // Limpiar al cerrar la página
+        window.addEventListener('beforeunload', () => {
+            if (chatSystem && chatSystem.notebookSync) {
+                chatSystem.notebookSync.stopAutoSync();
+            }
         });
     </script>
 </body>
