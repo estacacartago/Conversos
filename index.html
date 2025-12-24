@@ -62,6 +62,10 @@
             background: rgba(255, 193, 7, 0.3);
         }
 
+        .status.error {
+            background: rgba(244, 67, 54, 0.3);
+        }
+
         .messages-container {
             flex: 1;
             padding: 20px;
@@ -103,6 +107,14 @@
             background: #fff3cd;
             color: #856404;
             border: 1px solid #ffeaa7;
+            font-size: 14px;
+            border-bottom-left-radius: 4px;
+        }
+
+        .message.error .message-content {
+            background: #ffebee;
+            color: #c62828;
+            border: 1px solid #ffcdd2;
             font-size: 14px;
             border-bottom-left-radius: 4px;
         }
@@ -234,25 +246,44 @@
             background: #ffebee;
             color: #c62828;
         }
+
+        .diagnostic-btn {
+            padding: 6px 12px;
+            background: #ff9800;
+            color: white;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-left: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .diagnostic-btn:hover {
+            background: #f57c00;
+            transform: translateY(-1px);
+        }
     </style>
 </head>
 <body>
     <div class="chat-container">
         <div class="chat-header">
             <h1>🏛️ Chat Estaca Cartago - NotebookLM Real</h1>
-            <div class="status" id="status">🔄 Conectando...</div>
+            <div class="status" id="status">🔄 Verificando conexión...</div>
+            <button class="diagnostic-btn" onclick="runDiagnostic()">🔍 Diagnóstico</button>
         </div>
 
         <div class="messages-container" id="messages">
             <div class="message assistant">
                 <div class="message-content">
-                    ¡Hola! Soy el asistente de la Estaca Cartago conectado directamente a NotebookLM.
+                    ¡Hola! Soy el asistente de la Estaca Cartago con conexión real a NotebookLM.
                     <br><br>
-                    🚀 <strong>Características:</strong><br>
+                    🚀 <strong>Características avanzadas:</strong><br>
                     ✅ Conexión real con NotebookLM<br>
                     ✅ Respuestas auténticas y actualizadas<br>
                     ✅ Acceso a tu notebook específico<br>
                     ✅ Proceso visible en tiempo real<br>
+                    ✅ Sistema de diagnóstico incluido<br>
                     <br>
                     <strong>Puedes preguntarme sobre:</strong><br>
                     • Datos de conversos<br>
@@ -281,13 +312,13 @@
     </div>
 
     <script>
-        // URL del backend - REEMPLAZA CON TU URL DE REPLIT
-        const BACKEND_URL = 'https://notebooklm-bridge--devidedekawaii.replit.app';
+        // URL del backend actualizado
+        const BACKEND_URL = 'https://notebooklm-backend-two.vercel.app';
         
-        function addMessage(content, isUser = false, isSystem = false) {
+        function addMessage(content, isUser = false, isSystem = false, isError = false) {
             const messagesContainer = document.getElementById('messages');
             const messageDiv = document.createElement('div');
-            messageDiv.className = `message ${isUser ? 'user' : isSystem ? 'system' : 'assistant'}`;
+            messageDiv.className = `message ${isUser ? 'user' : isSystem ? 'system' : isError ? 'error' : 'assistant'}`;
             
             const messageContent = document.createElement('div');
             messageContent.className = 'message-content';
@@ -317,10 +348,76 @@
             return progressDiv;
         }
 
-        function updateStatus(text, isConnected = false) {
-            const status = document.getElementById('status');
-            status.textContent = text;
-            status.className = isConnected ? 'status connected' : 'status connecting';
+        function updateStatus(text, status = 'connecting') {
+            const statusEl = document.getElementById('status');
+            statusEl.textContent = text;
+            statusEl.className = `status ${status}`;
+        }
+
+        async function runDiagnostic() {
+            addMessage('🔍 <strong>Iniciando diagnóstico completo del sistema...</strong>', false, false, false);
+            
+            // Paso 1: Verificar backend principal
+            const step1 = addProgressStep('Verificando conexión con backend principal...', true);
+            
+            try {
+                const response = await fetch(BACKEND_URL);
+                if (response.ok) {
+                    const text = await response.text();
+                    step1.className = 'progress-step completed';
+                    addMessage(`✅ Backend principal conectado`, false, false, false);
+                } else {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+            } catch (error) {
+                step1.className = 'progress-step error';
+                addMessage(`❌ Error de backend principal: ${error.message}`, false, false, true);
+                updateStatus('🔴 Error de backend', 'error');
+                return;
+            }
+            
+            // Paso 2: Verificar endpoint de estado
+            const step2 = addProgressStep('Verificando endpoint de estado...', true);
+            
+            try {
+                const response = await fetch(`${BACKEND_URL}/api/status`);
+                if (response.ok) {
+                    const data = await response.json();
+                    step2.className = 'progress-step completed';
+                    addMessage(`✅ Endpoint de estado funcionando: ${data.status}`, false, false, false);
+                } else {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+            } catch (error) {
+                step2.className = 'progress-step error';
+                addMessage(`❌ Error en endpoint de estado: ${error.message}`, false, false, true);
+                return;
+            }
+            
+            // Paso 3: Verificar endpoint de preguntas
+            const step3 = addProgressStep('Verificando endpoint de preguntas...', true);
+            
+            try {
+                const testResponse = await fetch(`${BACKEND_URL}/api/ask`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ question: 'test de conexión' })
+                });
+                
+                if (testResponse.ok) {
+                    step3.className = 'progress-step completed';
+                    addMessage('✅ Endpoint de preguntas funcionando correctamente', false, false, false);
+                } else {
+                    throw new Error(`HTTP ${testResponse.status}`);
+                }
+            } catch (error) {
+                step3.className = 'progress-step error';
+                addMessage(`❌ Error en endpoint de preguntas: ${error.message}`, false, false, true);
+                return;
+            }
+            
+            updateStatus('🟢 Sistema funcionando perfectamente', 'connected');
+            addMessage('🎉 <strong>¡Diagnóstico completado! Todo el sistema está funcionando correctamente.</strong>', false, false, false);
         }
 
         async function sendMessage() {
@@ -338,33 +435,8 @@
             addMessage(question, true);
             input.value = '';
             
-            // Mostrar pasos del proceso
-            const step1 = addProgressStep('Iniciando navegador Chrome...', true);
-            updateStatus('🔄 Conectando con NotebookLM...');
-            
             try {
                 console.log('Enviando pregunta:', question);
-                
-                // Simular actualización de pasos
-                setTimeout(() => {
-                    step1.className = 'progress-step completed';
-                    const step2 = addProgressStep('Navegando a tu NotebookLM...', true);
-                    
-                    setTimeout(() => {
-                        step2.className = 'progress-step completed';
-                        const step3 = addProgressStep('Buscando campo de pregunta...', true);
-                        
-                        setTimeout(() => {
-                            step3.className = 'progress-step completed';
-                            const step4 = addProgressStep('Escribiendo pregunta...', true);
-                            
-                            setTimeout(() => {
-                                step4.className = 'progress-step completed';
-                                const step5 = addProgressStep('Obteniendo respuesta de NotebookLM...', true);
-                            }, 2000);
-                        }, 2000);
-                    }, 2000);
-                }, 1000);
                 
                 // Enviar pregunta al backend
                 const response = await fetch(`${BACKEND_URL}/api/ask`, {
@@ -384,24 +456,15 @@
                 const data = await response.json();
                 console.log('Respuesta:', data);
                 
-                // Determinar el badge
-                let sourceBadge = '';
-                if (data.response.includes('NotebookLM')) {
-                    sourceBadge = '<span class="source-badge">📚 NotebookLM Real</span>';
-                } else {
-                    sourceBadge = '<span class="source-badge fallback">🤖 Modo Respaldo</span>';
-                }
-                
-                const responseText = data.response + sourceBadge;
+                const responseText = data.response + '<span class="source-badge">📚 Respuesta del Sistema</span>';
                 addMessage(responseText);
                 
-                updateStatus('🟢 Conectado a NotebookLM', true);
+                updateStatus('🟢 Conectado y funcionando', 'connected');
                 
             } catch (error) {
                 console.error('Error:', error);
-                addProgressStep('Error de conexión', false, false, true);
-                addMessage('❌ Error al conectar con NotebookLM. Por favor, intenta nuevamente.', false, true);
-                updateStatus('🔴 Error de conexión');
+                addMessage(`❌ Error al conectar: ${error.message}. Por favor, ejecuta el diagnóstico.`, false, false, true);
+                updateStatus('🔴 Error de conexión', 'error');
             } finally {
                 // Rehabilitar botón
                 sendBtn.disabled = false;
@@ -420,19 +483,9 @@
             }
         }
 
-        // Verificar conexión al backend
+        // Verificar conexión automáticamente al cargar
         window.addEventListener('load', async () => {
-            try {
-                const response = await fetch(`${BACKEND_URL}/api/status`);
-                const data = await response.json();
-                console.log('Status del backend:', data);
-                
-                updateStatus('🟢 NotebookLM Ready', true);
-            } catch (error) {
-                console.error('Error de conexión:', error);
-                updateStatus('🔴 Error de conexión');
-                addMessage('❌ No se puede conectar con el backend. Por favor, verifica que el servidor esté funcionando.', false, true);
-            }
+            await runDiagnostic();
         });
     </script>
 </body>
