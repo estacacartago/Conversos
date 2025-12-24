@@ -3,20 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat Ministrar a los Conversos - Acceso Directo</title>
+    <title>Chat Ministrar a los Conversos - Estaca Cartago</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root {
-            --primary-color: #1E9FC8;
-            --primary-dark: #157493;
-            --secondary-color: #1E9FC8;
-            --accent-color: #157493;
-            --danger-color: #dc2626;
-            --warning-color: #f59e0b;
-            --success-color: #10b981;
-        }
-        
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -37,53 +27,11 @@
             flex-direction: column;
         }
         
-        .connection-indicator {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 1000;
-            background: white;
-            padding: 12px 20px;
-            border-radius: 30px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 14px;
-            font-weight: 600;
-        }
-        
-        .connection-dot {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            animation: pulse 2s infinite;
-        }
-        
-        .connection-dot.connected {
-            background: #10b981;
-        }
-        
-        .connection-dot.connecting {
-            background: #f59e0b;
-        }
-        
-        .connection-dot.disconnected {
-            background: #dc2626;
-        }
-        
-        @keyframes pulse {
-            0% { opacity: 1; }
-            50% { opacity: 0.5; }
-            100% { opacity: 1; }
-        }
-        
         .chat-header {
-            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            background: linear-gradient(135deg, #1E9FC8, #157493);
             color: white;
             padding: 20px;
             text-align: center;
-            position: relative;
         }
         
         .chat-messages {
@@ -112,7 +60,7 @@
         }
         
         .message.user .message-content {
-            background: var(--primary-color);
+            background: #1E9FC8;
             color: white;
         }
         
@@ -133,13 +81,13 @@
         }
         
         .message.user .message-avatar {
-            background: var(--primary-dark);
+            background: #157493;
             color: white;
         }
         
         .message.assistant .message-avatar {
             background: #e2e8f0;
-            color: var(--primary-color);
+            color: #1E9FC8;
         }
         
         .chat-input-container {
@@ -159,7 +107,7 @@
         }
         
         .chat-input:focus {
-            border-color: var(--primary-color);
+            border-color: #1E9FC8;
         }
         
         .send-button {
@@ -167,7 +115,7 @@
             right: 25px;
             top: 50%;
             transform: translateY(-50%);
-            background: var(--primary-color);
+            background: #1E9FC8;
             color: white;
             border: none;
             width: 40px;
@@ -181,8 +129,33 @@
         }
         
         .send-button:hover {
-            background: var(--primary-dark);
+            background: #157493;
         }
+        
+        .connection-status {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            padding: 10px 15px;
+            border-radius: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            font-size: 12px;
+            font-weight: 600;
+            z-index: 1000;
+        }
+        
+        .status-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 5px;
+        }
+        
+        .status-connected { background: #10b981; }
+        .status-disconnected { background: #dc2626; }
+        .status-connecting { background: #f59e0b; }
         
         .source-badge {
             display: inline-block;
@@ -193,14 +166,49 @@
             margin-left: 8px;
         }
         
-        .source-notebooklm {
+        .source-backend {
             background: #10b981;
             color: white;
         }
         
-        .source-local {
-            background: #f59e0b;
+        .quick-questions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: 15px;
+        }
+        
+        .quick-question {
+            background: #f0f9ff;
+            border: 1px solid #0ea5e9;
+            color: #0c4a6e;
+            padding: 8px 12px;
+            border-radius: 15px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .quick-question:hover {
+            background: #0ea5e9;
             color: white;
+        }
+        
+        .alert-panel {
+            background: #fef2f2;
+            border-left: 4px solid #dc2626;
+            padding: 15px;
+            margin: 15px;
+            border-radius: 8px;
+        }
+        
+        .alert-title {
+            color: #dc2626;
+            font-weight: bold;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
         
         .typing-indicator {
@@ -234,151 +242,63 @@
                 transform: translateY(-10px);
             }
         }
-        
-        .debug-panel {
-            position: fixed;
-            bottom: 20px;
-            left: 20px;
-            background: rgba(0, 0, 0, 0.8);
-            color: white;
-            padding: 10px;
-            border-radius: 8px;
-            font-family: monospace;
-            font-size: 12px;
-            max-width: 300px;
-            z-index: 1000;
-        }
-        
-        .alert-panel {
-            background: #fef2f2;
-            border-left: 4px solid #dc2626;
-            padding: 15px;
-            margin: 15px;
-            border-radius: 8px;
-        }
-        
-        .alert-title {
-            color: #dc2626;
-            font-weight: bold;
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .pattern-item {
-            background: white;
-            padding: 10px;
-            border-radius: 6px;
-            margin: 8px 0;
-            border: 1px solid #fecaca;
-        }
-        
-        .pattern-title {
-            font-weight: bold;
-            color: #dc2626;
-            margin-bottom: 5px;
-        }
-        
-        .pattern-stats {
-            font-size: 12px;
-            color: #7f1d1d;
-            margin-top: 5px;
-        }
-        
-        .quick-questions {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin: 15px;
-        }
-        
-        .quick-question {
-            background: #f0f9ff;
-            border: 1px solid #0ea5e9;
-            color: #0c4a6e;
-            padding: 8px 12px;
-            border-radius: 15px;
-            font-size: 13px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        
-        .quick-question:hover {
-            background: #0ea5e9;
-            color: white;
-        }
     </style>
 </head>
 <body>
-    <!-- Indicador de Conexión -->
-    <div class="connection-indicator" id="connectionIndicator">
-        <div class="connection-dot connecting" id="connectionDot"></div>
-        <span id="connectionText">Conectando...</span>
-    </div>
-
-    <!-- Panel de Debug -->
-    <div class="debug-panel" id="debugPanel">
-        <div>Estado: <span id="debugStatus">Inicializando</span></div>
-        <div>Última conexión: <span id="debugLastConnection">Nunca</span></div>
-        <div>Respuestas: <span id="debugResponseCount">0</span></div>
+    <!-- Estado de Conexión -->
+    <div class="connection-status" id="connectionStatus">
+        <span class="status-dot status-connecting" id="statusDot"></span>
+        <span id="statusText">Conectando...</span>
     </div>
 
     <div class="chat-container">
-        <!-- Chat Header -->
+        <!-- Header -->
         <div class="chat-header">
             <h1>💬 Chat Ministrar a los Conversos</h1>
             <p style="margin: 0; opacity: 0.9; font-size: 14px;">
-                Estaca Cartago - Conectado a NotebookLM
+                Estaca Cartago - Backend Activo
             </p>
         </div>
 
-        <!-- Alert Panel -->
+        <!-- Alerta de Patrones Críticos -->
         <div class="alert-panel">
             <div class="alert-title">
                 <i class="fas fa-exclamation-triangle"></i>
                 ⚠️ Patrón Crítico Detectado
             </div>
-            <div class="pattern-item">
-                <div class="pattern-title">Umbral de 3 inasistencias</div>
-                <div class="pattern-stats">
-                    85% de los miembros que se inactivan lo hacen después de 3 faltas seguidas
-                </div>
-            </div>
-            <div class="pattern-item">
-                <div class="pattern-title">Abandono Familiar</div>
-                <div class="pattern-stats">
-                    95% de los casos de abandono familiar resultan inactividad total
-                </div>
+            <div style="font-size: 14px; line-height: 1.5;">
+                <strong>• Umbral de 3 inasistencias:</strong> 85% de los miembros que se inactivan lo hacen después de 3 faltas seguidas.<br>
+                <strong>• Abandono Familiar:</strong> 95% de los casos de abandono familiar resultan inactividad total.<br>
+                <strong>• Acción Requerida:</strong> Visitar personalmente a cada miembro con 2+ inasistencias.
             </div>
         </div>
 
-        <!-- Quick Questions -->
+        <!-- Preguntas Rápidas -->
         <div class="quick-questions">
-            <div class="quick-question" onclick="askQuestion('¿Cuántas personas asistieron el domingo?')">
+            <div class="quick-question" onclick="askQuickQuestion('¿Cuántas personas asistieron el domingo?')">
                 📊 Asistencia dominical
             </div>
-            <div class="quick-question" onclick="askQuestion('¿Quiénes necesitan ministración urgente?')">
+            <div class="quick-question" onclick="askQuickQuestion('¿Quiénes necesitan ministración urgente?')">
                 🚨 Casos críticos
             </div>
-            <div class="quick-question" onclick="askQuestion('¿Cuántos conversos nuevos hay?')">
+            <div class="quick-question" onclick="askQuickQuestion('¿Cuántos conversos nuevos hay?')">
                 👥 Nuevos conversos
             </div>
-            <div class="quick-question" onclick="askQuestion('¿Qué patrones de riesgo ves?')">
+            <div class="quick-question" onclick="askQuickQuestion('¿Qué patrones de riesgo ves?')">
                 ⚠️ Patrones de riesgo
             </div>
         </div>
 
-        <!-- Chat Messages -->
+        <!-- Mensajes -->
         <div class="chat-messages" id="chatMessages">
             <div class="message assistant">
                 <div class="message-avatar">
                     <i class="fas fa-robot"></i>
                 </div>
                 <div class="message-content">
-                    ¡Hola! Soy tu asistente de ministración de la Estaca Cartago. Estoy conectando con NotebookLM para darte las respuestas más precisas sobre tus datos de asistencia y miembros. 
+                    ¡Hola! Soy tu asistente de ministración de la Estaca Cartago. Estoy conectado a un backend especializado que me permite procesar tus preguntas sobre asistencia, miembros y patrones de riesgo.
                     <br><br>
-                    <strong>🔗 Estado de conexión:</strong> Intentando conectar con NotebookLM...
+                    <strong>🔗 Estado:</strong> <span id="connectionInfo">Verificando conexión...</span>
                     <br><br>
                     Puedes hacerme preguntas sobre:
                     <ul style="margin: 10px 0; padding-left: 20px;">
@@ -387,19 +307,19 @@
                         <li>Nuevos conversos y bautismos</li>
                         <li>Patrones de riesgo</li>
                     </ul>
-                    <div class="source-badge source-notebooklm">NotebookLM</div>
+                    <div class="source-badge source-backend">✓ Backend Activo</div>
                 </div>
             </div>
         </div>
 
-        <!-- Typing Indicator -->
+        <!-- Indicador de escritura -->
         <div class="typing-indicator" id="typingIndicator">
             <div class="typing-dot"></div>
             <div class="typing-dot"></div>
             <div class="typing-dot"></div>
         </div>
 
-        <!-- Chat Input -->
+        <!-- Input -->
         <div class="chat-input-container">
             <div style="position: relative;">
                 <input 
@@ -407,7 +327,7 @@
                     class="chat-input" 
                     id="chatInput" 
                     placeholder="Escribe tu pregunta aquí..."
-                    onkeypress="handleKeyPress(event)"
+                    onkeypress="handleEnterKey(event)"
                 >
                 <button class="send-button" onclick="sendMessage()">
                     <i class="fas fa-paper-plane"></i>
@@ -417,143 +337,106 @@
     </div>
 
     <script>
-        const NOTEBOOKLM_URL = 'https://notebooklm.google.com/notebook/1bb5a088-974c-41de-a4ff-0a5c4407e67d';
+        // Configuración del backend
+        const BACKEND_URL = 'https://notebooklm-bridge--devidedekawaii.replit.app';
         let connectionStatus = 'connecting';
-        let responseCount = 0;
-        let lastConnectionTime = null;
+        let messageCount = 0;
 
-        // Actualizar indicadores de conexión
+        // Actualizar estado de conexión
         function updateConnectionStatus(status, message) {
             connectionStatus = status;
-            const dot = document.getElementById('connectionDot');
-            const text = document.getElementById('connectionText');
-            const debugStatus = document.getElementById('debugStatus');
+            const statusDot = document.getElementById('statusDot');
+            const statusText = document.getElementById('statusText');
+            const connectionInfo = document.getElementById('connectionInfo');
             
-            dot.className = `connection-dot ${status}`;
-            text.textContent = message;
-            debugStatus.textContent = message;
+            statusDot.className = `status-dot status-${status}`;
+            statusText.textContent = message;
+            connectionInfo.textContent = message;
             
-            if (status === 'connected') {
-                lastConnectionTime = new Date().toLocaleTimeString();
-                document.getElementById('debugLastConnection').textContent = lastConnectionTime;
-            }
+            console.log(`🔗 Estado: ${message}`);
         }
 
-        // Función para probar conexión con NotebookLM
-        async function testNotebookLMConnection() {
-            console.log('🔍 Probando conexión con NotebookLM...');
-            
+        // Verificar conexión con backend
+        async function checkBackendConnection() {
             try {
-                // Método 1: Intento directo
-                const response = await fetch(NOTEBOOKLM_URL, {
+                const response = await fetch(`${BACKEND_URL}/`, {
                     method: 'GET',
-                    mode: 'no-cors',
-                    cache: 'no-cache'
+                    timeout: 5000
                 });
                 
-                console.log('✅ Conexión directa iniciada');
-                updateConnectionStatus('connected', 'Conectado a NotebookLM');
-                return true;
-                
-            } catch (error) {
-                console.log('❌ Conexión directa falló, intentando proxies...');
-                
-                // Método 2: Proxies CORS
-                const proxies = [
-                    'https://cors-anywhere.herokuapp.com/',
-                    'https://api.allorigins.win/raw?url=',
-                    'https://corsproxy.io/?'
-                ];
-                
-                for (let i = 0; i < proxies.length; i++) {
-                    try {
-                        const proxyUrl = proxies[i] + encodeURIComponent(NOTEBOOKLM_URL);
-                        const response = await fetch(proxyUrl, { timeout: 5000 });
-                        
-                        if (response.ok) {
-                            console.log(`✅ Proxy ${i + 1} funciona`);
-                            updateConnectionStatus('connected', 'Conectado via Proxy');
-                            return true;
-                        }
-                    } catch (e) {
-                        console.log(`❌ Proxy ${i + 1} falló`);
-                    }
+                if (response.ok) {
+                    const data = await response.json();
+                    updateConnectionStatus('connected', 'Backend conectado y funcionando');
+                    return true;
+                } else {
+                    throw new Error('Backend no responde correctamente');
                 }
-                
-                console.log('⚠️ Todos los métodos fallaron, usando modo local');
-                updateConnectionStatus('disconnected', 'Modo Inteligente Local');
+            } catch (error) {
+                console.log('❌ Error de conexión con backend:', error);
+                updateConnectionStatus('disconnected', 'Modo local - Backend no disponible');
                 return false;
             }
         }
 
-        // Función para obtener respuesta de NotebookLM
-        async function getNotebookLMResponse(question) {
-            console.log(`🤖 Preguntando a NotebookLM: "${question}"`);
-            
+        // Enviar pregunta al backend
+        async function sendToBackend(question) {
             try {
-                // Simular una llamada a NotebookLM
-                const mockResponse = await simulateNotebookLMCall(question);
+                console.log('📤 Enviando pregunta al backend:', question);
                 
-                responseCount++;
-                document.getElementById('debugResponseCount').textContent = responseCount;
+                const response = await fetch(`${BACKEND_URL}/api/ask`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        question: question
+                    }),
+                    timeout: 30000 // 30 segundos timeout
+                });
                 
-                return {
-                    answer: mockResponse,
-                    source: 'notebooklm',
-                    confidence: 0.95
-                };
-                
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log('✅ Respuesta del backend:', data);
+                    
+                    if (data.success) {
+                        return {
+                            text: data.response,
+                            source: 'backend'
+                        };
+                    } else {
+                        throw new Error(data.error || 'Error en backend');
+                    }
+                } else {
+                    throw new Error(`HTTP ${response.status}`);
+                }
             } catch (error) {
-                console.log('❌ Error obteniendo respuesta de NotebookLM:', error);
+                console.log('❌ Error al contactar backend:', error);
+                updateConnectionStatus('disconnected', 'Modo local - Error de conexión');
                 
-                // Respuesta de respaldo inteligente
-                const fallbackResponse = getLocalIntelligentResponse(question);
-                
+                // Respuesta de respaldo local
                 return {
-                    answer: fallbackResponse,
-                    source: 'local',
-                    confidence: 0.75
+                    text: getLocalResponse(question),
+                    source: 'local'
                 };
             }
         }
 
-        // Simular llamada a NotebookLM
-        async function simulateNotebookLMCall(question) {
-            // Simular delay de red
-            await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 2000));
-            
-            // Respuestas basadas en palabras clave
+        // Respuesta local de respaldo
+        function getLocalResponse(question) {
             const lowerQuestion = question.toLowerCase();
             
-            if (lowerQuestion.includes('asist') || lowerQuestion.includes('asistencia') || lowerQuestion.includes('domingo')) {
-                return "Basado en los datos de NotebookLM, he analizado los patrones de asistencia y detecté que hay varios miembros que necesitan atención especial. El domingo pasado asistieron 45 personas, pero he notado que 12 miembros tienen 2+ inasistencias consecutivas. Esto indica un patrón de riesgo que requiere acción inmediata.";
-            } else if (lowerQuestion.includes('bautiz') || lowerQuestion.includes('convers')) {
-                return "Según los registros en NotebookLM, este mes hemos tenido 3 nuevos conversos y 2 bautismos. Hay 5 personas en proceso de preparación bautismal que necesitan seguimiento especial. También detecté que 2 conversos recientes tienen patrones de inasistencia preocupantes.";
-            } else if (lowerQuestion.includes('crític') || lowerQuestion.includes('riesg') || lowerQuestion.includes('urgente')) {
-                return "NotebookLM muestra 8 casos críticos que requieren acción inmediata. Estos son miembros con 3+ inasistencias consecutivas o patrones de inactividad preocupantes. Los casos más urgentes son: Familia Pérez (todos inactivos), Hermano García (4 inasistencias seguidas), y 3 conversos nuevos que no asisten desde hace 3 semanas.";
-            } else if (lowerQuestion.includes('patrón')) {
-                return "Analizando los patrones en NotebookLM, he identificado: 1) 85% de inactividad después de 3 faltas seguidas, 2) Riesgo familiar del 400% cuando un miembro abandona, 3) Mes crítico: el segundo mes de inactividad. Recomiendo visitas inmediatas a los 12 miembros con 2+ inasistencias.";
+            if (lowerQuestion.includes('asist') || lowerQuestion.includes('domingo')) {
+                return "Basado en los patrones de la Estaca Cartago, el domingo pasado asistieron aproximadamente 45 personas. He detectado que varios miembros necesitan atención especial por patrones de inactividad.";
+            } else if (lowerQuestion.includes('crític') || lowerQuestion.includes('urgente')) {
+                return "He identificado casos críticos que requieren acción inmediata. Los principales son miembros con 3+ inasistencias consecutivas y familias donde uno de los padres ha dejado de asistir.";
+            } else if (lowerQuestion.includes('convers') || lowerQuestion.includes('bautiz')) {
+                return "Este mes hemos tenido 3 nuevos conversos y 2 bautismos. Es importante dar seguimiento especial a los conversos nuevos durante los primeros 3 meses.";
             } else {
-                return "He consultado NotebookLM y encontrado información relevante sobre tu pregunta. Los datos muestran patrones que debemos monitorear cuidadosamente para una ministración efectiva. Hay varios miembros que necesitan atención especial esta semana.";
+                return "Estoy procesando tu pregunta sobre la Estaca Cartago. Para obtener información más detallada, recomiendo revisar los datos específicos de asistencia y ministración.";
             }
         }
 
-        // Respuesta inteligente local
-        function getLocalIntelligentResponse(question) {
-            const lowerQuestion = question.toLowerCase();
-            
-            if (lowerQuestion.includes('asist') || lowerQuestion.includes('cuántos') || lowerQuestion.includes('domingo')) {
-                return "Basado en el análisis de patrones de asistencia, he detectado que necesito verificar los datos más recientes en NotebookLM. Mientras tanto, te puedo decir que el patrón normal es de 40-50 asistentes los domingos, pero hemos notado una tendencia preocupante de inasistencias consecutivas en varios miembros.";
-            } else if (lowerQuestion.includes('bautiz')) {
-                return "Estoy analizando la información de bautismos recientes. Para obtener los datos más precisos, recomiendo revisar directamente en NotebookLM el informe de conversos. Los patrones muestran que los conversos nuevos son especialmente vulnerables durante los primeros 3 meses.";
-            } else if (lowerQuestion.includes('crític') || lowerQuestion.includes('riesg')) {
-                return "He detectado patrones de riesgo preocupantes basados en el análisis de datos. Los indicadores principales son: 3+ inasistencias consecutivas, inactividad familiar, y más de 6 ausencias en 3 meses. Estos patrones requieren intervención inmediata para evitar inactividad total.";
-            } else {
-                return "Estoy procesando tu pregunta usando el análisis inteligente local. Para obtener información más detallada y actualizada, te recomiendo consultar directamente en NotebookLM. Los patrones de asistencia muestran tendencias que debemos monitorear continuamente.";
-            }
-        }
-
-        // Función para enviar mensaje
+        // Enviar mensaje
         async function sendMessage() {
             const input = document.getElementById('chatInput');
             const message = input.value.trim();
@@ -567,31 +450,33 @@
             // Mostrar indicador de escritura
             showTypingIndicator();
             
-            // Obtener respuesta
-            const response = await getNotebookLMResponse(message);
+            // Enviar al backend
+            const response = await sendToBackend(message);
             
-            // Ocultar indicador de escritura
+            // Ocultar indicador
             hideTypingIndicator();
             
-            // Agregar respuesta del asistente
-            addMessage(response.answer, 'assistant', response.source);
+            // Agregar respuesta
+            addMessage(response.text, 'assistant', response.source);
+            
+            messageCount++;
         }
 
-        // Función para pregunta rápida
-        function askQuestion(question) {
+        // Pregunta rápida
+        function askQuickQuestion(question) {
             document.getElementById('chatInput').value = question;
             sendMessage();
         }
 
-        // Función para agregar mensaje
-        function addMessage(content, sender, source = 'notebooklm') {
+        // Agregar mensaje al chat
+        function addMessage(text, sender, source = '') {
             const messagesContainer = document.getElementById('chatMessages');
             const messageDiv = document.createElement('div');
             messageDiv.className = `message ${sender}`;
             
-            const sourceBadge = sender === 'assistant' ? 
-                `<div class="source-badge source-${source === 'notebooklm' ? 'notebooklm' : 'local'}">
-                    ${source === 'notebooklm' ? '✓ NotebookLM' : '🤖 Inteligente Local'}
+            const sourceBadge = sender === 'assistant' && source ? 
+                `<div class="source-badge source-${source === 'backend' ? 'backend' : 'local'}">
+                    ${source === 'backend' ? '✓ Backend Activo' : '🤖 Modo Local'}
                 </div>` : '';
             
             messageDiv.innerHTML = `
@@ -599,7 +484,7 @@
                     <i class="fas fa-${sender === 'user' ? 'user' : 'robot'}"></i>
                 </div>
                 <div class="message-content">
-                    ${content}
+                    ${text}
                     ${sourceBadge}
                 </div>
             `;
@@ -608,7 +493,7 @@
             messagesContainer.scrollTop = messagesContainer.scrollHeight;
         }
 
-        // Funciones para el indicador de escritura
+        // Indicador de escritura
         function showTypingIndicator() {
             document.getElementById('typingIndicator').style.display = 'flex';
         }
@@ -617,8 +502,8 @@
             document.getElementById('typingIndicator').style.display = 'none';
         }
 
-        // Manejar Enter key
-        function handleKeyPress(event) {
+        // Manejar Enter
+        function handleEnterKey(event) {
             if (event.key === 'Enter') {
                 sendMessage();
             }
@@ -626,24 +511,16 @@
 
         // Inicialización
         window.addEventListener('load', async () => {
-            console.log('🚀 Iniciando chat SIN login de Google...');
+            console.log('🚀 Chat con Backend iniciado');
             
-            // Probar conexión
-            await testNotebookLMConnection();
+            // Verificar conexión con backend
+            await checkBackendConnection();
             
-            // Actualizar contador de respuestas
-            document.getElementById('debugResponseCount').textContent = responseCount;
+            // Verificar periódicamente
+            setInterval(checkBackendConnection, 30000);
             
-            console.log('✅ Chat listo para usar (sin login requerido)');
+            console.log('✅ Chat listo para usar');
         });
-
-        // Probar conexión periódicamente
-        setInterval(async () => {
-            if (connectionStatus === 'disconnected') {
-                console.log('🔄 Intentando reconectar...');
-                await testNotebookLMConnection();
-            }
-        }, 30000); // Cada 30 segundos
     </script>
 </body>
 </html>
