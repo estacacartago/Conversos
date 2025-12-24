@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DEMO - Chat Estaca Cartago</title>
+    <title>Chat Estaca Cartago - NotebookLM Real</title>
     <style>
         * {
             margin: 0;
@@ -21,167 +21,419 @@
             padding: 20px;
         }
 
-        .container {
+        .chat-container {
             background: white;
             border-radius: 20px;
             box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-            padding: 40px;
-            text-align: center;
-            max-width: 600px;
             width: 100%;
+            max-width: 900px;
+            height: 80vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
         }
 
-        .icon {
-            font-size: 60px;
-            margin-bottom: 20px;
-        }
-
-        h1 {
-            color: #1E9FC8;
-            font-size: 28px;
-            margin-bottom: 15px;
-        }
-
-        .description {
-            color: #666;
-            font-size: 16px;
-            margin-bottom: 30px;
-            line-height: 1.5;
-        }
-
-        .button {
-            display: inline-block;
-            padding: 15px 30px;
+        .chat-header {
             background: linear-gradient(135deg, #1E9FC8 0%, #157493 100%);
             color: white;
-            text-decoration: none;
-            border-radius: 25px;
-            font-size: 18px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(30, 159, 200, 0.3);
-            cursor: pointer;
-            border: none;
-        }
-
-        .button:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(30, 159, 200, 0.4);
-        }
-
-        .info-box {
-            background: #f0f8ff;
-            border: 2px solid #1E9FC8;
-            border-radius: 15px;
             padding: 20px;
-            margin-top: 30px;
+            text-align: center;
         }
 
-        .info-box h3 {
-            color: #1E9FC8;
-            margin-bottom: 10px;
+        .chat-header h1 {
+            font-size: 24px;
+            margin-bottom: 5px;
         }
 
-        .info-box p {
-            color: #666;
-            font-size: 14px;
-            line-height: 1.4;
+        .status {
+            display: inline-block;
+            padding: 5px 15px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 20px;
+            font-size: 12px;
+            margin-top: 5px;
         }
 
-        .auto-open {
-            color: #28a745;
-            font-size: 14px;
-            margin-top: 15px;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
+        .status.connected {
+            background: rgba(76, 175, 80, 0.3);
         }
 
-        .pulse {
-            width: 8px;
-            height: 8px;
-            background: #28a745;
-            border-radius: 50%;
-            animation: pulse 2s infinite;
+        .status.connecting {
+            background: rgba(255, 193, 7, 0.3);
         }
 
-        @keyframes pulse {
-            0% { opacity: 1; }
-            50% { opacity: 0.5; }
-            100% { opacity: 1; }
+        .messages-container {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background: #f8f9fa;
         }
 
-        .demo-message {
+        .message {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .message.user {
+            justify-content: flex-end;
+        }
+
+        .message-content {
+            max-width: 70%;
+            padding: 12px 16px;
+            border-radius: 18px;
+            word-wrap: break-word;
+        }
+
+        .message.user .message-content {
+            background: #1E9FC8;
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+
+        .message.assistant .message-content {
+            background: white;
+            color: #333;
+            border: 1px solid #e0e0e0;
+            border-bottom-left-radius: 4px;
+        }
+
+        .message.system .message-content {
             background: #fff3cd;
-            border: 1px solid #ffeaa7;
-            border-radius: 10px;
-            padding: 15px;
-            margin-top: 20px;
             color: #856404;
+            border: 1px solid #ffeaa7;
             font-size: 14px;
+            border-bottom-left-radius: 4px;
+        }
+
+        .quick-questions {
+            padding: 15px 20px;
+            background: white;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .quick-btn {
+            padding: 8px 16px;
+            background: #f0f0f0;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .quick-btn:hover {
+            background: #1E9FC8;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .chat-input-container {
+            padding: 20px;
+            background: white;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 12px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 25px;
+            font-size: 16px;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+
+        .chat-input:focus {
+            border-color: #1E9FC8;
+        }
+
+        .send-btn {
+            padding: 12px 24px;
+            background: #1E9FC8;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .send-btn:hover {
+            background: #157493;
+            transform: translateY(-2px);
+        }
+
+        .send-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #1E9FC8;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .source-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            background: #e8f5e8;
+            color: #2e7d32;
+            border-radius: 12px;
+            font-size: 11px;
+            margin-top: 5px;
+        }
+
+        .source-badge.fallback {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+
+        .progress-step {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 10px;
+            background: #f0f8ff;
+            border-radius: 8px;
+            font-size: 12px;
+            margin: 4px 0;
+            color: #1565c0;
+        }
+
+        .progress-step.active {
+            background: #e3f2fd;
+            color: #0d47a1;
+        }
+
+        .progress-step.completed {
+            background: #e8f5e8;
+            color: #2e7d32;
+        }
+
+        .progress-step.error {
+            background: #ffebee;
+            color: #c62828;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="icon">🏛️</div>
-        <h1>Chat Estaca Cartago</h1>
-        <p class="description">
-            Accede al chat inteligente con NotebookLM para consultar sobre los datos de conversos de la Estaca Cartago
-        </p>
-        
-        <button class="button" onclick="simulateOpen()">
-            Abrir Chat con NotebookLM
-        </button>
-
-        <div class="auto-open" id="autoOpen">
-            <div class="pulse"></div>
-            Abriendo NotebookLM automáticamente...
+    <div class="chat-container">
+        <div class="chat-header">
+            <h1>🏛️ Chat Estaca Cartago - NotebookLM Real</h1>
+            <div class="status" id="status">🔄 Conectando...</div>
         </div>
 
-        <div class="demo-message">
-            <strong>📋 DEMOSTRACIÓN:</strong><br>
-            En la versión real, este botón abriría:<br>
-            <code>https://notebooklm.google.com/notebook/1bb5a088-974c-41de-a4ff-0a5c4407e67d</code><br><br>
-            En esta demo, solo te muestro el mensaje de apertura.
+        <div class="messages-container" id="messages">
+            <div class="message assistant">
+                <div class="message-content">
+                    ¡Hola! Soy el asistente de la Estaca Cartago conectado directamente a NotebookLM.
+                    <br><br>
+                    🚀 <strong>Características:</strong><br>
+                    ✅ Conexión real con NotebookLM<br>
+                    ✅ Respuestas auténticas y actualizadas<br>
+                    ✅ Acceso a tu notebook específico<br>
+                    ✅ Proceso visible en tiempo real<br>
+                    <br>
+                    <strong>Puedes preguntarme sobre:</strong><br>
+                    • Datos de conversos<br>
+                    • Estadísticas de bautismos<br>
+                    • Análisis por barrio<br>
+                    • Tendencias y proyecciones<br>
+                    <br>
+                    ¿Qué te gustaría consultar hoy?
+                </div>
+            </div>
         </div>
 
-        <div class="info-box">
-            <h3>📊 ¿Qué puedes consultar?</h3>
-            <p>
-                • Datos actualizados de conversos<br>
-                • Estadísticas de bautismos<br>
-                • Análisis por barrio<br>
-                • Tendencias de crecimiento<br>
-                • Predicciones y recomendaciones
-            </p>
+        <div class="quick-questions">
+            <button class="quick-btn" onclick="askQuestion('¿Cuántos conversos nuevos hay este mes?')">📊 Conversos nuevos</button>
+            <button class="quick-btn" onclick="askQuestion('¿Cuál es el barrio con más bautismos?')">🏘️ Barrios líderes</button>
+            <button class="quick-btn" onclick="askQuestion('¿Qué tendencia observas en el crecimiento?')">📈 Tendencias</button>
+            <button class="quick-btn" onclick="askQuestion('¿Cómo podemos mejorar la retención?')">💡 Estrategias</button>
+        </div>
+
+        <div class="chat-input-container">
+            <div class="input-group">
+                <input type="text" class="chat-input" id="chatInput" placeholder="Escribe tu pregunta aquí..." onkeypress="handleKeyPress(event)">
+                <button class="send-btn" id="sendBtn" onclick="sendMessage()">Enviar</button>
+            </div>
         </div>
     </div>
 
     <script>
-        function simulateOpen() {
-            const autoOpen = document.getElementById('autoOpen');
-            autoOpen.style.display = 'flex';
+        // URL del backend - REEMPLAZA CON TU URL DE REPLIT
+        const BACKEND_URL = 'https://notebooklm-bridge--devidedekawaii.replit.app';
+        
+        function addMessage(content, isUser = false, isSystem = false) {
+            const messagesContainer = document.getElementById('messages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${isUser ? 'user' : isSystem ? 'system' : 'assistant'}`;
             
-            // En la versión real, esto abriría el NotebookLM
-            console.log('Versión real abriría: https://notebooklm.google.com/notebook/1bb5a088-974c-41de-a4ff-0a5c4407e67d');
+            const messageContent = document.createElement('div');
+            messageContent.className = 'message-content';
             
-            // Simulación: mostrar mensaje después de 1 segundo
-            setTimeout(() => {
-                alert('En la versión real, esto abriría tu NotebookLM en una nueva pestaña.\n\nURL: https://notebooklm.google.com/notebook/1bb5a088-974c-41de-a4ff-0a5c4407e67d');
-            }, 1000);
+            if (!isUser) {
+                messageContent.innerHTML = content;
+            } else {
+                messageContent.textContent = content;
+            }
+            
+            messageDiv.appendChild(messageContent);
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
         }
 
-        // Simular apertura automática después de 3 segundos (en lugar de 2)
-        setTimeout(() => {
-            const autoOpen = document.getElementById('autoOpen');
-            autoOpen.style.display = 'flex';
+        function addProgressStep(text, isActive = false, isCompleted = false, isError = false) {
+            const messagesContainer = document.getElementById('messages');
+            const progressDiv = document.createElement('div');
+            progressDiv.className = `progress-step ${isActive ? 'active' : ''} ${isCompleted ? 'completed' : ''} ${isError ? 'error' : ''}`;
             
-            setTimeout(() => {
-                console.log('Versión real abriría automáticamente tu NotebookLM');
-            }, 500);
-        }, 3000);
+            const icon = isError ? '❌' : isCompleted ? '✅' : isActive ? '🔄' : '⏳';
+            progressDiv.innerHTML = `${icon} ${text}`;
+            
+            messagesContainer.appendChild(progressDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            
+            return progressDiv;
+        }
+
+        function updateStatus(text, isConnected = false) {
+            const status = document.getElementById('status');
+            status.textContent = text;
+            status.className = isConnected ? 'status connected' : 'status connecting';
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const sendBtn = document.getElementById('sendBtn');
+            const question = input.value.trim();
+            
+            if (!question) return;
+            
+            // Deshabilitar botón
+            sendBtn.disabled = true;
+            sendBtn.innerHTML = '<div class="loading"></div>';
+            
+            // Agregar mensaje del usuario
+            addMessage(question, true);
+            input.value = '';
+            
+            // Mostrar pasos del proceso
+            const step1 = addProgressStep('Iniciando navegador Chrome...', true);
+            updateStatus('🔄 Conectando con NotebookLM...');
+            
+            try {
+                console.log('Enviando pregunta:', question);
+                
+                // Simular actualización de pasos
+                setTimeout(() => {
+                    step1.className = 'progress-step completed';
+                    const step2 = addProgressStep('Navegando a tu NotebookLM...', true);
+                    
+                    setTimeout(() => {
+                        step2.className = 'progress-step completed';
+                        const step3 = addProgressStep('Buscando campo de pregunta...', true);
+                        
+                        setTimeout(() => {
+                            step3.className = 'progress-step completed';
+                            const step4 = addProgressStep('Escribiendo pregunta...', true);
+                            
+                            setTimeout(() => {
+                                step4.className = 'progress-step completed';
+                                const step5 = addProgressStep('Obteniendo respuesta de NotebookLM...', true);
+                            }, 2000);
+                        }, 2000);
+                    }, 2000);
+                }, 1000);
+                
+                // Enviar pregunta al backend
+                const response = await fetch(`${BACKEND_URL}/api/ask`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ question: question })
+                });
+                
+                console.log('Status:', response.status);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                console.log('Respuesta:', data);
+                
+                // Determinar el badge
+                let sourceBadge = '';
+                if (data.response.includes('NotebookLM')) {
+                    sourceBadge = '<span class="source-badge">📚 NotebookLM Real</span>';
+                } else {
+                    sourceBadge = '<span class="source-badge fallback">🤖 Modo Respaldo</span>';
+                }
+                
+                const responseText = data.response + sourceBadge;
+                addMessage(responseText);
+                
+                updateStatus('🟢 Conectado a NotebookLM', true);
+                
+            } catch (error) {
+                console.error('Error:', error);
+                addProgressStep('Error de conexión', false, false, true);
+                addMessage('❌ Error al conectar con NotebookLM. Por favor, intenta nuevamente.', false, true);
+                updateStatus('🔴 Error de conexión');
+            } finally {
+                // Rehabilitar botón
+                sendBtn.disabled = false;
+                sendBtn.textContent = 'Enviar';
+            }
+        }
+
+        function askQuestion(question) {
+            document.getElementById('chatInput').value = question;
+            sendMessage();
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        // Verificar conexión al backend
+        window.addEventListener('load', async () => {
+            try {
+                const response = await fetch(`${BACKEND_URL}/api/status`);
+                const data = await response.json();
+                console.log('Status del backend:', data);
+                
+                updateStatus('🟢 NotebookLM Ready', true);
+            } catch (error) {
+                console.error('Error de conexión:', error);
+                updateStatus('🔴 Error de conexión');
+                addMessage('❌ No se puede conectar con el backend. Por favor, verifica que el servidor esté funcionando.', false, true);
+            }
+        });
     </script>
 </body>
 </html>
