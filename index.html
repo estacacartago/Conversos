@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat Estaca Cartago - NotebookLM Integrado</title>
+    <title>DEMO - Chat Estaca Cartago</title>
     <style>
         * {
             margin: 0;
@@ -15,284 +15,173 @@
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: linear-gradient(135deg, #1E9FC8 0%, #157493 100%);
             min-height: 100vh;
-            overflow: hidden;
-        }
-
-        .main-container {
             display: flex;
-            flex-direction: column;
-            height: 100vh;
-        }
-
-        .header {
-            background: linear-gradient(135deg, #1E9FC8 0%, #157493 100%);
-            color: white;
-            padding: 15px 20px;
-            text-align: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            z-index: 1000;
-        }
-
-        .header h1 {
-            font-size: 20px;
-            margin-bottom: 5px;
-        }
-
-        .header-info {
-            font-size: 12px;
-            opacity: 0.9;
-        }
-
-        .notebooklm-container {
-            flex: 1;
-            position: relative;
-            background: white;
-            margin: 0;
-            overflow: hidden;
-        }
-
-        .iframe-wrapper {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
-
-        .notebooklm-iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-            background: white;
-        }
-
-        .loading-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(255,255,255,0.95);
-            display: flex;
-            flex-direction: column;
             justify-content: center;
             align-items: center;
-            z-index: 100;
+            padding: 20px;
         }
 
-        .loading-spinner {
-            width: 50px;
-            height: 50px;
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #1E9FC8;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            padding: 40px;
+            text-align: center;
+            max-width: 600px;
+            width: 100%;
+        }
+
+        .icon {
+            font-size: 60px;
             margin-bottom: 20px;
         }
 
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        h1 {
+            color: #1E9FC8;
+            font-size: 28px;
+            margin-bottom: 15px;
         }
 
-        .loading-text {
+        .description {
+            color: #666;
             font-size: 16px;
-            color: #333;
+            margin-bottom: 30px;
+            line-height: 1.5;
+        }
+
+        .button {
+            display: inline-block;
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #1E9FC8 0%, #157493 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            font-size: 18px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(30, 159, 200, 0.3);
+            cursor: pointer;
+            border: none;
+        }
+
+        .button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(30, 159, 200, 0.4);
+        }
+
+        .info-box {
+            background: #f0f8ff;
+            border: 2px solid #1E9FC8;
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 30px;
+        }
+
+        .info-box h3 {
+            color: #1E9FC8;
             margin-bottom: 10px;
         }
 
-        .loading-subtext {
-            font-size: 14px;
+        .info-box p {
             color: #666;
-            text-align: center;
-            max-width: 300px;
-        }
-
-        .fallback-button {
-            margin-top: 20px;
-            padding: 12px 24px;
-            background: #1E9FC8;
-            color: white;
-            border: none;
-            border-radius: 25px;
-            cursor: pointer;
             font-size: 14px;
-            transition: all 0.3s ease;
+            line-height: 1.4;
         }
 
-        .fallback-button:hover {
-            background: #157493;
-            transform: translateY(-2px);
+        .auto-open {
+            color: #28a745;
+            font-size: 14px;
+            margin-top: 15px;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
 
-        .controls {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            z-index: 50;
-            display: flex;
-            gap: 10px;
+        .pulse {
+            width: 8px;
+            height: 8px;
+            background: #28a745;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
         }
 
-        .control-btn {
-            padding: 8px 16px;
-            background: rgba(30, 159, 200, 0.9);
-            color: white;
-            border: none;
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 12px;
-            backdrop-filter: blur(10px);
-            transition: all 0.3s ease;
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
         }
 
-        .control-btn:hover {
-            background: rgba(21, 116, 147, 0.9);
-            transform: translateY(-2px);
-        }
-
-        .error-message {
-            background: #ffebee;
-            color: #c62828;
-            padding: 20px;
+        .demo-message {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
             border-radius: 10px;
-            margin: 20px;
-            text-align: center;
-        }
-
-        .hidden {
-            display: none !important;
+            padding: 15px;
+            margin-top: 20px;
+            color: #856404;
+            font-size: 14px;
         }
     </style>
 </head>
 <body>
-    <div class="main-container">
-        <div class="header">
-            <h1>🏛️ Chat Estaca Cartago - NotebookLM Integrado</h1>
-            <div class="header-info">
-                Consulta directamente con NotebookLM sobre los datos de conversos de la Estaca Cartago
-            </div>
+    <div class="container">
+        <div class="icon">🏛️</div>
+        <h1>Chat Estaca Cartago</h1>
+        <p class="description">
+            Accede al chat inteligente con NotebookLM para consultar sobre los datos de conversos de la Estaca Cartago
+        </p>
+        
+        <button class="button" onclick="simulateOpen()">
+            Abrir Chat con NotebookLM
+        </button>
+
+        <div class="auto-open" id="autoOpen">
+            <div class="pulse"></div>
+            Abriendo NotebookLM automáticamente...
         </div>
 
-        <div class="notebooklm-container">
-            <div class="controls">
-                <button class="control-btn" onclick="reloadNotebookLM()">🔄 Recargar</button>
-                <button class="control-btn" onclick="openInNewTab()">🔗 Abrir en nueva pestaña</button>
-            </div>
+        <div class="demo-message">
+            <strong>📋 DEMOSTRACIÓN:</strong><br>
+            En la versión real, este botón abriría:<br>
+            <code>https://notebooklm.google.com/notebook/1bb5a088-974c-41de-a4ff-0a5c4407e67d</code><br><br>
+            En esta demo, solo te muestro el mensaje de apertura.
+        </div>
 
-            <div class="loading-overlay" id="loadingOverlay">
-                <div class="loading-spinner"></div>
-                <div class="loading-text">Cargando NotebookLM...</div>
-                <div class="loading-subtext">
-                    Estamos integrando tu NotebookLM con los datos de conversos de la Estaca Cartago
-                </div>
-                <button class="fallback-button" onclick="openDirectly()">
-                    Abrir NotebookLM directamente
-                </button>
-            </div>
-
-            <div class="iframe-wrapper">
-                <iframe 
-                    id="notebooklmFrame"
-                    class="notebooklm-iframe"
-                    src="https://notebooklm.google.com/notebook/1bb5a088-974c-41de-a4ff-0a5c4407e67d"
-                    onload="hideLoading()"
-                    onerror="showError()"
-                    allowfullscreen
-                    sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
-                ></iframe>
-            </div>
-
-            <div class="error-message hidden" id="errorMessage">
-                <h3>❌ No se puede cargar NotebookLM directamente</h3>
-                <p>Google restringe la incrustación de NotebookLM en iframes por seguridad.</p>
-                <button class="fallback-button" onclick="openDirectly()">
-                    Abrir NotebookLM en nueva pestaña
-                </button>
-            </div>
+        <div class="info-box">
+            <h3>📊 ¿Qué puedes consultar?</h3>
+            <p>
+                • Datos actualizados de conversos<br>
+                • Estadísticas de bautismos<br>
+                • Análisis por barrio<br>
+                • Tendencias de crecimiento<br>
+                • Predicciones y recomendaciones
+            </p>
         </div>
     </div>
 
     <script>
-        // URL del NotebookLM específico
-        const NOTEBOOKLM_URL = 'https://notebooklm.google.com/notebook/1bb5a088-974c-41de-a4ff-0a5c4407e67d';
-
-        function hideLoading() {
+        function simulateOpen() {
+            const autoOpen = document.getElementById('autoOpen');
+            autoOpen.style.display = 'flex';
+            
+            // En la versión real, esto abriría el NotebookLM
+            console.log('Versión real abriría: https://notebooklm.google.com/notebook/1bb5a088-974c-41de-a4ff-0a5c4407e67d');
+            
+            // Simulación: mostrar mensaje después de 1 segundo
             setTimeout(() => {
-                const loadingOverlay = document.getElementById('loadingOverlay');
-                loadingOverlay.style.opacity = '0';
-                setTimeout(() => {
-                    loadingOverlay.classList.add('hidden');
-                }, 500);
-            }, 2000);
+                alert('En la versión real, esto abriría tu NotebookLM en una nueva pestaña.\n\nURL: https://notebooklm.google.com/notebook/1bb5a088-974c-41de-a4ff-0a5c4407e67d');
+            }, 1000);
         }
 
-        function showError() {
-            document.getElementById('loadingOverlay').classList.add('hidden');
-            document.getElementById('errorMessage').classList.remove('hidden');
-        }
-
-        function reloadNotebookLM() {
-            const frame = document.getElementById('notebooklmFrame');
-            const loadingOverlay = document.getElementById('loadingOverlay');
+        // Simular apertura automática después de 3 segundos (en lugar de 2)
+        setTimeout(() => {
+            const autoOpen = document.getElementById('autoOpen');
+            autoOpen.style.display = 'flex';
             
-            loadingOverlay.classList.remove('hidden');
-            loadingOverlay.style.opacity = '1';
-            
-            frame.src = NOTEBOOKLM_URL;
-        }
-
-        function openInNewTab() {
-            window.open(NOTEBOOKLM_URL, '_blank');
-        }
-
-        function openDirectly() {
-            window.open(NOTEBOOKLM_URL, '_blank');
-        }
-
-        // Detectar si el iframe se cargó correctamente
-        window.addEventListener('load', () => {
-            const frame = document.getElementById('notebooklmFrame');
-            
-            // Esperar un tiempo para ver si el iframe carga
             setTimeout(() => {
-                try {
-                    // Intentar acceder al contenido del iframe
-                    const frameContent = frame.contentWindow || frame.contentDocument;
-                    if (!frameContent) {
-                        // Si no se puede acceder, probablemente fue bloqueado
-                        showError();
-                    }
-                } catch (e) {
-                    // Error de CORS o seguridad
-                    console.log('El iframe fue bloqueado por políticas de seguridad');
-                    showError();
-                }
-            }, 5000);
-        });
-
-        // Manejar mensajes del iframe (si NotebookLM los envía)
-        window.addEventListener('message', (event) => {
-            if (event.origin.includes('notebooklm.google.com')) {
-                console.log('Mensaje de NotebookLM:', event.data);
-            }
-        });
-
-        // Redimensionar automáticamente el iframe si es posible
-        function resizeIframe() {
-            const frame = document.getElementById('notebooklmFrame');
-            try {
-                const frameHeight = frame.contentWindow.document.body.scrollHeight;
-                frame.style.height = frameHeight + 'px';
-            } catch (e) {
-                // No se puede redimensionar debido a restricciones de CORS
-                console.log('No se puede redimensionar el iframe automáticamente');
-            }
-        }
-
-        // Intentar redimensionar periódicamente
-        setInterval(resizeIframe, 2000);
+                console.log('Versión real abriría automáticamente tu NotebookLM');
+            }, 500);
+        }, 3000);
     </script>
 </body>
 </html>
