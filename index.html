@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat Estaca Cartago - Conversos + NotebookLM</title>
+    <title>Chat Estaca Cartago - NotebookLM Integrado</title>
     <style>
         * {
             margin: 0;
@@ -15,177 +15,80 @@
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: linear-gradient(135deg, #1E9FC8 0%, #157493 100%);
             min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
-
-        .chat-container {
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-            width: 100%;
-            max-width: 900px;
-            height: 80vh;
-            display: flex;
-            flex-direction: column;
             overflow: hidden;
         }
 
-        .chat-header {
-            background: linear-gradient(135deg, #1E9FC8 0%, #157493 100%);
-            color: white;
-            padding: 20px;
-            text-align: center;
+        .main-container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
         }
 
-        .chat-header h1 {
-            font-size: 24px;
+        .header {
+            background: linear-gradient(135deg, #1E9FC8 0%, #157493 100%);
+            color: white;
+            padding: 15px 20px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+        }
+
+        .header h1 {
+            font-size: 20px;
             margin-bottom: 5px;
         }
 
-        .status {
-            display: inline-block;
-            padding: 5px 15px;
-            background: rgba(255,255,255,0.2);
-            border-radius: 20px;
+        .header-info {
             font-size: 12px;
-            margin-top: 5px;
+            opacity: 0.9;
         }
 
-        .status.connected {
-            background: rgba(76, 175, 80, 0.3);
-        }
-
-        .status.connecting {
-            background: rgba(255, 193, 7, 0.3);
-        }
-
-        .messages-container {
+        .notebooklm-container {
             flex: 1;
-            padding: 20px;
-            overflow-y: auto;
-            background: #f8f9fa;
-        }
-
-        .message {
-            margin-bottom: 15px;
-            display: flex;
-            align-items: flex-start;
-        }
-
-        .message.user {
-            justify-content: flex-end;
-        }
-
-        .message-content {
-            max-width: 70%;
-            padding: 12px 16px;
-            border-radius: 18px;
-            word-wrap: break-word;
-        }
-
-        .message.user .message-content {
-            background: #1E9FC8;
-            color: white;
-            border-bottom-right-radius: 4px;
-        }
-
-        .message.assistant .message-content {
+            position: relative;
             background: white;
-            color: #333;
-            border: 1px solid #e0e0e0;
-            border-bottom-left-radius: 4px;
+            margin: 0;
+            overflow: hidden;
         }
 
-        .message.system .message-content {
-            background: #fff3cd;
-            color: #856404;
-            border: 1px solid #ffeaa7;
-            font-size: 14px;
-            border-bottom-left-radius: 4px;
-        }
-
-        .quick-questions {
-            padding: 15px 20px;
-            background: white;
-            border-top: 1px solid #e0e0e0;
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .quick-btn {
-            padding: 8px 16px;
-            background: #f0f0f0;
+        .iframe-wrapper {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             border: none;
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 14px;
-            transition: all 0.3s ease;
         }
 
-        .quick-btn:hover {
-            background: #1E9FC8;
-            color: white;
-            transform: translateY(-2px);
-        }
-
-        .chat-input-container {
-            padding: 20px;
-            background: white;
-            border-top: 1px solid #e0e0e0;
-        }
-
-        .input-group {
-            display: flex;
-            gap: 10px;
-        }
-
-        .chat-input {
-            flex: 1;
-            padding: 12px 20px;
-            border: 2px solid #e0e0e0;
-            border-radius: 25px;
-            font-size: 16px;
-            outline: none;
-            transition: border-color 0.3s ease;
-        }
-
-        .chat-input:focus {
-            border-color: #1E9FC8;
-        }
-
-        .send-btn {
-            padding: 12px 24px;
-            background: #1E9FC8;
-            color: white;
+        .notebooklm-iframe {
+            width: 100%;
+            height: 100%;
             border: none;
-            border-radius: 25px;
-            cursor: pointer;
-            font-size: 16px;
-            transition: all 0.3s ease;
+            background: white;
         }
 
-        .send-btn:hover {
-            background: #157493;
-            transform: translateY(-2px);
+        .loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255,255,255,0.95);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
         }
 
-        .send-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .loading {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #1E9FC8;
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #1E9FC8;
             border-radius: 50%;
             animation: spin 1s linear infinite;
+            margin-bottom: 20px;
         }
 
         @keyframes spin {
@@ -193,322 +96,203 @@
             100% { transform: rotate(360deg); }
         }
 
-        .source-badge {
-            display: inline-block;
-            padding: 2px 8px;
-            background: #e3f2fd;
-            color: #1976d2;
-            border-radius: 12px;
-            font-size: 11px;
-            margin-top: 5px;
+        .loading-text {
+            font-size: 16px;
+            color: #333;
+            margin-bottom: 10px;
         }
 
-        .source-badge.notebooklm {
-            background: #e8f5e8;
-            color: #2e7d32;
+        .loading-subtext {
+            font-size: 14px;
+            color: #666;
+            text-align: center;
+            max-width: 300px;
         }
 
-        .source-badge.local {
-            background: #fff3e0;
-            color: #f57c00;
+        .fallback-button {
+            margin-top: 20px;
+            padding: 12px 24px;
+            background: #1E9FC8;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
         }
 
-        .source-badge.conversos {
-            background: #fce4ec;
-            color: #c2185b;
+        .fallback-button:hover {
+            background: #157493;
+            transform: translateY(-2px);
         }
 
-        .connection-indicator {
+        .controls {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 50;
             display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px 12px;
-            background: rgba(255,255,255,0.1);
-            border-radius: 15px;
+            gap: 10px;
+        }
+
+        .control-btn {
+            padding: 8px 16px;
+            background: rgba(30, 159, 200, 0.9);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
             font-size: 12px;
-            margin-top: 8px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
         }
 
-        .connection-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: #4caf50;
-            animation: pulse 2s infinite;
+        .control-btn:hover {
+            background: rgba(21, 116, 147, 0.9);
+            transform: translateY(-2px);
         }
 
-        @keyframes pulse {
-            0% { opacity: 1; }
-            50% { opacity: 0.5; }
-            100% { opacity: 1; }
-        }
-
-        .progress-step {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 6px 10px;
-            background: #f0f8ff;
-            border-radius: 8px;
-            font-size: 12px;
-            margin: 4px 0;
-            color: #1565c0;
-        }
-
-        .progress-step.active {
-            background: #e3f2fd;
-            color: #0d47a1;
-        }
-
-        .progress-step.completed {
-            background: #e8f5e8;
-            color: #2e7d32;
-        }
-
-        .progress-step.error {
+        .error-message {
             background: #ffebee;
             color: #c62828;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px;
+            text-align: center;
         }
 
-        .data-preview {
-            background: #f5f5f5;
-            border: 1px solid #e0e0e0;
-            border-radius: 8px;
-            padding: 10px;
-            margin: 10px 0;
-            font-size: 12px;
-            color: #666;
-            max-height: 100px;
-            overflow-y: auto;
+        .hidden {
+            display: none !important;
         }
     </style>
 </head>
 <body>
-    <div class="chat-container">
-        <div class="chat-header">
-            <h1>🏛️ Chat Estaca Cartago - Conversos + NotebookLM</h1>
-            <div class="status connected" id="status">🟢 Sistema Listo</div>
-            <div class="connection-indicator" id="connectionIndicator" style="display: none;">
-                <div class="connection-dot"></div>
-                <span id="connectionText">Procesando...</span>
+    <div class="main-container">
+        <div class="header">
+            <h1>🏛️ Chat Estaca Cartago - NotebookLM Integrado</h1>
+            <div class="header-info">
+                Consulta directamente con NotebookLM sobre los datos de conversos de la Estaca Cartago
             </div>
         </div>
 
-        <div class="messages-container" id="messages">
-            <div class="message assistant">
-                <div class="message-content">
-                    ¡Hola! Soy el asistente inteligente de la Estaca Cartago.
-                    <br><br>
-                    🔥 <strong>Nuevo sistema integrado:</strong><br>
-                    ✅ Accedo a <a href="https://estacacartago.github.io/Conversos/" target="_blank">tus datos de conversos</a><br>
-                    ✅ Pregunto a NotebookLM con esa información<br>
-                    ✅ Obtengo respuestas contextualizadas y reales<br>
-                    <br>
-                    <strong>Puedes preguntarme sobre:</strong><br>
-                    • Análisis de conversos recientes<br>
-                    • Tendencias de bautismos<br>
-                    • Estadísticas por barrio<br>
-                    • Patrones de crecimiento<br>
-                    • Cualquier pregunta sobre tus datos<br>
-                    <br>
-                    ¿Qué te gustaría analizar hoy?
+        <div class="notebooklm-container">
+            <div class="controls">
+                <button class="control-btn" onclick="reloadNotebookLM()">🔄 Recargar</button>
+                <button class="control-btn" onclick="openInNewTab()">🔗 Abrir en nueva pestaña</button>
+            </div>
+
+            <div class="loading-overlay" id="loadingOverlay">
+                <div class="loading-spinner"></div>
+                <div class="loading-text">Cargando NotebookLM...</div>
+                <div class="loading-subtext">
+                    Estamos integrando tu NotebookLM con los datos de conversos de la Estaca Cartago
                 </div>
+                <button class="fallback-button" onclick="openDirectly()">
+                    Abrir NotebookLM directamente
+                </button>
             </div>
-        </div>
 
-        <div class="quick-questions">
-            <button class="quick-btn" onclick="askQuestion('¿Cuántos conversos nuevos hay este mes?')">📊 Conversos nuevos</button>
-            <button class="quick-btn" onclick="askQuestion('¿Cuál es el barrio con más bautismos?')">🏘️ Barrios líderes</button>
-            <button class="quick-btn" onclick="askQuestion('¿Qué tendencia observas en los conversos?')">📈 Tendencias</button>
-            <button class="quick-btn" onclick="askQuestion('¿Cómo podemos mejorar la retención?')">💡 Mejoras</button>
-        </div>
+            <div class="iframe-wrapper">
+                <iframe 
+                    id="notebooklmFrame"
+                    class="notebooklm-iframe"
+                    src="https://notebooklm.google.com/notebook/1bb5a088-974c-41de-a4ff-0a5c4407e67d"
+                    onload="hideLoading()"
+                    onerror="showError()"
+                    allowfullscreen
+                    sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
+                ></iframe>
+            </div>
 
-        <div class="chat-input-container">
-            <div class="input-group">
-                <input type="text" class="chat-input" id="chatInput" placeholder="Escribe tu pregunta sobre los conversos..." onkeypress="handleKeyPress(event)">
-                <button class="send-btn" id="sendBtn" onclick="sendMessage()">Enviar</button>
+            <div class="error-message hidden" id="errorMessage">
+                <h3>❌ No se puede cargar NotebookLM directamente</h3>
+                <p>Google restringe la incrustación de NotebookLM en iframes por seguridad.</p>
+                <button class="fallback-button" onclick="openDirectly()">
+                    Abrir NotebookLM en nueva pestaña
+                </button>
             </div>
         </div>
     </div>
 
     <script>
-        // URL del backend en Replit
-        const BACKEND_URL = 'https://notebooklm-bridge--devidedekawaii.replit.app';
-        
-        function addMessage(content, isUser = false, isSystem = false) {
-            const messagesContainer = document.getElementById('messages');
-            const messageDiv = document.createElement('div');
-            messageDiv.className = `message ${isUser ? 'user' : isSystem ? 'system' : 'assistant'}`;
-            
-            const messageContent = document.createElement('div');
-            messageContent.className = 'message-content';
-            
-            if (!isUser) {
-                messageContent.innerHTML = content;
-            } else {
-                messageContent.textContent = content;
-            }
-            
-            messageDiv.appendChild(messageContent);
-            messagesContainer.appendChild(messageDiv);
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
-        }
+        // URL del NotebookLM específico
+        const NOTEBOOKLM_URL = 'https://notebooklm.google.com/notebook/1bb5a088-974c-41de-a4ff-0a5c4407e67d';
 
-        function addProgressStep(text, isActive = false, isCompleted = false, isError = false) {
-            const messagesContainer = document.getElementById('messages');
-            const progressDiv = document.createElement('div');
-            progressDiv.className = `progress-step ${isActive ? 'active' : ''} ${isCompleted ? 'completed' : ''} ${isError ? 'error' : ''}`;
-            
-            const icon = isError ? '❌' : isCompleted ? '✅' : isActive ? '🔄' : '⏳';
-            progressDiv.innerHTML = `${icon} ${text}`;
-            
-            messagesContainer.appendChild(progressDiv);
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
-            
-            return progressDiv;
-        }
-
-        function addDataPreview(title, data) {
-            const messagesContainer = document.getElementById('messages');
-            const previewDiv = document.createElement('div');
-            previewDiv.className = 'data-preview';
-            previewDiv.innerHTML = `<strong>${title}:</strong><br>${data.substring(0, 200)}...`;
-            messagesContainer.appendChild(previewDiv);
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
-        }
-
-        function updateConnectionIndicator(show, text = 'Procesando...') {
-            const indicator = document.getElementById('connectionIndicator');
-            const connectionText = document.getElementById('connectionText');
-            
-            if (show) {
-                indicator.style.display = 'flex';
-                connectionText.textContent = text;
-            } else {
-                indicator.style.display = 'none';
-            }
-        }
-
-        async function sendMessage() {
-            const input = document.getElementById('chatInput');
-            const sendBtn = document.getElementById('sendBtn');
-            const question = input.value.trim();
-            
-            if (!question) return;
-            
-            // Deshabilitar botón
-            sendBtn.disabled = true;
-            sendBtn.innerHTML = '<div class="loading"></div>';
-            
-            // Agregar mensaje del usuario
-            addMessage(question, true);
-            input.value = '';
-            
-            // Mostrar indicador de proceso
-            updateConnectionIndicator(true, 'Iniciando proceso inteligente...');
-            
-            // Pasos del proceso
-            const step1 = addProgressStep('Accediendo a datos de conversos...', true);
-            
-            try {
-                console.log('Enviando pregunta:', question);
-                
-                // Simular actualización de pasos
+        function hideLoading() {
+            setTimeout(() => {
+                const loadingOverlay = document.getElementById('loadingOverlay');
+                loadingOverlay.style.opacity = '0';
                 setTimeout(() => {
-                    step1.className = 'progress-step completed';
-                    const step2 = addProgressStep('Analizando datos de conversos...', true);
-                    
-                    setTimeout(() => {
-                        step2.className = 'progress-step completed';
-                        const step3 = addProgressStep('Conectando a NotebookLM...', true);
-                        
-                        setTimeout(() => {
-                            step3.className = 'progress-step completed';
-                            const step4 = addProgressStep('Enviando pregunta con contexto...', true);
-                            
-                            setTimeout(() => {
-                                step4.className = 'progress-step completed';
-                                const step5 = addProgressStep('Obteniendo respuesta inteligente...', true);
-                            }, 1500);
-                        }, 1500);
-                    }, 1500);
-                }, 1000);
-                
-                // Enviar pregunta al backend
-                const response = await fetch(`${BACKEND_URL}/api/ask`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ question: question })
-                });
-                
-                console.log('Status:', response.status);
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                
-                const data = await response.json();
-                console.log('Respuesta:', data);
-                
-                // Ocultar indicador
-                updateConnectionIndicator(false);
-                
-                // Determinar fuente y badge
-                let sourceBadge = '';
-                if (data.response.includes('NotebookLM usando datos actualizados')) {
-                    sourceBadge = '<span class="source-badge notebooklm">📚 NotebookLM + Conversos</span>';
-                } else if (data.response.includes('basada en datos disponibles')) {
-                    sourceBadge = '<span class="source-badge conversos">📊 Datos Conversos</span>';
-                } else {
-                    sourceBadge = '<span class="source-badge local">🤖 Respuesta Local</span>';
-                }
-                
-                const responseText = data.response + sourceBadge;
-                addMessage(responseText);
-                
-            } catch (error) {
-                console.error('Error:', error);
-                updateConnectionIndicator(false);
-                addProgressStep('Error en el proceso', false, false, true);
-                addMessage('❌ Error al procesar tu pregunta. Por favor, intenta nuevamente.', false, true);
-            } finally {
-                // Rehabilitar botón
-                sendBtn.disabled = false;
-                sendBtn.textContent = 'Enviar';
-            }
+                    loadingOverlay.classList.add('hidden');
+                }, 500);
+            }, 2000);
         }
 
-        function askQuestion(question) {
-            document.getElementById('chatInput').value = question;
-            sendMessage();
+        function showError() {
+            document.getElementById('loadingOverlay').classList.add('hidden');
+            document.getElementById('errorMessage').classList.remove('hidden');
         }
 
-        function handleKeyPress(event) {
-            if (event.key === 'Enter') {
-                sendMessage();
-            }
+        function reloadNotebookLM() {
+            const frame = document.getElementById('notebooklmFrame');
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            
+            loadingOverlay.classList.remove('hidden');
+            loadingOverlay.style.opacity = '1';
+            
+            frame.src = NOTEBOOKLM_URL;
         }
 
-        // Verificar conexión al backend
-        window.addEventListener('load', async () => {
-            try {
-                const response = await fetch(BACKEND_URL);
-                const status = document.getElementById('status');
-                if (response.ok) {
-                    status.textContent = '🟢 Conversos + NotebookLM Ready';
-                    status.className = 'status connected';
-                } else {
-                    throw new Error('Backend no responde');
+        function openInNewTab() {
+            window.open(NOTEBOOKLM_URL, '_blank');
+        }
+
+        function openDirectly() {
+            window.open(NOTEBOOKLM_URL, '_blank');
+        }
+
+        // Detectar si el iframe se cargó correctamente
+        window.addEventListener('load', () => {
+            const frame = document.getElementById('notebooklmFrame');
+            
+            // Esperar un tiempo para ver si el iframe carga
+            setTimeout(() => {
+                try {
+                    // Intentar acceder al contenido del iframe
+                    const frameContent = frame.contentWindow || frame.contentDocument;
+                    if (!frameContent) {
+                        // Si no se puede acceder, probablemente fue bloqueado
+                        showError();
+                    }
+                } catch (e) {
+                    // Error de CORS o seguridad
+                    console.log('El iframe fue bloqueado por políticas de seguridad');
+                    showError();
                 }
-            } catch (error) {
-                const status = document.getElementById('status');
-                status.textContent = '🔴 Error de conexión';
-                status.className = 'status';
-                addMessage('❌ No se puede conectar al backend: ' + error.message, false, true);
+            }, 5000);
+        });
+
+        // Manejar mensajes del iframe (si NotebookLM los envía)
+        window.addEventListener('message', (event) => {
+            if (event.origin.includes('notebooklm.google.com')) {
+                console.log('Mensaje de NotebookLM:', event.data);
             }
         });
+
+        // Redimensionar automáticamente el iframe si es posible
+        function resizeIframe() {
+            const frame = document.getElementById('notebooklmFrame');
+            try {
+                const frameHeight = frame.contentWindow.document.body.scrollHeight;
+                frame.style.height = frameHeight + 'px';
+            } catch (e) {
+                // No se puede redimensionar debido a restricciones de CORS
+                console.log('No se puede redimensionar el iframe automáticamente');
+            }
+        }
+
+        // Intentar redimensionar periódicamente
+        setInterval(resizeIframe, 2000);
     </script>
 </body>
 </html>
