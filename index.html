@@ -171,6 +171,11 @@
             color: white;
         }
         
+        .source-local {
+            background: #f59e0b;
+            color: white;
+        }
+        
         .quick-questions {
             display: flex;
             flex-wrap: wrap;
@@ -275,8 +280,8 @@
 
         <!-- Preguntas Rápidas -->
         <div class="quick-questions">
-            <div class="quick-question" onclick="askQuickQuestion('¿Cuántas personas asistieron el domingo?')">
-                📊 Asistencia dominical
+            <div class="quick-question" onclick="askQuickQuestion('¿Cuántos bautismos hubo en diciembre?')">
+                📊 Bautismos diciembre
             </div>
             <div class="quick-question" onclick="askQuickQuestion('¿Quiénes necesitan ministración urgente?')">
                 🚨 Casos críticos
@@ -359,6 +364,8 @@
         // Verificar conexión con backend
         async function checkBackendConnection() {
             try {
+                console.log('🔍 Verificando conexión con backend...');
+                
                 const response = await fetch(`${BACKEND_URL}/`, {
                     method: 'GET',
                     timeout: 5000
@@ -366,6 +373,7 @@
                 
                 if (response.ok) {
                     const data = await response.json();
+                    console.log('✅ Conexión exitosa:', data);
                     updateConnectionStatus('connected', 'Backend conectado y funcionando');
                     return true;
                 } else {
@@ -394,14 +402,20 @@
                     timeout: 30000 // 30 segundos timeout
                 });
                 
+                console.log('📡 Estado de la respuesta:', response.status);
+                console.log('📡 Headers:', response.headers);
+                
                 if (response.ok) {
                     const data = await response.json();
                     console.log('✅ Respuesta del backend:', data);
+                    console.log('✅ data.success:', data.success);
+                    console.log('✅ data.response:', data.response);
+                    console.log('✅ data.source:', data.source);
                     
                     if (data.success) {
                         return {
                             text: data.response,
-                            source: 'backend'
+                            source: data.source
                         };
                     } else {
                         throw new Error(data.error || 'Error en backend');
@@ -425,12 +439,14 @@
         function getLocalResponse(question) {
             const lowerQuestion = question.toLowerCase();
             
-            if (lowerQuestion.includes('asist') || lowerQuestion.includes('domingo')) {
+            if (lowerQuestion.includes('bautism') || lowerQuestion.includes('bautiz')) {
+                return "Durante diciembre de 2024 se han registrado 5 bautismos en la Estaca Cartago:\n\nBarrio Cartago (3):\n• Juan Carlos Fuentes - 7 de diciembre\n• Ana Carolina Martínez - 7 de diciembre\n• Víctor Manuel Brenes - 12 de diciembre\n\nBarrio Paraíso (1):\n• Roberto Rivera - 1 de diciembre\n\nRama Los Santos (1):\n• Jeannette Hernández - 14 de diciembre";
+            } else if (lowerQuestion.includes('asist') || lowerQuestion.includes('domingo')) {
                 return "Basado en los patrones de la Estaca Cartago, el domingo pasado asistieron aproximadamente 45 personas. He detectado que varios miembros necesitan atención especial por patrones de inactividad.";
             } else if (lowerQuestion.includes('crític') || lowerQuestion.includes('urgente')) {
                 return "He identificado casos críticos que requieren acción inmediata. Los principales son miembros con 3+ inasistencias consecutivas y familias donde uno de los padres ha dejado de asistir.";
-            } else if (lowerQuestion.includes('convers') || lowerQuestion.includes('bautiz')) {
-                return "Este mes hemos tenido 3 nuevos conversos y 2 bautismos. Es importante dar seguimiento especial a los conversos nuevos durante los primeros 3 meses.";
+            } else if (lowerQuestion.includes('convers') || lowerQuestion.includes('nuevos')) {
+                return "Este mes hemos tenido 3 nuevos conversos y 2 bautismos en la Estaca Cartago. Es crítico dar seguimiento especial durante los primeros 90 días.";
             } else {
                 return "Estoy procesando tu pregunta sobre la Estaca Cartago. Para obtener información más detallada, recomiendo revisar los datos específicos de asistencia y ministración.";
             }
@@ -475,8 +491,8 @@
             messageDiv.className = `message ${sender}`;
             
             const sourceBadge = sender === 'assistant' && source ? 
-                `<div class="source-badge source-${source === 'backend' ? 'backend' : 'local'}">
-                    ${source === 'backend' ? '✓ Backend Activo' : '🤖 Modo Local'}
+                `<div class="source-badge source-${source === 'notebooklm-data' ? 'backend' : 'local'}">
+                    ${source === 'notebooklm-data' ? '✓ Backend Activo' : '🤖 Modo Local'}
                 </div>` : '';
             
             messageDiv.innerHTML = `
