@@ -373,7 +373,6 @@
                 
                 if (response.ok) {
                     const data = await response.json();
-                    console.log('✅ Conexión exitosa:', data);
                     updateConnectionStatus('connected', 'Backend conectado y funcionando');
                     return true;
                 } else {
@@ -444,7 +443,7 @@
             } else if (lowerQuestion.includes('asist') || lowerQuestion.includes('domingo')) {
                 return "Basado en los patrones de la Estaca Cartago, el domingo pasado asistieron aproximadamente 45 personas. He detectado que varios miembros necesitan atención especial por patrones de inactividad.";
             } else if (lowerQuestion.includes('crític') || lowerQuestion.includes('urgente')) {
-                return "He identificado casos críticos que requieren acción inmediata. Los principales son miembros con 3+ inasistencias consecutivas y familias donde uno de los padres ha dejado de asistir.";
+                return "He identificado casos críticos que requieren acción inmediata en la Estaca Cartago. Los principales son miembros con 3+ inasistencias consecutivas y familias donde uno de los padres ha dejado de asistir.";
             } else if (lowerQuestion.includes('convers') || lowerQuestion.includes('nuevos')) {
                 return "Este mes hemos tenido 3 nuevos conversos y 2 bautismos en la Estaca Cartago. Es crítico dar seguimiento especial durante los primeros 90 días.";
             } else {
