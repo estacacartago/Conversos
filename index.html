@@ -3,437 +3,1071 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ministrar a Nuevos Conversos</title>
+    <title>Rescate Celestial - Estaca Cartago</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        .scrollbar-thin::-webkit-scrollbar {
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .checkbox-container input:checked ~ .checkmark {
+            background-color: #10b981;
+            border-color: #10b981;
+        }
+        .checkbox-container input:checked ~ .checkmark:after {
+            display: block;
+        }
+        .checkbox-container .checkmark:after {
+            content: "";
+            position: absolute;
+            display: none;
+            left: 6px;
+            top: 2px;
+            width: 5px;
+            height: 10px;
+            border: solid white;
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg);
+        }
+        .progress-fill {
+            transition: width 0.5s ease-in-out;
+        }
+        .category-card {
+            transition: all 0.3s ease;
+        }
+        .category-card:hover {
+            transform: translateY(-2px);
+        }
+        .custom-scrollbar::-webkit-scrollbar {
             width: 6px;
         }
-        .scrollbar-thin::-webkit-scrollbar-track {
+        .custom-scrollbar::-webkit-scrollbar-track {
             background: #f1f1f1;
-            border-radius: 10px;
+            border-radius: 3px;
         }
-        .scrollbar-thin::-webkit-scrollbar-thumb {
+        .custom-scrollbar::-webkit-scrollbar-thumb {
             background: #888;
-            border-radius: 10px;
+            border-radius: 3px;
         }
-        .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
             background: #555;
-        }
-        .checkbox-custom {
-            transition: all 0.2s ease;
-        }
-        .checkbox-custom:hover {
-            transform: scale(1.02);
-        }
-        .fade-in {
-            animation: fadeIn 0.3s ease-in;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .card-shadow {
-            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
-        }
-        .card-shadow:hover {
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-        }
-        .progress-bar {
-            transition: width 0.3s ease;
-        }
-        .action-button {
-            transition: all 0.2s ease;
-        }
-        .action-button:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-        }
-        .action-button:active {
-            transform: translateY(0);
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
         }
     </style>
 </head>
-<body class="bg-gray-50 min-h-screen flex flex-col">
-    <!-- Header -->
-    <header class="bg-white border-b border-gray-200 p-6 shadow-sm">
-        <div class="max-w-7xl mx-auto">
-            <div class="text-center">
-                <h1 class="text-2xl font-bold text-gray-800 mb-2">
-                    Ministrar a Nuevos Conversos
-                </h1>
-                <p class="text-gray-600 text-sm">
-                    Estaca Cartago - Diciembre 2024
-                </p>
-                <div class="text-gray-500 text-xs mt-2" id="lastSaved">
-                    Guardado: --
-                </div>
-            </div>
-        </div>
-    </header>
-
-    <!-- Main Content -->
-    <main class="flex-1 p-6">
-        <div class="max-w-7xl mx-auto">
-            <!-- Progress Overview -->
-            <div class="bg-white rounded-lg border border-gray-200 p-6 mb-6 card-shadow">
-                <div class="text-center mb-4">
-                    <h2 class="text-lg font-semibold text-gray-800 mb-2">
-                        Progreso General
-                    </h2>
-                    <div class="text-3xl font-bold text-blue-600 mb-2">
-                        <span id="totalProgress">0%</span>
+<body class="bg-gray-50 text-gray-800">
+    <div class="min-h-screen flex flex-col">
+        <!-- Header -->
+        <header class="bg-white shadow-sm border-b border-gray-200">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-900">Rescate Celestial</h1>
+                        <p class="text-sm text-gray-600 mt-1">Estaca Cartago - Seguimiento de Miembros</p>
                     </div>
-                    <div class="w-full bg-gray-200 rounded-full h-3">
-                        <div class="bg-blue-600 h-3 rounded-full progress-bar" id="totalProgressBar" style="width: 0%"></div>
+                    <div class="text-right">
+                        <p class="text-sm text-gray-500">Progreso General</p>
+                        <div class="w-32 h-2 bg-gray-200 rounded-full overflow-hidden">
+                            <div id="totalProgressBar" class="h-full bg-green-500 progress-fill" style="width: 0%"></div>
+                        </div>
+                        <p id="totalProgressText" class="text-xs text-gray-600 mt-1">0% completado</p>
                     </div>
                 </div>
-                
-                <div class="grid grid-cols-2 md:grid-cols-5 gap-4" id="categoryProgress">
-                    <!-- Category progress will be inserted here -->
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="flex-grow">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+                <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+                    
+                    <!-- Domingos sin Asistir -->
+                    <div class="category-card bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                        <div class="bg-red-500 text-white px-4 py-3">
+                            <h2 class="font-semibold text-lg">Domingos sin Asistir</h2>
+                            <p class="text-sm opacity-90">Miembros que necesitan asistencia</p>
+                        </div>
+                        <div class="p-4">
+                            <div class="w-full h-2 bg-gray-200 rounded-full overflow-hidden mb-4">
+                                <div class="category-progress h-full bg-red-500 progress-fill" data-category="domingos" style="width: 0%"></div>
+                            </div>
+                            <div class="space-y-3 max-h-80 overflow-y-auto custom-scrollbar">
+                                <div class="flex items-start space-x-3 p-2 hover:bg-gray-50 rounded">
+                                    <label class="checkbox-container relative flex items-start cursor-pointer">
+                                        <input type="checkbox" class="mt-1 opacity-0 absolute" data-category="domingos" data-person="maria-garcia">
+                                        <span class="checkmark w-4 h-4 border-2 border-gray-300 rounded relative flex-shrink-0 mt-0.5"></span>
+                                    </label>
+                                    <div class="flex-grow">
+                                        <p class="font-medium text-gray-900">María García</p>
+                                        <p class="text-sm text-gray-600">Visitar y orar con ella</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-3 p-2 hover:bg-gray-50 rounded">
+                                    <label class="checkbox-container relative flex items-start cursor-pointer">
+                                        <input type="checkbox" class="mt-1 opacity-0 absolute" data-category="domingos" data-person="jose-martinez">
+                                        <span class="checkmark w-4 h-4 border-2 border-gray-300 rounded relative flex-shrink-0 mt-0.5"></span>
+                                    </label>
+                                    <div class="flex-grow">
+                                        <p class="font-medium text-gray-900">José Martínez</p>
+                                        <p class="text-sm text-gray-600">Llamada telefónica esta semana</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-3 p-2 hover:bg-gray-50 rounded">
+                                    <label class="checkbox-container relative flex items-start cursor-pointer">
+                                        <input type="checkbox" class="mt-1 opacity-0 absolute" data-category="domingos" data-person="ana-lopez">
+                                        <span class="checkmark w-4 h-4 border-2 border-gray-300 rounded relative flex-shrink-0 mt-0.5"></span>
+                                    </label>
+                                    <div class="flex-grow">
+                                        <p class="font-medium text-gray-900">Ana López</p>
+                                        <p class="text-sm text-gray-600">Invitar a actividad familiar</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-3 p-2 hover:bg-gray-50 rounded">
+                                    <label class="checkbox-container relative flex items-start cursor-pointer">
+                                        <input type="checkbox" class="mt-1 opacity-0 absolute" data-category="domingos" data-person="carlos-rodriguez">
+                                        <span class="checkmark w-4 h-4 border-2 border-gray-300 rounded relative flex-shrink-0 mt-0.5"></span>
+                                    </label>
+                                    <div class="flex-grow">
+                                        <p class="font-medium text-gray-900">Carlos Rodríguez</p>
+                                        <p class="text-sm text-gray-600">Coordinar visita de maestros</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-3 p-2 hover:bg-gray-50 rounded">
+                                    <label class="checkbox-container relative flex items-start cursor-pointer">
+                                        <input type="checkbox" class="mt-1 opacity-0 absolute" data-category="domingos" data-person="lucia-hernandez">
+                                        <span class="checkmark w-4 h-4 border-2 border-gray-300 rounded relative flex-shrink-0 mt-0.5"></span>
+                                    </label>
+                                    <div class="flex-grow">
+                                        <p class="font-medium text-gray-900">Lucía Hernández</p>
+                                        <p class="text-sm text-gray-600">Enviar mensaje de aliento</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-3 p-2 hover:bg-gray-50 rounded">
+                                    <label class="checkbox-container relative flex items-start cursor-pointer">
+                                        <input type="checkbox" class="mt-1 opacity-0 absolute" data-category="domingos" data-person="miguel-sanchez">
+                                        <span class="checkmark w-4 h-4 border-2 border-gray-300 rounded relative flex-shrink-0 mt-0.5"></span>
+                                    </label>
+                                    <div class="flex-grow">
+                                        <p class="font-medium text-gray-900">Miguel Sánchez</p>
+                                        <p class="text-sm text-gray-600">Visitar en su hogar</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-3 p-2 hover:bg-gray-50 rounded">
+                                    <label class="checkbox-container relative flex items-start cursor-pointer">
+                                        <input type="checkbox" class="mt-1 opacity-0 absolute" data-category="domingos" data-person="elena-diaz">
+                                        <span class="checkmark w-4 h-4 border-2 border-gray-300 rounded relative flex-shrink-0 mt-0.5"></span>
+                                    </label>
+                                    <div class="flex-grow">
+                                        <p class="font-medium text-gray-900">Elena Díaz</p>
+                                        <p class="text-sm text-gray-600">Ofrecer transporte</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-3 p-2 hover:bg-gray-50 rounded">
+                                    <label class="checkbox-container relative flex items-start cursor-pointer">
+                                        <input type="checkbox" class="mt-1 opacity-0 absolute" data-category="domingos" data-person="juan-perez">
+                                        <span class="checkmark w-4 h-4 border-2 border-gray-300 rounded relative flex-shrink-0 mt-0.5"></span>
+                                    </label>
+                                    <div class="flex-grow">
+                                        <p class="font-medium text-gray-900">Juan Pérez</p>
+                                        <p class="text-sm text-gray-600">Compartir mensaje inspirador</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Hermanas sin Ministrantes -->
+                    <div class="category-card bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                        <div class="bg-yellow-500 text-white px-4 py-3">
+                            <h2 class="font-semibold text-lg">Hermanas sin Ministrantes</h2>
+                            <p class="text-sm opacity-90">Hermanas que necesitan visitas</p>
+                        </div>
+                        <div class="p-4">
+                            <div class="w-full h-2 bg-gray-200 rounded-full overflow-hidden mb-4">
+                                <div class="category-progress h-full bg-yellow-500 progress-fill" data-category="hermanas" style="width: 0%"></div>
+                            </div>
+                            <div class="space-y-3 max-h-80 overflow-y-auto custom-scrollbar">
+                                <div class="flex items-start space-x-3 p-2 hover:bg-gray-50 rounded">
+                                    <label class="checkbox-container relative flex items-start cursor-pointer">
+                                        <input type="checkbox" class="mt-1 opacity-0 absolute" data-category="hermanas" data-person="sofia-ramirez">
+                                        <span class="checkmark w-4 h-4 border-2 border-gray-300 rounded relative flex-shrink-0 mt-0.5"></span>
+                                    </label>
+                                    <div class="flex-grow">
+                                        <p class="font-medium text-gray-900">Sofía Ramírez</p>
+                                        <p class="text-sm text-gray-600">Asignar ministrantes esta semana</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-3 p-2 hover:bg-gray-50 rounded">
+                                    <label class="checkbox-container relative flex items-start cursor-pointer">
+                                        <input type="checkbox" class="mt-1 opacity-0 absolute" data-category="hermanas" data-person="isabel-torres">
+                                        <span class="checkmark w-4 h-4 border-2 border-gray-300 rounded relative flex-shrink-0 mt-0.5"></span>
+                                    </label>
+                                    <div class="flex-grow">
+                                        <p class="font-medium text-gray-900">Isabel Torres</p>
+                                        <p class="text-sm text-gray-600">Visita de bienvenida</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-3 p-2 hover:bg-gray-50 rounded">
+                                    <label class="checkbox-container relative flex items-start cursor-pointer">
+                                        <input type="checkbox" class="mt-1 opacity-0 absolute" data-category="hermanas" data-person="carmen-morales">
+                                        <span class="checkmark w-4 h-4 border-2 border-gray-300 rounded relative flex-shrink-0 mt-0.5"></span>
+                                    </label>
+                                    <div class="flex-grow">
+                                        <p class="font-medium text-gray-900">Carmen Morales</p>
+                                        <p class="text-sm text-gray-600">Coordinar con presidenta auxiliar</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-3 p-2 hover:bg-gray-50 rounded">
+                                    <label class="checkbox-container relative flex items-start cursor-pointer">
+                                        <input type="checkbox" class="mt-1 opacity-0 absolute" data-category="hermanas" data-person="rosa-vargas">
+                                        <span class="checkmark w-4 h-4 border-2 border-gray-300 rounded relative flex-shrink-0 mt-0.5"></span>
+                                    </label>
+                                    <div class="flex-grow">
+                                        <p class="font-medium text-gray-900">Rosa Vargas</p>
+                                        <p class="text-sm text-gray-600">Programar visita mensual</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-3 p-2 hover:bg-gray-50 rounded">
+                                    <label class="checkbox-container relative flex items-start cursor-pointer">
+                                        <input type="checkbox" class="mt-1 opacity-0 absolute" data-category="hermanas" data-person="patricia-castro">
+                                        <span class="checkmark w-4 h-4 border-2 border-gray-300 rounded relative flex-shrink-0 mt-0.5"></span>
+                                    </label>
+                                    <div class="flex-grow">
+                                        <p class="font-medium text-gray-900">Patricia Castro</p>
+                                        <p class="text-sm text-gray-600">Evaluar necesidades especiales</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-3 p-2 hover:bg-gray-50 rounded">
+                                    <label class="checkbox-container relative flex items-start cursor-pointer">
+                                        <input type="checkbox" class="mt-1 opacity-0 absolute" data-category="hermanas" data-person="laura-gomez">
+                                        <span class="checkmark w-4 h-4 border-2 border-gray-300 rounded relative flex-shrink-0 mt-0.5"></span>
+                                    </label>
+                                    <div class="flex-grow">
+                                        <p class="font-medium text-gray-900">Laura Gómez</p>
+                                        <p class="text-sm text-gray-600">Incluir en actividad de Relief Society</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-3 p-2 hover:bg-gray-50 rounded">
+                                    <label class="checkbox-container relative flex items-start cursor-pointer">
+                                        <input type="checkbox" class="mt-1 opacity-0 absolute" data-category="hermanas" data-person="diana-mendoza">
+                                        <span class="checkmark w-4 h-4 border-2 border-gray-300 rounded relative flex-shrink-0 mt-0.5"></span>
+                                    </label>
+                                    <div class="flex-grow">
+                                        <p class="font-medium text-gray-900">Diana Mendoza</p>
+                                        <p class="text-sm text-gray-600">Contactar para conversar</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-3 p-2 hover:bg-gray-50 rounded">
+                                    <label class="checkbox-container relative flex items-start cursor-pointer">
+                                        <input type="checkbox" class="mt-1 opacity-0 absolute" data-category="hermanas" data-person="beatriz-silva">
+                                        <span class="checkmark w-4 h-4 border-2 border-gray-300 rounded relative flex-shrink-0 mt-0.5"></span>
+                                    </label>
+                                    <div class="flex-grow">
+                                        <p class="font-medium text-gray-900">Beatriz Silva</p>
+                                        <p class="text-sm text-gray-600">Visitar y compartir lección</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Varones sin Ser Ordenados -->
+                    <div class="category-card bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                        <div class="bg-blue-500 text-white px-4 py-3">
+                            <h2 class="font-semibold text-lg">Varones sin Ser Ordenados</h2>
+                            <p class="text-sm opacity-90">Hermanos elegibles para el Sacerdocio</p>
+                        </div>
+                        <div class="p-4">
+                            <div class="w-full h-2 bg-gray-200 rounded-full overflow-hidden mb-4">
+                                <div class="category-progress h-full bg-blue-500 progress-fill" data-category="varones" style="width: 0%"></div>
+                            </div>
+                            <div class="space-y-3 max-h-80 overflow-y-auto custom-scrollbar">
+                                <div class="flex items-start space-x-3 p-2 hover:bg-gray-50 rounded">
+                                    <label class="checkbox-container relative flex items-start cursor-pointer">
+                                        <input type="checkbox" class="mt-1 opacity-0 absolute" data-category="varones" data-person="antonio-ruiz">
+                                        <span class="checkmark w-4 h-4 border-2 border-gray-300 rounded relative flex-shrink-0 mt-0.5"></span>
+                                    </label>
+                                    <div class="flex-grow">
+                                        <p class="font-medium text-gray-900">Antonio Ruiz</p>
+                                        <p class="text-sm text-gray-600">Preparar para ordenación</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-3 p-2 hover:bg-gray-50 rounded">
+                                    <label class="checkbox-container relative flex items-start cursor-pointer">
+                                        <input type="checkbox" class="mt-1 opacity-0 absolute" data-category="varones" data-person="francisco-jimenez">
+                                        <span class="checkmark w-4 h-4 border-2 border-gray-300 rounded relative flex-shrink-0 mt-0.5"></span>
+                                    </label>
+                                    <div class="flex-grow">
+                                        <p class="font-medium text-gray-900">Francisco Jiménez</p>
+                                        <p class="text-sm text-gray-600">Enseñar sobre el Sacerdocio</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-3 p-2 hover:bg-gray-50 rounded">
+                                    <label class="checkbox-container relative flex items-start cursor-pointer">
+                                        <input type="checkbox" class="mt-1 opacity-0 absolute" data-category="varones" data-person="luis-fernandez">
+                                        <span class="checkmark w-4 h-4 border-2 border-gray-300 rounded relative flex-shrink-0 mt-0.5"></span>
+                                    </label>
+                                    <div class="flex-grow">
+                                        <p class="font-medium text-gray-900">Luis Fernández</p>
+                                        <p class="text-sm text-gray-600">Coordinar entrevista con obispo</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-3 p-2 hover:bg-gray-50 rounded">
+                                    <label class="checkbox-container relative flex items-start cursor-pointer">
+                                        <input type="checkbox" class="mt-1 opacity-0 absolute" data-category="varones" data-person="javier-navarro">
+                                        <span class="checkmark w-4 h-4 border-2 border-gray-300 rounded relative flex-shrink-0 mt-0.5"></span>
+                                    </label>
+                                    <div class="flex-grow">
+                                        <p class="font-medium text-gray-900">Javier Navarro</p>
+                                        <p class="text-sm text-gray-600">Invitar a clase de preparación</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-3 p-2 hover:bg-gray-50 rounded">
+                                    <label class="checkbox-container relative flex items-start cursor-pointer">
+                                        <input type="checkbox" class="mt-1 opacity-0 absolute" data-category="varones" data-person="ricardo-mendoza">
+                                        <span class="checkmark w-4 h-4 border-2 border-gray-300 rounded relative flex-shrink-0 mt-0.5"></span>
+                                    </label>
+                                    <div class="flex-grow">
+                                        <p class="font-medium text-gray-900">Ricardo Mendoza</p>
+                                        <p class="text-sm text-gray-600">Visitar y compartir bendiciones</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-3 p-2 hover:bg-gray-50 rounded">
+                                    <label class="checkbox-container relative flex items-start cursor-pointer">
+                                        <input type="checkbox" class="mt-1 opacity-0 absolute" data-category="varones" data-person="alberto-herrera">
+                                        <span class="checkmark w-4 h-4 border-2 border-gray-300 rounded relative flex-shrink-0 mt-0.5"></span>
+                                    </label>
+                                    <div class="flex-grow">
+                                        <p class="font-medium text-gray-900">Alberto Herrera</p>
+                                        <p class="text-sm text-gray-600">Evaluar preparación espiritual</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-3 p-2 hover:bg-gray-50 rounded">
+                                    <label class="checkbox-container relative flex items-start cursor-pointer">
+                                        <input type="checkbox" class="mt-1 opacity-0 absolute" data-category="varones" data-person="oscar-romero">
+                                        <span class="checkmark w-4 h-4 border-2 border-gray-300 rounded relative flex-shrink-0 mt-0.5"></span>
+                                    </label>
+                                    <div class="flex-grow">
+                                        <p class="font-medium text-gray-900">Óscar Romero</p>
+                                        <p class="text-sm text-gray-600">Programar entrevista con presidente</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-3 p-2 hover:bg-gray-50 rounded">
+                                    <label class="checkbox-container relative flex items-start cursor-pointer">
+                                        <input type="checkbox" class="mt-1 opacity-0 absolute" data-category="varones" data-person="daniel-ortega">
+                                        <span class="checkmark w-4 h-4 border-2 border-gray-300 rounded relative flex-shrink-0 mt-0.5"></span>
+                                    </label>
+                                    <div class="flex-grow">
+                                        <p class="font-medium text-gray-900">Daniel Ortega</p>
+                                        <p class="text-sm text-gray-600">Compartir experiencias personales</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Hermanos con Llamamiento -->
+                    <div class="category-card bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                        <div class="bg-purple-500 text-white px-4 py-3">
+                            <h2 class="font-semibold text-lg">Hermanos con Llamamiento</h2>
+                            <p class="text-sm opacity-90">Llamamientos por sostener</p>
+                        </div>
+                        <div class="p-4">
+                            <div class="w-full h-2 bg-gray-200 rounded-full overflow-hidden mb-4">
+                                <div class="category-progress h-full bg-purple-500 progress-fill" data-category="llamamiento" style="width: 0%"></div>
+                            </div>
+                            <div class="space-y-3 max-h-80 overflow-y-auto custom-scrollbar">
+                                <div class="flex items-start space-x-3 p-2 hover:bg-gray-50 rounded">
+                                    <label class="checkbox-container relative flex items-start cursor-pointer">
+                                        <input type="checkbox" class="mt-1 opacity-0 absolute" data-category="llamamiento" data-person="raul-santana">
+                                        <span class="checkmark w-4 h-4 border-2 border-gray-300 rounded relative flex-shrink-0 mt-0.5"></span>
+                                    </label>
+                                    <div class="flex-grow">
+                                        <p class="font-medium text-gray-900">Raúl Santana</p>
+                                        <p class="text-sm text-gray-600">Sostener como maestro orientador</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-3 p-2 hover:bg-gray-50 rounded">
+                                    <label class="checkbox-container relative flex items-start cursor-pointer">
+                                        <input type="checkbox" class="mt-1 opacity-0 absolute" data-category="llamamiento" data-person="victor-cruz">
+                                        <span class="checkmark w-4 h-4 border-2 border-gray-300 rounded relative flex-shrink-0 mt-0.5"></span>
+                                    </label>
+                                    <div class="flex-grow">
+                                        <p class="font-medium text-gray-900">Víctor Cruz</p>
+                                        <p class="text-sm text-gray-600">Apoyar en su nuevo llamamiento</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-3 p-2 hover:bg-gray-50 rounded">
+                                    <label class="checkbox-container relative flex items-start cursor-pointer">
+                                        <input type="checkbox" class="mt-1 opacity-0 absolute" data-category="llamamiento" data-person="sergio-alvarez">
+                                        <span class="checkmark w-4 h-4 border-2 border-gray-300 rounded relative flex-shrink-0 mt-0.5"></span>
+                                    </label>
+                                    <div class="flex-grow">
+                                        <p class="font-medium text-gray-900">Sergio Álvarez</p>
+                                        <p class="text-sm text-gray-600">Capacitar en sus responsabilidades</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-3 p-2 hover:bg-gray-50 rounded">
+                                    <label class="checkbox-container relative flex items-start cursor-pointer">
+                                        <input type="checkbox" class="mt-1 opacity-0 absolute" data-category="llamamiento" data-person="eduardo-flores">
+                                        <span class="checkmark w-4 h-4 border-2 border-gray-300 rounded relative flex-shrink-0 mt-0.5"></span>
+                                    </label>
+                                    <div class="flex-grow">
+                                        <p class="font-medium text-gray-900">Eduardo Flores</p>
+                                        <p class="text-sm text-gray-600">Orar por su servicio</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-3 p-2 hover:bg-gray-50 rounded">
+                                    <label class="checkbox-container relative flex items-start cursor-pointer">
+                                        <input type="checkbox" class="mt-1 opacity-0 absolute" data-category="llamamiento" data-person="marco-solano">
+                                        <span class="checkmark w-4 h-4 border-2 border-gray-300 rounded relative flex-shrink-0 mt-0.5"></span>
+                                    </label>
+                                    <div class="flex-grow">
+                                        <p class="font-medium text-gray-900">Marco Solano</p>
+                                        <p class="text-sm text-gray-600">Brindar recursos necesarios</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-3 p-2 hover:bg-gray-50 rounded">
+                                    <label class="checkbox-container relative flex items-start cursor-pointer">
+                                        <input type="checkbox" class="mt-1 opacity-0 absolute" data-category="llamamiento" data-person="adrian-guzman">
+                                        <span class="checkmark w-4 h-4 border-2 border-gray-300 rounded relative flex-shrink-0 mt-0.5"></span>
+                                    </label>
+                                    <div class="flex-grow">
+                                        <p class="font-medium text-gray-900">Adrián Guzmán</p>
+                                        <p class="text-sm text-gray-600">Visitar para fortalecer</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-3 p-2 hover:bg-gray-50 rounded">
+                                    <label class="checkbox-container relative flex items-start cursor-pointer">
+                                        <input type="checkbox" class="mt-1 opacity-0 absolute" data-category="llamamiento" data-person="fernando-castro">
+                                        <span class="checkmark w-4 h-4 border-2 border-gray-300 rounded relative flex-shrink-0 mt-0.5"></span>
+                                    </label>
+                                    <div class="flex-grow">
+                                        <p class="font-medium text-gray-900">Fernando Castro</p>
+                                        <p class="text-sm text-gray-600">Ayudar con desafíos específicos</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-3 p-2 hover:bg-gray-50 rounded">
+                                    <label class="checkbox-container relative flex items-start cursor-pointer">
+                                        <input type="checkbox" class="mt-1 opacity-0 absolute" data-category="llamamiento" data-person="julian-rios">
+                                        <span class="checkmark w-4 h-4 border-2 border-gray-300 rounded relative flex-shrink-0 mt-0.5"></span>
+                                    </label>
+                                    <div class="flex-grow">
+                                        <p class="font-medium text-gray-900">Julián Ríos</p>
+                                        <p class="text-sm text-gray-600">Expresar gratitud por su servicio</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Actividad del Mes -->
+                    <div class="category-card bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                        <div class="bg-green-500 text-white px-4 py-3">
+                            <h2 class="font-semibold text-lg">Actividad del Mes</h2>
+                            <p class="text-sm opacity-90">Eventos y actividades especiales</p>
+                        </div>
+                        <div class="p-4">
+                            <div class="w-full h-2 bg-gray-200 rounded-full overflow-hidden mb-4">
+                                <div class="category-progress h-full bg-green-500 progress-fill" data-category="actividad" style="width: 0%"></div>
+                            </div>
+                            <div class="space-y-3 max-h-80 overflow-y-auto custom-scrollbar">
+                                <div class="flex items-start space-x-3 p-2 hover:bg-gray-50 rounded">
+                                    <label class="checkbox-container relative flex items-start cursor-pointer">
+                                        <input type="checkbox" class="mt-1 opacity-0 absolute" data-category="actividad" data-person="conferencia-estaca">
+                                        <span class="checkmark w-4 h-4 border-2 border-gray-300 rounded relative flex-shrink-0 mt-0.5"></span>
+                                    </label>
+                                    <div class="flex-grow">
+                                        <p class="font-medium text-gray-900">Conferencia de Estaca</p>
+                                        <p class="text-sm text-gray-600">Confirmar asistencia de líderes</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-3 p-2 hover:bg-gray-50 rounded">
+                                    <label class="checkbox-container relative flex items-start cursor-pointer">
+                                        <input type="checkbox" class="mt-1 opacity-0 absolute" data-category="actividad" data-person="noche-hogar">
+                                        <span class="checkmark w-4 h-4 border-2 border-gray-300 rounded relative flex-shrink-0 mt-0.5"></span>
+                                    </label>
+                                    <div class="flex-grow">
+                                        <p class="font-medium text-gray-900">Noche de Hogar Comunitaria</p>
+                                        <p class="text-sm text-gray-600">Preparar materiales y refrescos</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-3 p-2 hover:bg-gray-50 rounded">
+                                    <label class="checkbox-container relative flex items-start cursor-pointer">
+                                        <input type="checkbox" class="mt-1 opacity-0 absolute" data-category="actividad" data-person="servicio-comunitario">
+                                        <span class="checkmark w-4 h-4 border-2 border-gray-300 rounded relative flex-shrink-0 mt-0.5"></span>
+                                    </label>
+                                    <div class="flex-grow">
+                                        <p class="font-medium text-gray-900">Proyecto de Servicio</p>
+                                        <p class="text-sm text-gray-600">Coordinar voluntarios</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-3 p-2 hover:bg-gray-50 rounded">
+                                    <label class="checkbox-container relative flex items-start cursor-pointer">
+                                        <input type="checkbox" class="mt-1 opacity-0 absolute" data-category="actividad" data-person="clase-templo">
+                                        <span class="checkmark w-4 h-4 border-2 border-gray-300 rounded relative flex-shrink-0 mt-0.5"></span>
+                                    </label>
+                                    <div class="flex-grow">
+                                        <p class="font-medium text-gray-900">Clase de Preparación Temporal</p>
+                                        <p class="text-sm text-gray-600">Confirmar instructor y participantes</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-3 p-2 hover:bg-gray-50 rounded">
+                                    <label class="checkbox-container relative flex items-start cursor-pointer">
+                                        <input type="checkbox" class="mt-1 opacity-0 absolute" data-category="actividad" data-person="deporte-jovenes">
+                                        <span class="checkmark w-4 h-4 border-2 border-gray-300 rounded relative flex-shrink-0 mt-0.5"></span>
+                                    </label>
+                                    <div class="flex-grow">
+                                        <p class="font-medium text-gray-900">Actividad Deportiva Jóvenes</p>
+                                        <p class="text-sm text-gray-600">Reservar instalaciones</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-3 p-2 hover:bg-gray-50 rounded">
+                                    <label class="checkbox-container relative flex items-start cursor-pointer">
+                                        <input type="checkbox" class="mt-1 opacity-0 absolute" data-category="actividad" data-person="campamento">
+                                        <span class="checkmark w-4 h-4 border-2 border-gray-300 rounded relative flex-shrink-0 mt-0.5"></span>
+                                    </label>
+                                    <div class="flex-grow">
+                                        <p class="font-medium text-gray-900">Campamento de Jóvenes</p>
+                                        <p class="text-sm text-gray-600">Preparar equipo y permisos</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-3 p-2 hover:bg-gray-50 rounded">
+                                    <label class="checkbox-container relative flex items-start cursor-pointer">
+                                        <input type="checkbox" class="mt-1 opacity-0 absolute" data-category="actividad" data-person="conferencia-sacerdocio">
+                                        <span class="checkmark w-4 h-4 border-2 border-gray-300 rounded relative flex-shrink-0 mt-0.5"></span>
+                                    </label>
+                                    <div class="flex-grow">
+                                        <p class="font-medium text-gray-900">Conferencia del Sacerdocio</p>
+                                        <p class="text-sm text-gray-600">Enviar recordatorios</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-3 p-2 hover:bg-gray-50 rounded">
+                                    <label class="checkbox-container relative flex items-start cursor-pointer">
+                                        <input type="checkbox" class="mt-1 opacity-0 absolute" data-category="actividad" data-person="actividad-relief">
+                                        <span class="checkmark w-4 h-4 border-2 border-gray-300 rounded relative flex-shrink-0 mt-0.5"></span>
+                                    </label>
+                                    <div class="flex-grow">
+                                        <p class="font-medium text-gray-900">Actividad Relief Society</p>
+                                        <p class="text-sm text-gray-600">Confirmar asistencia</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Conversos Nuevos -->
+                    <div class="category-card bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                        <div class="bg-indigo-500 text-white px-4 py-3">
+                            <h2 class="font-semibold text-lg">Conversos Nuevos</h2>
+                            <p class="text-sm opacity-90">Nuevos miembros que necesitan apoyo</p>
+                        </div>
+                        <div class="p-4">
+                            <div class="w-full h-2 bg-gray-200 rounded-full overflow-hidden mb-4">
+                                <div class="category-progress h-full bg-indigo-500 progress-fill" data-category="conversos" style="width: 0%"></div>
+                            </div>
+                            <div class="space-y-3 max-h-80 overflow-y-auto custom-scrollbar">
+                                <div class="flex items-start space-x-3 p-2 hover:bg-gray-50 rounded">
+                                    <label class="checkbox-container relative flex items-start cursor-pointer">
+                                        <input type="checkbox" class="mt-1 opacity-0 absolute" data-category="conversos" data-person="alejandra-mendoza">
+                                        <span class="checkmark w-4 h-4 border-2 border-gray-300 rounded relative flex-shrink-0 mt-0.5"></span>
+                                    </label>
+                                    <div class="flex-grow">
+                                        <p class="font-medium text-gray-900">Alejandra Mendoza</p>
+                                        <p class="text-sm text-gray-600">Asignar hermana para acompañar</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-3 p-2 hover:bg-gray-50 rounded">
+                                    <label class="checkbox-container relative flex items-start cursor-pointer">
+                                        <input type="checkbox" class="mt-1 opacity-0 absolute" data-category="conversos" data-person="roberto-silva">
+                                        <span class="checkmark w-4 h-4 border-2 border-gray-300 rounded relative flex-shrink-0 mt-0.5"></span>
+                                    </label>
+                                    <div class="flex-grow">
+                                        <p class="font-medium text-gray-900">Roberto Silva</p>
+                                        <p class="text-sm text-gray-600">Visitar semanalmente</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-3 p-2 hover:bg-gray-50 rounded">
+                                    <label class="checkbox-container relative flex items-start cursor-pointer">
+                                        <input type="checkbox" class="mt-1 opacity-0 absolute" data-category="conversos" data-person="carmen-ortiz">
+                                        <span class="checkmark w-4 h-4 border-2 border-gray-300 rounded relative flex-shrink-0 mt-0.5"></span>
+                                    </label>
+                                    <div class="flex-grow">
+                                        <p class="font-medium text-gray-900">Carmen Ortiz</p>
+                                        <p class="text-sm text-gray-600">Invitar a clase de principios</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-3 p-2 hover:bg-gray-50 rounded">
+                                    <label class="checkbox-container relative flex items-start cursor-pointer">
+                                        <input type="checkbox" class="mt-1 opacity-0 absolute" data-category="conversos" data-person="luis-paredes">
+                                        <span class="checkmark w-4 h-4 border-2 border-gray-300 rounded relative flex-shrink-0 mt-0.5"></span>
+                                    </label>
+                                    <div class="flex-grow">
+                                        <p class="font-medium text-gray-900">Luis Paredes</p>
+                                        <p class="text-sm text-gray-600">Presentar a otros miembros</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-3 p-2 hover:bg-gray-50 rounded">
+                                    <label class="checkbox-container relative flex items-start cursor-pointer">
+                                        <input type="checkbox" class="mt-1 opacity-0 absolute" data-category="conversos" data-person="monica-herrera">
+                                        <span class="checkmark w-4 h-4 border-2 border-gray-300 rounded relative flex-shrink-0 mt-0.5"></span>
+                                    </label>
+                                    <div class="flex-grow">
+                                        <p class="font-medium text-gray-900">Mónica Herrera</p>
+                                        <p class="text-sm text-gray-600">Ayudar con lectura de escrituras</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-3 p-2 hover:bg-gray-50 rounded">
+                                    <label class="checkbox-container relative flex items-start cursor-pointer">
+                                        <input type="checkbox" class="mt-1 opacity-0 absolute" data-category="conversos" data-person="javier-torres">
+                                        <span class="checkmark w-4 h-4 border-2 border-gray-300 rounded relative flex-shrink-0 mt-0.5"></span>
+                                    </label>
+                                    <div class="flex-grow">
+                                        <p class="font-medium text-gray-900">Javier Torres</p>
+                                        <p class="text-sm text-gray-600">Enseñar sobre la Palabra de Sabiduría</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-3 p-2 hover:bg-gray-50 rounded">
+                                    <label class="checkbox-container relative flex items-start cursor-pointer">
+                                        <input type="checkbox" class="mt-1 opacity-0 absolute" data-category="conversos" data-person="patricia-rios">
+                                        <span class="checkmark w-4 h-4 border-2 border-gray-300 rounded relative flex-shrink-0 mt-0.5"></span>
+                                    </label>
+                                    <div class="flex-grow">
+                                        <p class="font-medium text-gray-900">Patricia Ríos</p>
+                                        <p class="text-sm text-gray-600">Invitar a actividad social</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-3 p-2 hover:bg-gray-50 rounded">
+                                    <label class="checkbox-container relative flex items-start cursor-pointer">
+                                        <input type="checkbox" class="mt-1 opacity-0 absolute" data-category="conversos" data-person="gustavo-campos">
+                                        <span class="checkmark w-4 h-4 border-2 border-gray-300 rounded relative flex-shrink-0 mt-0.5"></span>
+                                    </label>
+                                    <div class="flex-grow">
+                                        <p class="font-medium text-gray-900">Gustavo Campos</p>
+                                        <p class="text-sm text-gray-600">Compartir historia de la Iglesia</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Miembros Activos -->
+                    <div class="category-card bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                        <div class="bg-teal-500 text-white px-4 py-3">
+                            <h2 class="font-semibold text-lg">Miembros Activos</h2>
+                            <p class="text-sm opacity-90">Miembros fieles que necesitan fortalecimiento</p>
+                        </div>
+                        <div class="p-4">
+                            <div class="w-full h-2 bg-gray-200 rounded-full overflow-hidden mb-4">
+                                <div class="category-progress h-full bg-teal-500 progress-fill" data-category="activos" style="width: 0%"></div>
+                            </div>
+                            <div class="space-y-3 max-h-80 overflow-y-auto custom-scrollbar">
+                                <div class="flex items-start space-x-3 p-2 hover:bg-gray-50 rounded">
+                                    <label class="checkbox-container relative flex items-start cursor-pointer">
+                                        <input type="checkbox" class="mt-1 opacity-0 absolute" data-category="activos" data-person="maria-fernandez">
+                                        <span class="checkmark w-4 h-4 border-2 border-gray-300 rounded relative flex-shrink-0 mt-0.5"></span>
+                                    </label>
+                                    <div class="flex-grow">
+                                        <p class="font-medium text-gray-900">María Fernández</p>
+                                        <p class="text-sm text-gray-600">Agradecer su servicio</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-3 p-2 hover:bg-gray-50 rounded">
+                                    <label class="checkbox-container relative flex items-start cursor-pointer">
+                                        <input type="checkbox" class="mt-1 opacity-0 absolute" data-category="activos" data-person="carlos-mendoza">
+                                        <span class="checkmark w-4 h-4 border-2 border-gray-300 rounded relative flex-shrink-0 mt-0.5"></span>
+                                    </label>
+                                    <div class="flex-grow">
+                                        <p class="font-medium text-gray-900">Carlos Mendoza</p>
+                                        <p class="text-sm text-gray-600">Invitar a compartir testimonio</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-3 p-2 hover:bg-gray-50 rounded">
+                                    <label class="checkbox-container relative flex items-start cursor-pointer">
+                                        <input type="checkbox" class="mt-1 opacity-0 absolute" data-category="activos" data-person="lucia-gomez">
+                                        <span class="checkmark w-4 h-4 border-2 border-gray-300 rounded relative flex-shrink-0 mt-0.5"></span>
+                                    </label>
+                                    <div class="flex-grow">
+                                        <p class="font-medium text-gray-900">Lucía Gómez</p>
+                                        <p class="text-sm text-gray-600">Pedir ayuda con actividad</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-3 p-2 hover:bg-gray-50 rounded">
+                                    <label class="checkbox-container relative flex items-start cursor-pointer">
+                                        <input type="checkbox" class="mt-1 opacity-0 absolute" data-category="activos" data-person="antonio-silva">
+                                        <span class="checkmark w-4 h-4 border-2 border-gray-300 rounded relative flex-shrink-0 mt-0.5"></span>
+                                    </label>
+                                    <div class="flex-grow">
+                                        <p class="font-medium text-gray-900">Antonio Silva</p>
+                                        <p class="text-sm text-gray-600">Compartir recurso espiritual</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-3 p-2 hover:bg-gray-50 rounded">
+                                    <label class="checkbox-container relative flex items-start cursor-pointer">
+                                        <input type="checkbox" class="mt-1 opacity-0 absolute" data-category="activos" data-person="elena-campos">
+                                        <span class="checkmark w-4 h-4 border-2 border-gray-300 rounded relative flex-shrink-0 mt-0.5"></span>
+                                    </label>
+                                    <div class="flex-grow">
+                                        <p class="font-medium text-gray-900">Elena Campos</p>
+                                        <p class="text-sm text-gray-600">Expresar gratitud</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-3 p-2 hover:bg-gray-50 rounded">
+                                    <label class="checkbox-container relative flex items-start cursor-pointer">
+                                        <input type="checkbox" class="mt-1 opacity-0 absolute" data-category="activos" data-person="jose-ortiz">
+                                        <span class="checkmark w-4 h-4 border-2 border-gray-300 rounded relative flex-shrink-0 mt-0.5"></span>
+                                    </label>
+                                    <div class="flex-grow">
+                                        <p class="font-medium text-gray-900">José Ortiz</p>
+                                        <p class="text-sm text-gray-600">Invitar a servir en proyecto</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-3 p-2 hover:bg-gray-50 rounded">
+                                    <label class="checkbox-container relative flex items-start cursor-pointer">
+                                        <input type="checkbox" class="mt-1 opacity-0 absolute" data-category="activos" data-person="sofia-herrera">
+                                        <span class="checkmark w-4 h-4 border-2 border-gray-300 rounded relative flex-shrink-0 mt-0.5"></span>
+                                    </label>
+                                    <div class="flex-grow">
+                                        <p class="font-medium text-gray-900">Sofía Herrera</p>
+                                        <p class="text-sm text-gray-600">Compartir experiencia positiva</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-3 p-2 hover:bg-gray-50 rounded">
+                                    <label class="checkbox-container relative flex items-start cursor-pointer">
+                                        <input type="checkbox" class="mt-1 opacity-0 absolute" data-category="activos" data-person="miguel-torres">
+                                        <span class="checkmark w-4 h-4 border-2 border-gray-300 rounded relative flex-shrink-0 mt-0.5"></span>
+                                    </label>
+                                    <div class="flex-grow">
+                                        <p class="font-medium text-gray-900">Miguel Torres</p>
+                                        <p class="text-sm text-gray-600">Pedir consejo o guía</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Líderes de la Estaca -->
+                    <div class="category-card bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                        <div class="bg-rose-500 text-white px-4 py-3">
+                            <h2 class="font-semibold text-lg">Líderes de la Estaca</h2>
+                            <p class="text-sm opacity-90">Autoridades que necesitan apoyo</p>
+                        </div>
+                        <div class="p-4">
+                            <div class="w-full h-2 bg-gray-200 rounded-full overflow-hidden mb-4">
+                                <div class="category-progress h-full bg-rose-500 progress-fill" data-category="lideres" style="width: 0%"></div>
+                            </div>
+                            <div class="space-y-3 max-h-80 overflow-y-auto custom-scrollbar">
+                                <div class="flex items-start space-x-3 p-2 hover:bg-gray-50 rounded">
+                                    <label class="checkbox-container relative flex items-start cursor-pointer">
+                                        <input type="checkbox" class="mt-1 opacity-0 absolute" data-category="lideres" data-person="presidente-estaca">
+                                        <span class="checkmark w-4 h-4 border-2 border-gray-300 rounded relative flex-shrink-0 mt-0.5"></span>
+                                    </label>
+                                    <div class="flex-grow">
+                                        <p class="font-medium text-gray-900">Presidente de Estaca</p>
+                                        <p class="text-sm text-gray-600">Orar por su liderazgo</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-3 p-2 hover:bg-gray-50 rounded">
+                                    <label class="checkbox-container relative flex items-start cursor-pointer">
+                                        <input type="checkbox" class="mt-1 opacity-0 absolute" data-category="lideres" data-person="primer-consejero">
+                                        <span class="checkmark w-4 h-4 border-2 border-gray-300 rounded relative flex-shrink-0 mt-0.5"></span>
+                                    </label>
+                                    <div class="flex-grow">
+                                        <p class="font-medium text-gray-900">Primer Consejero</p>
+                                        <p class="text-sm text-gray-600">Apoyar en sus responsabilidades</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-3 p-2 hover:bg-gray-50 rounded">
+                                    <label class="checkbox-container relative flex items-start cursor-pointer">
+                                        <input type="checkbox" class="mt-1 opacity-0 absolute" data-category="lideres" data-person="segundo-consejero">
+                                        <span class="checkmark w-4 h-4 border-2 border-gray-300 rounded relative flex-shrink-0 mt-0.5"></span>
+                                    </label>
+                                    <div class="flex-grow">
+                                        <p class="font-medium text-gray-900">Segundo Consejero</p>
+                                        <p class="text-sm text-gray-600">Ayudar con asignaciones</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-3 p-2 hover:bg-gray-50 rounded">
+                                    <label class="checkbox-container relative flex items-start cursor-pointer">
+                                        <input type="checkbox" class="mt-1 opacity-0 absolute" data-category="lideres" data-person="secretario-estaca">
+                                        <span class="checkmark w-4 h-4 border-2 border-gray-300 rounded relative flex-shrink-0 mt-0.5"></span>
+                                    </label>
+                                    <div class="flex-grow">
+                                        <p class="font-medium text-gray-900">Secretario de Estaca</p>
+                                        <p class="text-sm text-gray-600">Facilitar información necesaria</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-3 p-2 hover:bg-gray-50 rounded">
+                                    <label class="checkbox-container relative flex items-start cursor-pointer">
+                                        <input type="checkbox" class="mt-1 opacity-0 absolute" data-category="lideres" data-person="presidente-relief">
+                                        <span class="checkmark w-4 h-4 border-2 border-gray-300 rounded relative flex-shrink-0 mt-0.5"></span>
+                                    </label>
+                                    <div class="flex-grow">
+                                        <p class="font-medium text-gray-900">Presidenta Relief Society</p>
+                                        <p class="text-sm text-gray-600">Colaborar en actividades</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-3 p-2 hover:bg-gray-50 rounded">
+                                    <label class="checkbox-container relative flex items-start cursor-pointer">
+                                        <input type="checkbox" class="mt-1 opacity-0 absolute" data-category="lideres" data-person="presidente-jovenes">
+                                        <span class="checkmark w-4 h-4 border-2 border-gray-300 rounded relative flex-shrink-0 mt-0.5"></span>
+                                    </label>
+                                    <div class="flex-grow">
+                                        <p class="font-medium text-gray-900">Presidente de Jóvenes</p>
+                                        <p class="text-sm text-gray-600">Apoyar programa juvenil</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-3 p-2 hover:bg-gray-50 rounded">
+                                    <label class="checkbox-container relative flex items-start cursor-pointer">
+                                        <input type="checkbox" class="mt-1 opacity-0 absolute" data-category="lideres" data-person="presidente-primaria">
+                                        <span class="checkmark w-4 h-4 border-2 border-gray-300 rounded relative flex-shrink-0 mt-0.5"></span>
+                                    </label>
+                                    <div class="flex-grow">
+                                        <p class="font-medium text-gray-900">Presidenta de Primaria</p>
+                                        <p class="text-sm text-gray-600">Ayudar con necesidades de niños</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-3 p-2 hover:bg-gray-50 rounded">
+                                    <label class="checkbox-container relative flex items-start cursor-pointer">
+                                        <input type="checkbox" class="mt-1 opacity-0 absolute" data-category="lideres" data-person="obispo-barrio1">
+                                        <span class="checkmark w-4 h-4 border-2 border-gray-300 rounded relative flex-shrink-0 mt-0.5"></span>
+                                    </label>
+                                    <div class="flex-grow">
+                                        <p class="font-medium text-gray-900">Obispo Barrio 1</p>
+                                        <p class="text-sm text-gray-600">Sostener en su ministerio</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Jóvenes y Niños -->
+                    <div class="category-card bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                        <div class="bg-cyan-500 text-white px-4 py-3">
+                            <h2 class="font-semibold text-lg">Jóvenes y Niños</h2>
+                            <p class="text-sm opacity-90">La generación futura de la Iglesia</p>
+                        </div>
+                        <div class="p-4">
+                            <div class="w-full h-2 bg-gray-200 rounded-full overflow-hidden mb-4">
+                                <div class="category-progress h-full bg-cyan-500 progress-fill" data-category="jovenes" style="width: 0%"></div>
+                            </div>
+                            <div class="space-y-3 max-h-80 overflow-y-auto custom-scrollbar">
+                                <div class="flex items-start space-x-3 p-2 hover:bg-gray-50 rounded">
+                                    <label class="checkbox-container relative flex items-start cursor-pointer">
+                                        <input type="checkbox" class="mt-1 opacity-0 absolute" data-category="jovenes" data-person="santiago-garcia">
+                                        <span class="checkmark w-4 h-4 border-2 border-gray-300 rounded relative flex-shrink-0 mt-0.5"></span>
+                                    </label>
+                                    <div class="flex-grow">
+                                        <p class="font-medium text-gray-900">Santiago García</p>
+                                        <p class="text-sm text-gray-600">Preparar para misión</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-3 p-2 hover:bg-gray-50 rounded">
+                                    <label class="checkbox-container relative flex items-start cursor-pointer">
+                                        <input type="checkbox" class="mt-1 opacity-0 absolute" data-category="jovenes" data-person="valentina-martinez">
+                                        <span class="checkmark w-4 h-4 border-2 border-gray-300 rounded relative flex-shrink-0 mt-0.5"></span>
+                                    </label>
+                                    <div class="flex-grow">
+                                        <p class="font-medium text-gray-900">Valentina Martínez</p>
+                                        <p class="text-sm text-gray-600">Animar a asistir a campamento</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-3 p-2 hover:bg-gray-50 rounded">
+                                    <label class="checkbox-container relative flex items-start cursor-pointer">
+                                        <input type="checkbox" class="mt-1 opacity-0 absolute" data-category="jovenes" data-person="mateo-lopez">
+                                        <span class="checkmark w-4 h-4 border-2 border-gray-300 rounded relative flex-shrink-0 mt-0.5"></span>
+                                    </label>
+                                    <div class="flex-grow">
+                                        <p class="font-medium text-gray-900">Mateo López</p>
+                                        <p class="text-sm text-gray-600">Ayudar con Progreso Personal</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-3 p-2 hover:bg-gray-50 rounded">
+                                    <label class="checkbox-container relative flex items-start cursor-pointer">
+                                        <input type="checkbox" class="mt-1 opacity-0 absolute" data-category="jovenes" data-person="isabella-rodriguez">
+                                        <span class="checkmark w-4 h-4 border-2 border-gray-300 rounded relative flex-shrink-0 mt-0.5"></span>
+                                    </label>
+                                    <div class="flex-grow">
+                                        <p class="font-medium text-gray-900">Isabella Rodríguez</p>
+                                        <p class="text-sm text-gray-600">Enseñar sobre virtudes</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-3 p-2 hover:bg-gray-50 rounded">
+                                    <label class="checkbox-container relative flex items-start cursor-pointer">
+                                        <input type="checkbox" class="mt-1 opacity-0 absolute" data-category="jovenes" data-person="sebastian-hernandez">
+                                        <span class="checkmark w-4 h-4 border-2 border-gray-300 rounded relative flex-shrink-0 mt-0.5"></span>
+                                    </label>
+                                    <div class="flex-grow">
+                                        <p class="font-medium text-gray-900">Sebastián Hernández</p>
+                                        <p class="text-sm text-gray-600">Invitar a actividad de cuartel</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-3 p-2 hover:bg-gray-50 rounded">
+                                    <label class="checkbox-container relative flex items-start cursor-pointer">
+                                        <input type="checkbox" class="mt-1 opacity-0 absolute" data-category="jovenes" data-person="sofia-sanchez">
+                                        <span class="checkmark w-4 h-4 border-2 border-gray-300 rounded relative flex-shrink-0 mt-0.5"></span>
+                                    </label>
+                                    <div class="flex-grow">
+                                        <p class="font-medium text-gray-900">Sofía Sánchez</p>
+                                        <p class="text-sm text-gray-600">Ayudar con Fe en Dios</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-3 p-2 hover:bg-gray-50 rounded">
+                                    <label class="checkbox-container relative flex items-start cursor-pointer">
+                                        <input type="checkbox" class="mt-1 opacity-0 absolute" data-category="jovenes" data-person="daniel-diaz">
+                                        <span class="checkmark w-4 h-4 border-2 border-gray-300 rounded relative flex-shrink-0 mt-0.5"></span>
+                                    </label>
+                                    <div class="flex-grow">
+                                        <p class="font-medium text-gray-900">Daniel Díaz</p>
+                                        <p class="text-sm text-gray-600">Compartir historias de las escrituras</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-3 p-2 hover:bg-gray-50 rounded">
+                                    <label class="checkbox-container relative flex items-start cursor-pointer">
+                                        <input type="checkbox" class="mt-1 opacity-0 absolute" data-category="jovenes" data-person="emma-perez">
+                                        <span class="checkmark w-4 h-4 border-2 border-gray-300 rounded relative flex-shrink-0 mt-0.5"></span>
+                                    </label>
+                                    <div class="flex-grow">
+                                        <p class="font-medium text-gray-900">Emma Pérez</p>
+                                        <p class="text-sm text-gray-600">Enseñar canciones primarias</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
+        </main>
 
-            <!-- Categories Grid -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="categoriesGrid">
-                <!-- Categories will be inserted here -->
+        <!-- Footer -->
+        <footer class="bg-white border-t border-gray-200 mt-auto">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+                <div class="flex flex-col sm:flex-row justify-between items-center">
+                    <p class="text-sm text-gray-600">© 2023 Estaca Cartago - Rescate Celestial</p>
+                    <div class="flex space-x-4 mt-2 sm:mt-0">
+                        <button id="resetButton" class="text-sm text-gray-500 hover:text-gray-700">
+                            <i class="fas fa-redo mr-1"></i> Reiniciar Progreso
+                        </button>
+                        <button id="exportButton" class="text-sm text-gray-500 hover:text-gray-700">
+                            <i class="fas fa-download mr-1"></i> Exportar Datos
+                        </button>
+                    </div>
+                </div>
             </div>
-        </div>
-    </main>
-
-    <!-- Footer -->
-    <footer class="bg-white border-t border-gray-200 mt-auto">
-        <div class="max-w-7xl mx-auto px-6 py-4">
-            <div class="text-center text-sm text-gray-600">
-                <p>© 2024 Estaca Cartago</p>
-                <p class="text-xs mt-1">
-                    Sistema de seguimiento para ministrar a nuevos conversos
-                </p>
-            </div>
-        </div>
-    </footer>
+        </footer>
+    </div>
 
     <script>
-        // Datos de las personas con acciones específicas
-        const INITIAL_DATA = [
-            {
-                id: 'domingos',
-                title: 'Domingos sin Asistir',
-                description: 'Personas que no han asistido a los servicios dominicales',
-                icon: 'fa-calendar',
-                color: 'text-red-600',
-                bgColor: 'bg-white border-gray-200',
-                people: [
-                    { id: 'd1', name: 'Ana María González Rodríguez', checked: false, action: 'Contactar para verificar razón de ausencia' },
-                    { id: 'd2', name: 'Carlos Alberto Hernández Sánchez', checked: false, action: 'Visitar y ofrecer apoyo espiritual' },
-                    { id: 'd3', name: 'María Eugenia Jiménez Castro', checked: false, action: 'Invitar personalmente a próxima reunión' },
-                    { id: 'd4', name: 'José Luis Ramírez Vargas', checked: false, action: 'Llamar por teléfono y orar visita' },
-                    { id: 'd5', name: 'Carmen Elena Morales Porras', checked: false, action: 'Enviar mensaje de apoyo y orar visita' },
-                    { id: 'd6', name: 'Luis Fernando Rojas Mora', checked: false, action: 'Asignar compañero de barrio para visitar' },
-                    { id: 'd7', name: 'Sandra Patricia Díaz Herrera', checked: false, action: 'Programar visita de ministro' },
-                    { id: 'd8', name: 'Roberto Carlos Solís Zamora', checked: false, action: 'Contactar con familia cercana' },
-                    { id: 'd9', name: 'Gabriela Isabel Murillo Guzmán', checked: false, action: 'Invitar a actividad de barrio' },
-                    { id: 'd10', name: 'Andrés Felipe Castro Navarro', checked: false, action: 'Ofrecer transporte para próximo domingo' },
-                    { id: 'd11', name: 'Beatriz Elena Soto Chaves', checked: false, action: 'Enviar recordatorio de clase' },
-                    { id: 'd12', name: 'Jorge Eduardo Vargas Quesada', checked: false, action: 'Visitar y compartir lección' },
-                    { id: 'd13', name: 'Ruth Cecilia Leiva Brenes', checked: false, action: 'Contactar para ofrecer ayuda' },
-                    { id: 'd14', name: 'Manuel Antonio Gutiérrez Alfaro', checked: false, action: 'Programar reunión con líderes' },
-                    { id: 'd15', name: 'Patricia María Flores Salazar', checked: false, action: 'Asignar maestra visitadora' }
-                ]
-            },
-            {
-                id: 'hermanas',
-                title: 'Hermanas sin Ministrantes',
-                description: 'Hermanas que necesitan ministrantes asignados',
-                icon: 'fa-users',
-                color: 'text-yellow-600',
-                bgColor: 'bg-white border-gray-200',
-                people: [
-                    { id: 'h1', name: 'Ana María González Rodríguez', checked: false, action: 'Asignar compañera ministrante' },
-                    { id: 'h2', name: 'María Eugenia Jiménez Castro', checked: false, action: 'Contactar para ofrecer ser ministrante' },
-                    { id: 'h3', name: 'Carmen Elena Morales Porras', checked: false, action: 'Asignar hermana con experiencia' },
-                    { id: 'h4', name: 'Sandra Patricia Díaz Herrera', checked: false, action: 'Organizar reunión de ministración' },
-                    { id: 'h5', name: 'Gabriela Isabel Murillo Guzmán', checked: false, action: 'Invitar a ser ministrante' },
-                    { id: 'h6', name: 'Beatriz Elena Soto Chaves', checked: false, action: 'Asignar mentora espiritual' },
-                    { id: 'h7', name: 'Ruth Cecilia Leiva Brenes', checked: false, action: 'Programar entrevista personal' },
-                    { id: 'h8', name: 'Patricia María Flores Salazar', checked: false, action: 'Contactar presidenta de Sociedad de Socorro' },
-                    { id: 'h9', name: 'Lorena Isabel Monge Umaña', checked: false, action: 'Ofrecer clase de liderazgo' },
-                    { id: 'h10', name: 'Martiza Azofeifa Alvarado', checked: false, action: 'Invitar a reunión de ministrantes' },
-                    { id: 'h11', name: 'Grettel Mora Calvo', checked: false, action: 'Asignar compañera de ministerio' },
-                    { id: 'h12', name: 'Karla Rojas Arias', checked: false, action: 'Programar visita de seguimiento' },
-                    { id: 'h13', name: 'Jessica Morales Cubillo', checked: false, action: 'Ofrecer recursos de enseñanza' },
-                    { id: 'h14', name: 'María José Álvarez Marín', checked: false, action: 'Organizar actividad de hermandad' },
-                    { id: 'h15', name: 'Cecilia Sánchez Vargas', checked: false, action: 'Contactar obispo para ayudar' }
-                ]
-            },
-            {
-                id: 'varones',
-                title: 'Varones sin Ser Ordenados',
-                description: 'Hermanos varones que aún no han sido ordenados al Sacerdocio',
-                icon: 'fa-award',
-                color: 'text-blue-600',
-                bgColor: 'bg-white border-gray-200',
-                people: [
-                    { id: 'v1', name: 'Carlos Alberto Hernández Sánchez', checked: false, action: 'Preparar para Sacerdocio' },
-                    { id: 'v2', name: 'José Luis Ramírez Vargas', checked: false, action: 'Reunir con obispo' },
-                    { id: 'v3', name: 'Luis Fernando Rojas Mora', checked: false, action: 'Comenzar entrevista con obispo' },
-                    { id: 'v4', name: 'Roberto Carlos Solís Zamora', checked: false, action: 'Programar clase de preparación' },
-                    { id: 'v5', name: 'Andrés Felipe Castro Navarro', checked: false, action: 'Asignar mentor de Sacerdocio' },
-                    { id: 'v6', name: 'Jorge Eduardo Vargas Quesada', checked: false, action: 'Organizar actividad de barrio' },
-                    { id: 'v7', name: 'Manuel Antonio Gutiérrez Alfaro', checked: false, action: 'Contactar con presidente de cuórum' },
-                    { id: 'v8', name: 'Francisco Javier Pérez González', checked: false, action: 'Iniciar preparación misional' },
-                    { id: 'v9', name: 'Mauricio Andrés Campos López', checked: false, action: 'Programar entrevista personal' },
-                    { id: 'v10', name: 'Juan Carlos Salazar Mora', checked: false, action: 'Asignar maestro de doctrina' },
-                    { id: 'v11', name: 'Pedro Antonio Benavides Rojas', checked: false, action: 'Organizar actividad de servicio' },
-                    { id: 'v12', name: 'Ricardo Alberto Herrera Castro', checked: false, action: 'Comenzar estudio de escrituras' },
-                    { id: 'v13', name: 'Sergio Alejandro Vargas Umaña', checked: false, action: 'Invitar a reunión de líderes' },
-                    { id: 'v14', name: 'Diego Armando Morales Solís', checked: false, action: 'Asignar compañero de oración' },
-                    { id: 'v15', name: 'Esteban de la Ossa Protti', checked: false, action: 'Contactar con familia para apoyo' }
-                ]
-            },
-            {
-                id: 'llamamiento',
-                title: 'Hermanos con Llamamiento',
-                description: 'Hermanos que tienen un llamamiento en la Iglesia',
-                icon: 'fa-user-check',
-                color: 'text-purple-600',
-                bgColor: 'bg-white border-gray-200',
-                people: [
-                    { id: 'l1', name: 'Carlos Alberto Hernández Sánchez', checked: false, action: 'Reunir para evaluar progreso' },
-                    { id: 'l2', name: 'José Luis Ramírez Vargas', checked: false, action: 'Ofrecer capacitación adicional' },
-                    { id: 'l3', name: 'Luis Fernando Rojas Mora', checked: false, action: 'Programar entrevista de seguimiento' },
-                    { id: 'l4', name: 'Roberto Carlos Solís Zamora', checked: false, action: 'Asignar mentor de llamamiento' },
-                    { id: 'l5', name: 'Andrés Felipe Castro Navarro', checked: false, action: 'Organizar actividad de enseñanza' },
-                    { id: 'l6', name: 'Jorge Eduardo Vargas Quesada', checked: false, action: 'Evaluar necesidades de apoyo' },
-                    { id: 'l7', name: 'Manuel Antonio Gutiérrez Alfaro', checked: false, action: 'Programar reunión de consejo' },
-                    { id: 'l8', name: 'Ana María González Rodríguez', checked: false, action: 'Asignar compañera de ministerio' },
-                    { id: "l9', name: 'María Eugenia Jiménez Castro', checked: false, action: 'Organizar actividad de Relief Society' },
-                    { id: 'l10', name: 'Carmen Elena Morales Porras', checked: false, action: 'Ofrecer recursos de enseñanza' },
-                    { id: 'l11', name: 'Sandra Patricia Díaz Herrera', checked: false, action: 'Programar actividad de servicio' },
-                    { id: 'l12', name: 'Gabriela Isabel Murillo Guzmán', checked: false, action: 'Reunir para establecer metas' },
-                    { id: 'l13', name: 'Beatriz Elena Soto Chaves', checked: false, action: 'Evaluar progreso espiritual' },
-                    { id: 'l14', name: 'Ruth Cecilia Leiva Brenes', checked: false, action: 'Asignar maestra visitadora' },
-                    { id: 'l15', name: 'Patricia María Flores Salazar', checked: false, action: 'Organizar actividad de hermandad' }
-                ]
-            },
-            {
-                id: 'actividad',
-                title: 'Actividad del Mes',
-                description: 'Participación en actividades del mes',
-                icon: 'fa-bullseye',
-                color: 'text-green-600',
-                bgColor: 'bg-white border-gray-200',
-                people: [
-                    { id: 'a1', name: 'Ana María González Rodríguez', checked: false, action: 'Invitar a actividad social' },
-                    { id: 'a2', name: 'Carlos Alberto Hernández Sánchez', checked: false, action: 'Organizar actividad de servicio' },
-                    { id: 'a3', name: 'María Eugenia Jiménez Castro', checked: false, action: 'Programar actividad de barrio' },
-                    { id: 'a4', name: 'José Luis Ramírez Vargas', checked: false, action: 'Asignar líder de actividad' },
-                    { id: 'a5', name: 'Carmen Elena Morales Porras', checked: false, action: 'Invitar a clase de estudio' },
-                    { id: 'a6', name: 'Luis Fernando Rojas Mora', checked: false, action: 'Organizar actividad misional' },
-                    { id: 'a7', name: 'Sandra Patricia Díaz Herrera', checked: false, action: 'Programar actividad juvenil' },
-                    { id: 'a8', name: 'Roberto Carlos Solís Zamora', checked: false, action: 'Asignar maestro de actividad' },
-                    { id: 'a9', name: 'Gabriela Isabel Murillo Guzmán', checked: false, action: 'Invitar a conferencia' },
-                    { id: 'a10', name: 'Andrés Felipe Castro Navarro', checked: false, action: 'Organizar proyecto de servicio' },
-                    { id: 'a11', name: 'Beatriz Elena Soto Chaves', checked: false, action: 'Programar actividad familiar' },
-                    { id: 'a12', name: 'Jorge Eduardo Vargas Quesada', checked: false, action: 'Asignar coordinador de eventos' },
-                    { id: 'a13', name: 'Ruth Cecilia Leiva Brenes', checked: false, action: 'Organizar actividad de mujeres' },
-                    { id: 'a14', name: 'Manuel Antonio Gutiérrez Alfaro', checked: false, action: 'Invitar a actividad deportiva' },
-                    { id: 'a15', name: 'Patricia María Flores Salazar', checked: false, action: 'Programar actividad cultural' },
-                    { id: 'a16', name: 'Lorena Isabel Monge Umaña', checked: false, action: 'Asignar maestra de música' },
-                    { id: 'a17', name: 'Martiza Azofeifa Alvarado', checked: false, action: 'Organizar actividad de jóvenes' },
-                    { id: 'a18', name: 'Grettel Mora Calvo', checked: false, action: 'Programar actividad de fin de semana' },
-                    { id: 'a19', name: 'Karla Rojas Arias', checked: false, action: 'Invitar a actividad de testimonios' },
-                    { id: 'a20', name: 'Jessica Morales Cubillo', checked: false, action: 'Organizar actividad de bienvenida' }
-                ]
-            }
-        ];
-
-        let categories = [...INITIAL_DATA];
-
-        // Cargar datos desde LocalStorage al iniciar
-        function loadData() {
-            const savedData = localStorage.getItem('seguimiento-estaca-cartago');
-            if (savedData) {
-                try {
-                    const parsedData = JSON.parse(savedData);
-                    categories = parsedData.categories || parsedData;
-                    updateLastSaved(parsedData.lastSaved || Date.now());
-                } catch (error) {
-                    console.error('Error loading saved data:', error);
-                }
-            }
-            renderCategories();
-            updateProgress();
-        }
-
-        // Guardar en LocalStorage
-        function saveData() {
-            const dataToSave = {
-                categories,
-                lastSaved: Date.now()
-            };
-            localStorage.setItem('seguimiento-estaca-cartago', JSON.stringify(dataToSave));
-            updateLastSaved(Date.now());
-        }
-
-        // Actualizar fecha de guardado
-        function updateLastSaved(timestamp) {
-            const date = new Date(timestamp);
-            document.getElementById('lastSaved').textContent = 
-                `Guardado: ${date.toLocaleTimeString('es-ES')}`;
-        }
-
-        // Manejar checkbox
-        function handlePersonCheck(categoryId, personId, checked) {
-            categories = categories.map(category =>
-                category.id === categoryId
-                    ? {
-                        ...category,
-                        people: category.people.map(person =>
-                            person.id === personId ? { ...person, checked } : person
-                        )
-                    }
-                    : category
-            );
-            saveData();
-            renderCategories();
-            updateProgress();
-        }
-
-        // Calcular progreso
-        function calculateProgress(people) {
-            if (people.length === 0) return 0;
-            const checkedCount = people.filter(person => person.checked).length;
-            return Math.round((checkedCount / people.length) * 100);
-        }
-
-        // Calcular progreso total
-        function getTotalProgress() {
-            const totalPeople = categories.reduce((sum, cat) => sum + cat.people.length, 0);
-            const totalChecked = categories.reduce(
-                (sum, cat) => sum + cat.people.filter(person => person.checked).length,
-                0
-            );
-            return totalPeople > 0 ? Math.round((totalChecked / totalPeople) * 100) : 0;
-        }
-
-        // Actualizar progreso
-        function updateProgress() {
-            const totalProgress = getTotalProgress();
-            document.getElementById('totalProgress').textContent = `${totalProgress}%`;
-            document.getElementById('totalProgressBar').style.width = `${totalProgress}%`;
-
-            // Actualizar progreso por categoría
-            const categoryProgressDiv = document.getElementById('categoryProgress');
-            categoryProgressDiv.innerHTML = categories.map(category => {
-                const progress = calculateProgress(category.people);
-                return `
-                    <div class="text-center">
-                        <div class="text-lg font-bold ${category.color}">
-                            ${progress}%
-                        </div>
-                        <div class="text-xs text-gray-600 mt-1">
-                            ${category.title.split(' ')[0]}
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        // Renderizar categorías
-        function renderCategories() {
-            const categoriesGrid = document.getElementById('categoriesGrid');
-            categoriesGrid.innerHTML = categories.map(category => {
-                const progress = calculateProgress(category.people);
-                const checkedCount = category.people.filter(person => person.checked).length;
-
-                return `
-                    <div class="bg-white border border-gray-200 rounded-lg card-shadow fade-in">
-                        <div class="p-4 pb-3">
-                            <div class="flex items-center justify-between mb-2">
-                                <div class="flex items-center gap-2">
-                                    <div class="${category.color}">
-                                        <i class="fas ${category.icon} text-lg"></i>
-                                    </div>
-                                    <span class="text-lg font-semibold text-gray-800">${category.title}</span>
-                                </div>
-                                <span class="bg-gray-200 text-gray-700 px-2 py-1 rounded-full text-xs ml-2">
-                                    ${checkedCount}/${category.people.length}
-                                </span>
-                            </div>
-                            <p class="text-sm text-gray-600 mt-1">
-                                ${category.description}
-                            </p>
-                            <div class="mt-2">
-                                <div class="flex justify-between mb-1">
-                                    <span class="text-xs font-medium">Progreso</span>
-                                    <span class="text-xs font-bold">${progress}%</span>
-                                </div>
-                                <div class="w-full bg-gray-200 rounded-full h-2">
-                                    <div class="bg-blue-600 h-2 rounded-full progress-bar" style="width: ${progress}%"></div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="p-4 pt-0">
-                            <div class="h-80 overflow-y-auto scrollbar-thin pr-4">
-                                <div class="space-y-2">
-                                    ${category.people.map(person => `
-                                        <div class="flex items-start space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors checkbox-custom">
-                                            <input 
-                                                type="checkbox" 
-                                                id="${category.id}-${person.id}"
-                                                ${person.checked ? 'checked' : ''}
-                                                onchange="handlePersonCheck('${category.id}', '${person.id}', this.checked)"
-                                                class="h-4 w-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500 mt-1"
-                                            />
-                                            <div class="flex-1">
-                                                <label 
-                                                        for="${category.id}-${person.id}"
-                                                        class="flex-1 text-sm font-medium cursor-pointer leading-relaxed text-gray-700"
-                                                >
-                                                    <div class="font-semibold">${person.name}</div>
-                                                    ${person.action ? `
-                                                        <div class="text-xs text-blue-600 mt-1 bg-blue-50 px-2 py-1 rounded">
-                                                            <i class="fas fa-tasks text-xs mr-1"></i>
-                                                            ${person.action}
-                                                        </div>
-                                                    ` : ''}
-                                                </label>
-                                            </div>
-                                            ${person.checked ? `
-                                                <i class="fas fa-check-circle text-green-600 text-sm flex-shrink-0 mt-1"></i>
-                                            ` : ''}
-                                        </div>
-                                    `).join('')}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        // Reiniciar progreso
-        function resetProgress() {
-            if (confirm('¿Estás seguro de que deseas reiniciar todo el progreso? Esta acción no se puede deshacer.')) {
-                categories = categories.map(category => ({
-                    ...category,
-                    people: category.people.map(person => ({ ...person, checked: false }))
-                }));
-                saveData();
-                renderCategories();
-                updateProgress();
-            }
-        }
-
-        // Inicializar al cargar la página
+        // Initialize the app
         document.addEventListener('DOMContentLoaded', function() {
-            loadData();
+            loadProgress();
+            updateAllProgress();
+            attachEventListeners();
         });
+
+        // Load progress from localStorage
+        function loadProgress() {
+            const savedProgress = localStorage.getItem('rescateCelestialProgress');
+            if (savedProgress) {
+                const progress = JSON.parse(savedProgress);
+                
+                // Apply saved checkbox states
+                Object.keys(progress).forEach(category => {
+                    Object.keys(progress[category]).forEach(person => {
+                        const checkbox = document.querySelector(`input[data-category="${category}"][data-person="${person}"]`);
+                        if (checkbox) {
+                            checkbox.checked = progress[category][person];
+                        }
+                    });
+                });
+            }
+        }
+
+        // Save progress to localStorage
+        function saveProgress() {
+            const progress = {};
+            
+            // Get all checkboxes and save their state
+            document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+                const category = checkbox.dataset.category;
+                const person = checkbox.dataset.person;
+                
+                if (!progress[category]) {
+                    progress[category] = {};
+                }
+                
+                progress[category][person] = checkbox.checked;
+            });
+            
+            localStorage.setItem('rescateCelestialProgress', JSON.stringify(progress));
+        }
+
+        // Update progress bars
+        function updateAllProgress() {
+            const categories = ['domingos', 'hermanas', 'varones', 'llamamiento', 'actividad', 'conversos', 'activos', 'lideres', 'jovenes'];
+            let totalCompleted = 0;
+            let totalTasks = 0;
+            
+            categories.forEach(category => {
+                const checkboxes = document.querySelectorAll(`input[data-category="${category}"]`);
+                const checked = document.querySelectorAll(`input[data-category="${category}"]:checked`);
+                
+                const completed = checked.length;
+                const total = checkboxes.length;
+                
+                totalCompleted += completed;
+                totalTasks += total;
+                
+                // Update category progress bar
+                const progressBar = document.querySelector(`.category-progress[data-category="${category}"]`);
+                if (progressBar) {
+                    const percentage = total > 0 ? Math.round((completed / total) * 100) : 0;
+                    progressBar.style.width = `${percentage}%`;
+                }
+            });
+            
+            // Update total progress
+            const totalPercentage = totalTasks > 0 ? Math.round((totalCompleted / totalTasks) * 100) : 0;
+            document.getElementById('totalProgressBar').style.width = `${totalPercentage}%`;
+            document.getElementById('totalProgressText').textContent = `${totalPercentage}% completado`;
+        }
+
+        // Attach event listeners
+        function attachEventListeners() {
+            // Checkbox change events
+            document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    saveProgress();
+                    updateAllProgress();
+                });
+            });
+            
+            // Reset button
+            document.getElementById('resetButton').addEventListener('click', function() {
+                if (confirm('¿Está seguro de que desea reiniciar todo el progreso?')) {
+                    localStorage.removeItem('rescateCelestialProgress');
+                    document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+                        checkbox.checked = false;
+                    });
+                    updateAllProgress();
+                }
+            });
+            
+            // Export button
+            document.getElementById('exportButton').addEventListener('click', function() {
+                const progress = localStorage.getItem('rescateCelestialProgress');
+                if (progress) {
+                    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(progress);
+                    const downloadAnchorNode = document.createElement('a');
+                    downloadAnchorNode.setAttribute("href", dataStr);
+                    downloadAnchorNode.setAttribute("download", "rescate_celestial_progreso.json");
+                    document.body.appendChild(downloadAnchorNode);
+                    downloadAnchorNode.click();
+                    downloadAnchorNode.remove();
+                } else {
+                    alert('No hay datos para exportar');
+                }
+            });
+        }
     </script>
 </body>
 </html>
-
-
