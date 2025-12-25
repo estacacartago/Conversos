@@ -3,489 +3,425 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat Estaca Cartago - NotebookLM Real</title>
+    <title>Rescate Celestial - Sistema de Seguimiento Individual</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        .scrollbar-thin::-webkit-scrollbar {
+            width: 6px;
         }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #1E9FC8 0%, #157493 100%);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
+        .scrollbar-thin::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
         }
-
-        .chat-container {
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-            width: 100%;
-            max-width: 900px;
-            height: 80vh;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
+        .scrollbar-thin::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 10px;
         }
-
-        .chat-header {
-            background: linear-gradient(135deg, #1E9FC8 0%, #157493 100%);
-            color: white;
-            padding: 20px;
-            text-align: center;
+        .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+            background: #555;
         }
-
-        .chat-header h1 {
-            font-size: 24px;
-            margin-bottom: 5px;
+        .checkbox-custom {
+            transition: all 0.2s ease;
         }
-
-        .status {
-            display: inline-block;
-            padding: 5px 15px;
-            background: rgba(255,255,255,0.2);
-            border-radius: 20px;
-            font-size: 12px;
-            margin-top: 5px;
+        .checkbox-custom:hover {
+            transform: scale(1.05);
         }
-
-        .status.connected {
-            background: rgba(76, 175, 80, 0.3);
+        .fade-in {
+            animation: fadeIn 0.3s ease-in;
         }
-
-        .status.connecting {
-            background: rgba(255, 193, 7, 0.3);
-        }
-
-        .status.error {
-            background: rgba(244, 67, 54, 0.3);
-        }
-
-        .messages-container {
-            flex: 1;
-            padding: 20px;
-            overflow-y: auto;
-            background: #f8f9fa;
-        }
-
-        .message {
-            margin-bottom: 15px;
-            display: flex;
-            align-items: flex-start;
-        }
-
-        .message.user {
-            justify-content: flex-end;
-        }
-
-        .message-content {
-            max-width: 70%;
-            padding: 12px 16px;
-            border-radius: 18px;
-            word-wrap: break-word;
-        }
-
-        .message.user .message-content {
-            background: #1E9FC8;
-            color: white;
-            border-bottom-right-radius: 4px;
-        }
-
-        .message.assistant .message-content {
-            background: white;
-            color: #333;
-            border: 1px solid #e0e0e0;
-            border-bottom-left-radius: 4px;
-        }
-
-        .message.system .message-content {
-            background: #fff3cd;
-            color: #856404;
-            border: 1px solid #ffeaa7;
-            font-size: 14px;
-            border-bottom-left-radius: 4px;
-        }
-
-        .message.error .message-content {
-            background: #ffebee;
-            color: #c62828;
-            border: 1px solid #ffcdd2;
-            font-size: 14px;
-            border-bottom-left-radius: 4px;
-        }
-
-        .quick-questions {
-            padding: 15px 20px;
-            background: white;
-            border-top: 1px solid #e0e0e0;
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .quick-btn {
-            padding: 8px 16px;
-            background: #f0f0f0;
-            border: none;
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 14px;
-            transition: all 0.3s ease;
-        }
-
-        .quick-btn:hover {
-            background: #1E9FC8;
-            color: white;
-            transform: translateY(-2px);
-        }
-
-        .chat-input-container {
-            padding: 20px;
-            background: white;
-            border-top: 1px solid #e0e0e0;
-        }
-
-        .input-group {
-            display: flex;
-            gap: 10px;
-        }
-
-        .chat-input {
-            flex: 1;
-            padding: 12px 20px;
-            border: 2px solid #e0e0e0;
-            border-radius: 25px;
-            font-size: 16px;
-            outline: none;
-            transition: border-color 0.3s ease;
-        }
-
-        .chat-input:focus {
-            border-color: #1E9FC8;
-        }
-
-        .send-btn {
-            padding: 12px 24px;
-            background: #1E9FC8;
-            color: white;
-            border: none;
-            border-radius: 25px;
-            cursor: pointer;
-            font-size: 16px;
-            transition: all 0.3s ease;
-        }
-
-        .send-btn:hover {
-            background: #157493;
-            transform: translateY(-2px);
-        }
-
-        .send-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .loading {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #1E9FC8;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .source-badge {
-            display: inline-block;
-            padding: 2px 8px;
-            background: #e8f5e8;
-            color: #2e7d32;
-            border-radius: 12px;
-            font-size: 11px;
-            margin-top: 5px;
-        }
-
-        .source-badge.fallback {
-            background: #fff3e0;
-            color: #f57c00;
-        }
-
-        .progress-step {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 6px 10px;
-            background: #f0f8ff;
-            border-radius: 8px;
-            font-size: 12px;
-            margin: 4px 0;
-            color: #1565c0;
-        }
-
-        .progress-step.active {
-            background: #e3f2fd;
-            color: #0d47a1;
-        }
-
-        .progress-step.completed {
-            background: #e8f5e8;
-            color: #2e7d32;
-        }
-
-        .progress-step.error {
-            background: #ffebee;
-            color: #c62828;
-        }
-
-        .diagnostic-btn {
-            padding: 6px 12px;
-            background: #ff9800;
-            color: white;
-            border: none;
-            border-radius: 15px;
-            cursor: pointer;
-            font-size: 12px;
-            margin-left: 10px;
-            transition: all 0.3s ease;
-        }
-
-        .diagnostic-btn:hover {
-            background: #f57c00;
-            transform: translateY(-1px);
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
-<body>
-    <div class="chat-container">
-        <div class="chat-header">
-            <h1>🏛️ Chat Estaca Cartago - NotebookLM Real</h1>
-            <div class="status" id="status">🔄 Verificando conexión...</div>
-            <button class="diagnostic-btn" onclick="runDiagnostic()">🔍 Diagnóstico</button>
-        </div>
-
-        <div class="messages-container" id="messages">
-            <div class="message assistant">
-                <div class="message-content">
-                    ¡Hola! Soy el asistente de la Estaca Cartago con conexión real a NotebookLM.
-                    <br><br>
-                    🚀 <strong>Características avanzadas:</strong><br>
-                    ✅ Conexión real con NotebookLM<br>
-                    ✅ Respuestas auténticas y actualizadas<br>
-                    ✅ Acceso a tu notebook específico<br>
-                    ✅ Proceso visible en tiempo real<br>
-                    ✅ Sistema de diagnóstico incluido<br>
-                    <br>
-                    <strong>Puedes preguntarme sobre:</strong><br>
-                    • Datos de conversos<br>
-                    • Estadísticas de bautismos<br>
-                    • Análisis por barrio<br>
-                    • Tendencias y proyecciones<br>
-                    <br>
-                    ¿Qué te gustaría consultar hoy?
+<body class="bg-gray-50 h-screen flex flex-col">
+    <!-- Header -->
+    <header class="bg-gradient-to-r from-blue-600 to-cyan-600 text-white p-6 shadow-lg">
+        <div class="max-w-7xl mx-auto">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-4">
+                    <div class="p-3 bg-white/20 rounded-lg backdrop-blur-sm">
+                        <i class="fas fa-users text-2xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-3xl font-bold">Rescate Celestial</h1>
+                        <p class="text-blue-100 text-lg">Sistema de Seguimiento Individual - Estaca Cartago</p>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <div class="text-2xl font-bold" id="totalProgress">0%</div>
+                    <div class="text-blue-100 text-sm">Progreso General</div>
+                    <div class="text-blue-200 text-xs mt-1" id="lastSaved">
+                        Guardado: --
+                    </div>
                 </div>
             </div>
         </div>
+    </header>
 
-        <div class="quick-questions">
-            <button class="quick-btn" onclick="askQuestion('¿Cuántos conversos nuevos hay este mes?')">📊 Conversos nuevos</button>
-            <button class="quick-btn" onclick="askQuestion('¿Cuál es el barrio con más bautismos?')">🏘️ Barrios líderes</button>
-            <button class="quick-btn" onclick="askQuestion('¿Qué tendencia observas en el crecimiento?')">📈 Tendencias</button>
-            <button class="quick-btn" onclick="askQuestion('¿Cómo podemos mejorar la retención?')">💡 Estrategias</button>
-        </div>
+    <!-- Main Content -->
+    <main class="flex-1 p-6">
+        <div class="max-w-7xl mx-auto">
+            <!-- Progress Overview -->
+            <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                <div class="flex items-center gap-2 mb-4">
+                    <i class="fas fa-check-circle text-green-600 text-xl"></i>
+                    <h2 class="text-xl font-semibold">Resumen de Progreso</h2>
+                </div>
+                <div class="space-y-4">
+                    <div>
+                        <div class="flex justify-between mb-2">
+                            <span class="text-sm font-medium">Progreso General</span>
+                            <span class="text-sm font-bold" id="totalProgressText">0%</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-3">
+                            <div class="bg-blue-600 h-3 rounded-full transition-all duration-300" id="totalProgressBar" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 md:grid-cols-5 gap-4" id="categoryProgress">
+                        <!-- Category progress will be inserted here -->
+                    </div>
+                </div>
+            </div>
 
-        <div class="chat-input-container">
-            <div class="input-group">
-                <input type="text" class="chat-input" id="chatInput" placeholder="Escribe tu pregunta aquí..." onkeypress="handleKeyPress(event)">
-                <button class="send-btn" id="sendBtn" onclick="sendMessage()">Enviar</button>
+            <!-- Categories Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6" id="categoriesGrid">
+                <!-- Categories will be inserted here -->
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="mt-8 flex justify-center gap-4">
+                <button onclick="resetProgress()" class="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors duration-200 flex items-center gap-2">
+                    <i class="fas fa-circle"></i>
+                    Reiniciar Progreso
+                </button>
             </div>
         </div>
-    </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t mt-auto">
+        <div class="max-w-7xl mx-auto px-6 py-4">
+            <div class="text-center text-sm text-gray-600">
+                <p>© 2024 Estaca Cartago - Rescate Celestial</p>
+                <p class="text-xs mt-1">
+                    Sistema de seguimiento individual para la ministración de nuevos conversos
+                </p>
+            </div>
+        </div>
+    </footer>
 
     <script>
-        // URL del backend actualizado
-        const BACKEND_URL = 'https://notebooklm-backend-two.vercel.app';
-        
-        function addMessage(content, isUser = false, isSystem = false, isError = false) {
-            const messagesContainer = document.getElementById('messages');
-            const messageDiv = document.createElement('div');
-            messageDiv.className = `message ${isUser ? 'user' : isSystem ? 'system' : isError ? 'error' : 'assistant'}`;
-            
-            const messageContent = document.createElement('div');
-            messageContent.className = 'message-content';
-            
-            if (!isUser) {
-                messageContent.innerHTML = content;
-            } else {
-                messageContent.textContent = content;
+        // Datos de las personas
+        const INITIAL_DATA = [
+            {
+                id: 'domingos',
+                title: 'Domingos sin Asistir',
+                description: 'Personas que no han asistido a los servicios dominicales',
+                icon: 'fa-calendar',
+                color: 'text-red-600',
+                bgColor: 'bg-red-50 border-red-200',
+                people: [
+                    { id: 'd1', name: 'Ana María González Rodríguez', checked: false },
+                    { id: 'd2', name: 'Carlos Alberto Hernández Sánchez', checked: false },
+                    { id: 'd3', name: 'María Eugenia Jiménez Castro', checked: false },
+                    { id: 'd4', name: 'José Luis Ramírez Vargas', checked: false },
+                    { id: 'd5', name: 'Carmen Elena Morales Porras', checked: false },
+                    { id: 'd6', name: 'Luis Fernando Rojas Mora', checked: false },
+                    { id: 'd7', name: 'Sandra Patricia Díaz Herrera', checked: false },
+                    { id: 'd8', name: 'Roberto Carlos Solís Zamora', checked: false },
+                    { id: 'd9', name: 'Gabriela Isabel Murillo Guzmán', checked: false },
+                    { id: 'd10', name: 'Andrés Felipe Castro Navarro', checked: false },
+                    { id: 'd11', name: 'Beatriz Elena Soto Chaves', checked: false },
+                    { id: 'd12', name: 'Jorge Eduardo Vargas Quesada', checked: false },
+                    { id: 'd13', name: 'Ruth Cecilia Leiva Brenes', checked: false },
+                    { id: 'd14', name: 'Manuel Antonio Gutiérrez Alfaro', checked: false },
+                    { id: 'd15', name: 'Patricia María Flores Salazar', checked: false }
+                ]
+            },
+            {
+                id: 'hermanas',
+                title: 'Hermanas sin Ministrantes Asignados',
+                description: 'Hermanas que necesitan ministrantes asignados',
+                icon: 'fa-users',
+                color: 'text-yellow-600',
+                bgColor: 'bg-yellow-50 border-yellow-200',
+                people: [
+                    { id: 'h1', name: 'Ana María González Rodríguez', checked: false },
+                    { id: 'h2', name: 'María Eugenia Jiménez Castro', checked: false },
+                    { id: 'h3', name: 'Carmen Elena Morales Porras', checked: false },
+                    { id: 'h4', name: 'Sandra Patricia Díaz Herrera', checked: false },
+                    { id: 'h5', name: 'Gabriela Isabel Murillo Guzmán', checked: false },
+                    { id: 'h6', name: 'Beatriz Elena Soto Chaves', checked: false },
+                    { id: 'h7', name: 'Ruth Cecilia Leiva Brenes', checked: false },
+                    { id: 'h8', name: 'Patricia María Flores Salazar', checked: false },
+                    { id: 'h9', name: 'Lorena Isabel Monge Umaña', checked: false },
+                    { id: 'h10', name: 'Martiza Azofeifa Alvarado', checked: false },
+                    { id: 'h11', name: 'Grettel Mora Calvo', checked: false },
+                    { id: 'h12', name: 'Karla Rojas Arias', checked: false },
+                    { id: 'h13', name: 'Jessica Morales Cubillo', checked: false },
+                    { id: 'h14', name: 'María José Álvarez Marín', checked: false },
+                    { id: 'h15', name: 'Cecilia Sánchez Vargas', checked: false }
+                ]
+            },
+            {
+                id: 'varones',
+                title: 'Varones Aún sin Ser Ordenados',
+                description: 'Hermanos varones que aún no han sido ordenados al Sacerdocio',
+                icon: 'fa-award',
+                color: 'text-blue-600',
+                bgColor: 'bg-blue-50 border-blue-200',
+                people: [
+                    { id: 'v1', name: 'Carlos Alberto Hernández Sánchez', checked: false },
+                    { id: 'v2', name: 'José Luis Ramírez Vargas', checked: false },
+                    { id: 'v3', name: 'Luis Fernando Rojas Mora', checked: false },
+                    { id: 'v4', name: 'Roberto Carlos Solís Zamora', checked: false },
+                    { id: 'v5', name: 'Andrés Felipe Castro Navarro', checked: false },
+                    { id: 'v6', name: 'Jorge Eduardo Vargas Quesada', checked: false },
+                    { id: 'v7', name: 'Manuel Antonio Gutiérrez Alfaro', checked: false },
+                    { id: 'v8', name: 'Francisco Javier Pérez González', checked: false },
+                    { id: 'v9', name: 'Mauricio Andrés Campos López', checked: false },
+                    { id: 'v10', name: 'Juan Carlos Salazar Mora', checked: false },
+                    { id: 'v11', name: 'Pedro Antonio Benavides Rojas', checked: false },
+                    { id: 'v12', name: 'Ricardo Alberto Herrera Castro', checked: false },
+                    { id: 'v13', name: 'Sergio Alejandro Vargas Umaña', checked: false },
+                    { id: 'v14', name: 'Diego Armando Morales Solís', checked: false },
+                    { id: 'v15', name: 'Esteban de la Ossa Protti', checked: false }
+                ]
+            },
+            {
+                id: 'llamamiento',
+                title: 'Hermanos con Llamamiento',
+                description: 'Hermanos que tienen un llamamiento en la Iglesia',
+                icon: 'fa-user-check',
+                color: 'text-purple-600',
+                bgColor: 'bg-purple-50 border-purple-200',
+                people: [
+                    { id: 'l1', name: 'Carlos Alberto Hernández Sánchez', checked: false },
+                    { id: 'l2', name: 'José Luis Ramírez Vargas', checked: false },
+                    { id: 'l3', name: 'Luis Fernando Rojas Mora', checked: false },
+                    { id: 'l4', name: 'Roberto Carlos Solís Zamora', checked: false },
+                    { id: 'l5', name: 'Andrés Felipe Castro Navarro', checked: false },
+                    { id: 'l6', name: 'Jorge Eduardo Vargas Quesada', checked: false },
+                    { id: 'l7', name: 'Manuel Antonio Gutiérrez Alfaro', checked: false },
+                    { id: 'l8', name: 'Ana María González Rodríguez', checked: false },
+                    { id: 'l9', name: 'María Eugenia Jiménez Castro', checked: false },
+                    { id: 'l10', name: 'Carmen Elena Morales Porras', checked: false },
+                    { id: 'l11', name: 'Sandra Patricia Díaz Herrera', checked: false },
+                    { id: 'l12', name: 'Gabriela Isabel Murillo Guzmán', checked: false },
+                    { id: 'l13', name: 'Beatriz Elena Soto Chaves', checked: false },
+                    { id: 'l14', name: 'Ruth Cecilia Leiva Brenes', checked: false },
+                    { id: 'l15', name: 'Patricia María Flores Salazar', checked: false }
+                ]
+            },
+            {
+                id: 'actividad',
+                title: 'Actividad del Mes',
+                description: 'Participación en actividades del mes',
+                icon: 'fa-bullseye',
+                color: 'text-green-600',
+                bgColor: 'bg-green-50 border-green-200',
+                people: [
+                    { id: 'a1', name: 'Ana María González Rodríguez', checked: false },
+                    { id: 'a2', name: 'Carlos Alberto Hernández Sánchez', checked: false },
+                    { id: 'a3', name: 'María Eugenia Jiménez Castro', checked: false },
+                    { id: 'a4', name: 'José Luis Ramírez Vargas', checked: false },
+                    { id: 'a5', name: 'Carmen Elena Morales Porras', checked: false },
+                    { id: 'a6', name: 'Luis Fernando Rojas Mora', checked: false },
+                    { id: 'a7', name: 'Sandra Patricia Díaz Herrera', checked: false },
+                    { id: 'a8', name: 'Roberto Carlos Solís Zamora', checked: false },
+                    { id: 'a9', name: 'Gabriela Isabel Murillo Guzmán', checked: false },
+                    { id: 'a10', name: 'Andrés Felipe Castro Navarro', checked: false },
+                    { id: 'a11', name: 'Beatriz Elena Soto Chaves', checked: false },
+                    { id: 'a12', name: 'Jorge Eduardo Vargas Quesada', checked: false },
+                    { id: 'a13', name: 'Ruth Cecilia Leiva Brenes', checked: false },
+                    { id: 'a14', name: 'Manuel Antonio Gutiérrez Alfaro', checked: false },
+                    { id: 'a15', name: 'Patricia María Flores Salazar', checked: false },
+                    { id: 'a16', name: 'Lorena Isabel Monge Umaña', checked: false },
+                    { id: 'a17', name: 'Martiza Azofeifa Alvarado', checked: false },
+                    { id: 'a18', name: 'Grettel Mora Calvo', checked: false },
+                    { id: 'a19', name: 'Karla Rojas Arias', checked: false },
+                    { id: 'a20', name: 'Jessica Morales Cubillo', checked: false }
+                ]
             }
-            
-            messageDiv.appendChild(messageContent);
-            messagesContainer.appendChild(messageDiv);
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
-        }
+        ];
 
-        function addProgressStep(text, isActive = false, isCompleted = false, isError = false) {
-            const messagesContainer = document.getElementById('messages');
-            const progressDiv = document.createElement('div');
-            progressDiv.className = `progress-step ${isActive ? 'active' : ''} ${isCompleted ? 'completed' : ''} ${isError ? 'error' : ''}`;
-            
-            const icon = isError ? '❌' : isCompleted ? '✅' : isActive ? '🔄' : '⏳';
-            progressDiv.innerHTML = `${icon} ${text}`;
-            
-            messagesContainer.appendChild(progressDiv);
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
-            
-            return progressDiv;
-        }
+        let categories = [...INITIAL_DATA];
 
-        function updateStatus(text, status = 'connecting') {
-            const statusEl = document.getElementById('status');
-            statusEl.textContent = text;
-            statusEl.className = `status ${status}`;
-        }
-
-        async function runDiagnostic() {
-            addMessage('🔍 <strong>Iniciando diagnóstico completo del sistema...</strong>', false, false, false);
-            
-            // Paso 1: Verificar backend principal
-            const step1 = addProgressStep('Verificando conexión con backend principal...', true);
-            
-            try {
-                const response = await fetch(BACKEND_URL);
-                if (response.ok) {
-                    const text = await response.text();
-                    step1.className = 'progress-step completed';
-                    addMessage(`✅ Backend principal conectado`, false, false, false);
-                } else {
-                    throw new Error(`HTTP ${response.status}`);
+        // Cargar datos desde LocalStorage al iniciar
+        function loadData() {
+            const savedData = localStorage.getItem('seguimiento-estaca-cartago');
+            if (savedData) {
+                try {
+                    const parsedData = JSON.parse(savedData);
+                    categories = parsedData.categories || parsedData;
+                    updateLastSaved(parsedData.lastSaved || Date.now());
+                } catch (error) {
+                    console.error('Error loading saved data:', error);
                 }
-            } catch (error) {
-                step1.className = 'progress-step error';
-                addMessage(`❌ Error de backend principal: ${error.message}`, false, false, true);
-                updateStatus('🔴 Error de backend', 'error');
-                return;
             }
-            
-            // Paso 2: Verificar endpoint de estado
-            const step2 = addProgressStep('Verificando endpoint de estado...', true);
-            
-            try {
-                const response = await fetch(`${BACKEND_URL}/api/status`);
-                if (response.ok) {
-                    const data = await response.json();
-                    step2.className = 'progress-step completed';
-                    addMessage(`✅ Endpoint de estado funcionando: ${data.status}`, false, false, false);
-                } else {
-                    throw new Error(`HTTP ${response.status}`);
-                }
-            } catch (error) {
-                step2.className = 'progress-step error';
-                addMessage(`❌ Error en endpoint de estado: ${error.message}`, false, false, true);
-                return;
-            }
-            
-            // Paso 3: Verificar endpoint de preguntas
-            const step3 = addProgressStep('Verificando endpoint de preguntas...', true);
-            
-            try {
-                const testResponse = await fetch(`${BACKEND_URL}/api/ask`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ question: 'test de conexión' })
-                });
-                
-                if (testResponse.ok) {
-                    step3.className = 'progress-step completed';
-                    addMessage('✅ Endpoint de preguntas funcionando correctamente', false, false, false);
-                } else {
-                    throw new Error(`HTTP ${testResponse.status}`);
-                }
-            } catch (error) {
-                step3.className = 'progress-step error';
-                addMessage(`❌ Error en endpoint de preguntas: ${error.message}`, false, false, true);
-                return;
-            }
-            
-            updateStatus('🟢 Sistema funcionando perfectamente', 'connected');
-            addMessage('🎉 <strong>¡Diagnóstico completado! Todo el sistema está funcionando correctamente.</strong>', false, false, false);
+            renderCategories();
+            updateProgress();
         }
 
-        async function sendMessage() {
-            const input = document.getElementById('chatInput');
-            const sendBtn = document.getElementById('sendBtn');
-            const question = input.value.trim();
-            
-            if (!question) return;
-            
-            // Deshabilitar botón
-            sendBtn.disabled = true;
-            sendBtn.innerHTML = '<div class="loading"></div>';
-            
-            // Agregar mensaje del usuario
-            addMessage(question, true);
-            input.value = '';
-            
-            try {
-                console.log('Enviando pregunta:', question);
-                
-                // Enviar pregunta al backend
-                const response = await fetch(`${BACKEND_URL}/api/ask`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ question: question })
-                });
-                
-                console.log('Status:', response.status);
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                
-                const data = await response.json();
-                console.log('Respuesta:', data);
-                
-                const responseText = data.response + '<span class="source-badge">📚 Respuesta del Sistema</span>';
-                addMessage(responseText);
-                
-                updateStatus('🟢 Conectado y funcionando', 'connected');
-                
-            } catch (error) {
-                console.error('Error:', error);
-                addMessage(`❌ Error al conectar: ${error.message}. Por favor, ejecuta el diagnóstico.`, false, false, true);
-                updateStatus('🔴 Error de conexión', 'error');
-            } finally {
-                // Rehabilitar botón
-                sendBtn.disabled = false;
-                sendBtn.textContent = 'Enviar';
+        // Guardar en LocalStorage
+        function saveData() {
+            const dataToSave = {
+                categories,
+                lastSaved: Date.now()
+            };
+            localStorage.setItem('seguimiento-estaca-cartago', JSON.stringify(dataToSave));
+            updateLastSaved(Date.now());
+        }
+
+        // Actualizar fecha de guardado
+        function updateLastSaved(timestamp) {
+            const date = new Date(timestamp);
+            document.getElementById('lastSaved').textContent = 
+                `Guardado: ${date.toLocaleTimeString('es-ES')}`;
+        }
+
+        // Manejar checkbox
+        function handlePersonCheck(categoryId, personId, checked) {
+            categories = categories.map(category =>
+                category.id === categoryId
+                    ? {
+                        ...category,
+                        people: category.people.map(person =>
+                            person.id === personId ? { ...person, checked } : person
+                        )
+                    }
+                    : category
+            );
+            saveData();
+            renderCategories();
+            updateProgress();
+        }
+
+        // Calcular progreso
+        function calculateProgress(people) {
+            if (people.length === 0) return 0;
+            const checkedCount = people.filter(person => person.checked).length;
+            return Math.round((checkedCount / people.length) * 100);
+        }
+
+        // Calcular progreso total
+        function getTotalProgress() {
+            const totalPeople = categories.reduce((sum, cat) => sum + cat.people.length, 0);
+            const totalChecked = categories.reduce(
+                (sum, cat) => sum + cat.people.filter(person => person.checked).length,
+                0
+            );
+            return totalPeople > 0 ? Math.round((totalChecked / totalPeople) * 100) : 0;
+        }
+
+        // Actualizar progreso
+        function updateProgress() {
+            const totalProgress = getTotalProgress();
+            document.getElementById('totalProgress').textContent = `${totalProgress}%`;
+            document.getElementById('totalProgressText').textContent = `${totalProgress}%`;
+            document.getElementById('totalProgressBar').style.width = `${totalProgress}%`;
+
+            // Actualizar progreso por categoría
+            const categoryProgressDiv = document.getElementById('categoryProgress');
+            categoryProgressDiv.innerHTML = categories.map(category => {
+                const progress = calculateProgress(category.people);
+                return `
+                    <div class="text-center">
+                        <div class="text-2xl font-bold ${category.color}">
+                            ${progress}%
+                        </div>
+                        <div class="text-xs text-gray-600 mt-1">
+                            ${category.title.split(' ')[0]}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Renderizar categorías
+        function renderCategories() {
+            const categoriesGrid = document.getElementById('categoriesGrid');
+            categoriesGrid.innerHTML = categories.map(category => {
+                const progress = calculateProgress(category.people);
+                const checkedCount = category.people.filter(person => person.checked).length;
+
+                return `
+                    <div class="${category.bgColor} border rounded-lg shadow-md fade-in">
+                        <div class="p-4 pb-3">
+                            <div class="flex items-center justify-between mb-2">
+                                <div class="flex items-center gap-2">
+                                    <div class="${category.color}">
+                                        <i class="fas ${category.icon} text-lg"></i>
+                                    </div>
+                                    <span class="text-lg font-semibold">${category.title}</span>
+                                </div>
+                                <span class="bg-gray-200 text-gray-700 px-2 py-1 rounded-full text-xs ml-2">
+                                    ${checkedCount}/${category.people.length}
+                                </span>
+                            </div>
+                            <p class="text-sm text-gray-600 mt-1">
+                                ${category.description}
+                            </p>
+                            <div class="mt-2">
+                                <div class="flex justify-between mb-1">
+                                    <span class="text-xs font-medium">Progreso</span>
+                                    <span class="text-xs font-bold">${progress}%</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="bg-blue-600 h-2 rounded-full transition-all duration-300" style="width: ${progress}%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-4 pt-0">
+                            <div class="h-96 overflow-y-auto scrollbar-thin pr-4">
+                                <div class="space-y-2">
+                                    ${category.people.map(person => `
+                                        <div class="flex items-center space-x-3 p-2 rounded-lg hover:bg-white/50 transition-colors checkbox-custom">
+                                            <input 
+                                                type="checkbox" 
+                                                id="${category.id}-${person.id}"
+                                                ${person.checked ? 'checked' : ''}
+                                                onchange="handlePersonCheck('${category.id}', '${person.id}', this.checked)"
+                                                class="h-4 w-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
+                                            />
+                                            <label 
+                                                for="${category.id}-${person.id}"
+                                                class="flex-1 text-sm font-medium cursor-pointer leading-relaxed"
+                                            >
+                                                ${person.name}
+                                            </label>
+                                            ${person.checked ? `
+                                                <i class="fas fa-check-circle text-green-600 text-sm flex-shrink-0"></i>
+                                            ` : ''}
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Reiniciar progreso
+        function resetProgress() {
+            if (confirm('¿Estás seguro de que deseas reiniciar todo el progreso? Esta acción no se puede deshacer.')) {
+                categories = categories.map(category => ({
+                    ...category,
+                    people: category.people.map(person => ({ ...person, checked: false }))
+                }));
+                saveData();
+                renderCategories();
+                updateProgress();
             }
         }
 
-        function askQuestion(question) {
-            document.getElementById('chatInput').value = question;
-            sendMessage();
-        }
-
-        function handleKeyPress(event) {
-            if (event.key === 'Enter') {
-                sendMessage();
-            }
-        }
-
-        // Verificar conexión automáticamente al cargar
-        window.addEventListener('load', async () => {
-            await runDiagnostic();
+        // Inicializar al cargar la página
+        document.addEventListener('DOMContentLoaded', function() {
+            loadData();
         });
     </script>
 </body>
