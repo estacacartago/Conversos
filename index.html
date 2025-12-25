@@ -43,10 +43,21 @@
         .progress-bar {
             transition: width 0.3s ease;
         }
+        .action-button {
+            transition: all 0.2s ease;
+        }
+        .action-button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+        .action-button:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+        }
     </style>
 </head>
 <body class="bg-gray-50 min-h-screen flex flex-col">
-    <!-- Header AMBIANDO, ESTILO MÍNIMO -->
+    <!-- Header -->
     <header class="bg-white border-b border-gray-200 p-6 shadow-sm">
         <div class="max-w-7xl mx-auto">
             <div class="text-center">
@@ -63,10 +74,10 @@
         </div>
     </header>
 
-    <!-- Main Content - ESTILO MÍNIMO -->
+    <!-- Main Content -->
     <main class="flex-1 p-6">
         <div class="max-w-7xl mx-auto">
-            <!-- Progress Overview - MÍNIMO -->
+            <!-- Progress Overview -->
             <div class="bg-white rounded-lg border border-gray-200 p-6 mb-6 card-shadow">
                 <div class="text-center mb-4">
                     <h2 class="text-lg font-semibold text-gray-800 mb-2">
@@ -85,22 +96,14 @@
                 </div>
             </div>
 
-            <!-- Categories Grid - ESTILO MÍNIMO -->
+            <!-- Categories Grid -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="categoriesGrid">
                 <!-- Categories will be inserted here -->
-            </div>
-
-            <!-- Action Buttons - MÍNIMO -->
-            <div class="mt-8 flex justify-center">
-                <button onclick="resetProgress()" class="px-6 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors duration-200 flex items-center gap-2">
-                    <i class="fas fa-circle"></i>
-                    Reiniciar Progreso
-                </button>
             </div>
         </div>
     </main>
 
-    <!-- Footer - MÍNIMO -->
+    <!-- Footer -->
     <footer class="bg-white border-t border-gray-200 mt-auto">
         <div class="max-w-7xl mx-auto px-6 py-4">
             <div class="text-center text-sm text-gray-600">
@@ -113,7 +116,7 @@
     </footer>
 
     <script>
-        // Datos de las personas
+        // Datos de las personas con acciones específicas
         const INITIAL_DATA = [
             {
                 id: 'domingos',
@@ -123,21 +126,21 @@
                 color: 'text-red-600',
                 bgColor: 'bg-white border-gray-200',
                 people: [
-                    { id: 'd1', name: 'Ana María González Rodríguez', checked: false },
-                    { id: 'd2', name: 'Carlos Alberto Hernández Sánchez', checked: false },
-                    { id: 'd3', name: 'María Eugenia Jiménez Castro', checked: false },
-                    { id: 'd4', name: 'José Luis Ramírez Vargas', checked: false },
-                    { id: 'd5', name: 'Carmen Elena Morales Porras', checked: false },
-                    { id: 'd6', name: 'Luis Fernando Rojas Mora', checked: false },
-                    { id: 'd7', name: 'Sandra Patricia Díaz Herrera', checked: false },
-                    { id: 'd8', name: 'Roberto Carlos Solís Zamora', checked: false },
-                    { id: 'd9', name: 'Gabriela Isabel Murillo Guzmán', checked: false },
-                    { id: 'd10', name: 'Andrés Felipe Castro Navarro', checked: false },
-                    { id: 'd11', name: 'Beatriz Elena Soto Chaves', checked: false },
-                    { id: 'd12', name: 'Jorge Eduardo Vargas Quesada', checked: false },
-                    { id: 'd13', name: 'Ruth Cecilia Leiva Brenes', checked: false },
-                    { id: 'd14', name: 'Manuel Antonio Gutiérrez Alfaro', checked: false },
-                    { id: 'd15', name: 'Patricia María Flores Salazar', checked: false }
+                    { id: 'd1', name: 'Ana María González Rodríguez', checked: false, action: 'Contactar para verificar razón de ausencia' },
+                    { id: 'd2', name: 'Carlos Alberto Hernández Sánchez', checked: false, action: 'Visitar y ofrecer apoyo espiritual' },
+                    { id: 'd3', name: 'María Eugenia Jiménez Castro', checked: false, action: 'Invitar personalmente a próxima reunión' },
+                    { id: 'd4', name: 'José Luis Ramírez Vargas', checked: false, action: 'Llamar por teléfono y orar visita' },
+                    { id: 'd5', name: 'Carmen Elena Morales Porras', checked: false, action: 'Enviar mensaje de apoyo y orar visita' },
+                    { id: 'd6', name: 'Luis Fernando Rojas Mora', checked: false, action: 'Asignar compañero de barrio para visitar' },
+                    { id: 'd7', name: 'Sandra Patricia Díaz Herrera', checked: false, action: 'Programar visita de ministro' },
+                    { id: 'd8', name: 'Roberto Carlos Solís Zamora', checked: false, action: 'Contactar con familia cercana' },
+                    { id: 'd9', name: 'Gabriela Isabel Murillo Guzmán', checked: false, action: 'Invitar a actividad de barrio' },
+                    { id: 'd10', name: 'Andrés Felipe Castro Navarro', checked: false, action: 'Ofrecer transporte para próximo domingo' },
+                    { id: 'd11', name: 'Beatriz Elena Soto Chaves', checked: false, action: 'Enviar recordatorio de clase' },
+                    { id: 'd12', name: 'Jorge Eduardo Vargas Quesada', checked: false, action: 'Visitar y compartir lección' },
+                    { id: 'd13', name: 'Ruth Cecilia Leiva Brenes', checked: false, action: 'Contactar para ofrecer ayuda' },
+                    { id: 'd14', name: 'Manuel Antonio Gutiérrez Alfaro', checked: false, action: 'Programar reunión con líderes' },
+                    { id: 'd15', name: 'Patricia María Flores Salazar', checked: false, action: 'Asignar maestra visitadora' }
                 ]
             },
             {
@@ -148,21 +151,21 @@
                 color: 'text-yellow-600',
                 bgColor: 'bg-white border-gray-200',
                 people: [
-                    { id: 'h1', name: 'Ana María González Rodríguez', checked: false },
-                    { id: 'h2', name: 'María Eugenia Jiménez Castro', checked: false },
-                    { id: 'h3', name: 'Carmen Elena Morales Porras', checked: false },
-                    { id: 'h4', name: 'Sandra Patricia Díaz Herrera', checked: false },
-                    { id: 'h5', name: 'Gabriela Isabel Murillo Guzmán', checked: false },
-                    { id: 'h6', name: 'Beatriz Elena Soto Chaves', checked: false },
-                    { id: 'h7', name: 'Ruth Cecilia Leiva Brenes', checked: false },
-                    { id: 'h8', name: 'Patricia María Flores Salazar', checked: false },
-                    { id: 'h9', name: 'Lorena Isabel Monge Umaña', checked: false },
-                    { id: 'h10', name: 'Martiza Azofeifa Alvarado', checked: false },
-                    { id: 'h11', name: 'Grettel Mora Calvo', checked: false },
-                    { id: 'h12', name: 'Karla Rojas Arias', checked: false },
-                    { id: 'h13', name: 'Jessica Morales Cubillo', checked: false },
-                    { id: 'h14', name: 'María José Álvarez Marín', checked: false },
-                    { id: 'h15', name: 'Cecilia Sánchez Vargas', checked: false }
+                    { id: 'h1', name: 'Ana María González Rodríguez', checked: false, action: 'Asignar compañera ministrante' },
+                    { id: 'h2', name: 'María Eugenia Jiménez Castro', checked: false, action: 'Contactar para ofrecer ser ministrante' },
+                    { id: 'h3', name: 'Carmen Elena Morales Porras', checked: false, action: 'Asignar hermana con experiencia' },
+                    { id: 'h4', name: 'Sandra Patricia Díaz Herrera', checked: false, action: 'Organizar reunión de ministración' },
+                    { id: 'h5', name: 'Gabriela Isabel Murillo Guzmán', checked: false, action: 'Invitar a ser ministrante' },
+                    { id: 'h6', name: 'Beatriz Elena Soto Chaves', checked: false, action: 'Asignar mentora espiritual' },
+                    { id: 'h7', name: 'Ruth Cecilia Leiva Brenes', checked: false, action: 'Programar entrevista personal' },
+                    { id: 'h8', name: 'Patricia María Flores Salazar', checked: false, action: 'Contactar presidenta de Sociedad de Socorro' },
+                    { id: 'h9', name: 'Lorena Isabel Monge Umaña', checked: false, action: 'Ofrecer clase de liderazgo' },
+                    { id: 'h10', name: 'Martiza Azofeifa Alvarado', checked: false, action: 'Invitar a reunión de ministrantes' },
+                    { id: 'h11', name: 'Grettel Mora Calvo', checked: false, action: 'Asignar compañera de ministerio' },
+                    { id: 'h12', name: 'Karla Rojas Arias', checked: false, action: 'Programar visita de seguimiento' },
+                    { id: 'h13', name: 'Jessica Morales Cubillo', checked: false, action: 'Ofrecer recursos de enseñanza' },
+                    { id: 'h14', name: 'María José Álvarez Marín', checked: false, action: 'Organizar actividad de hermandad' },
+                    { id: 'h15', name: 'Cecilia Sánchez Vargas', checked: false, action: 'Contactar obispo para ayudar' }
                 ]
             },
             {
@@ -173,21 +176,21 @@
                 color: 'text-blue-600',
                 bgColor: 'bg-white border-gray-200',
                 people: [
-                    { id: 'v1', name: 'Carlos Alberto Hernández Sánchez', checked: false },
-                    { id: 'v2', name: 'José Luis Ramírez Vargas', checked: false },
-                    { id: 'v3', name: 'Luis Fernando Rojas Mora', checked: false },
-                    { id: 'v4', name: 'Roberto Carlos Solís Zamora', checked: false },
-                    { id: 'v5', name: 'Andrés Felipe Castro Navarro', checked: false },
-                    { id: 'v6', name: 'Jorge Eduardo Vargas Quesada', checked: false },
-                    { id: 'v7', name: 'Manuel Antonio Gutiérrez Alfaro', checked: false },
-                    { id: 'v8', name: 'Francisco Javier Pérez González', checked: false },
-                    { id: 'v9', name: 'Mauricio Andrés Campos López', checked: false },
-                    { id: 'v10', name: 'Juan Carlos Salazar Mora', checked: false },
-                    { id: 'v11', name: 'Pedro Antonio Benavides Rojas', checked: false },
-                    { id: 'v12', name: 'Ricardo Alberto Herrera Castro', checked: false },
-                    { id: 'v13', name: 'Sergio Alejandro Vargas Umaña', checked: false },
-                    { id: 'v14', name: 'Diego Armando Morales Solís', checked: false },
-                    { id: 'v15', name: 'Esteban de la Ossa Protti', checked: false }
+                    { id: 'v1', name: 'Carlos Alberto Hernández Sánchez', checked: false, action: 'Preparar para Sacerdocio' },
+                    { id: 'v2', name: 'José Luis Ramírez Vargas', checked: false, action: 'Reunir con obispo' },
+                    { id: 'v3', name: 'Luis Fernando Rojas Mora', checked: false, action: 'Comenzar entrevista con obispo' },
+                    { id: 'v4', name: 'Roberto Carlos Solís Zamora', checked: false, action: 'Programar clase de preparación' },
+                    { id: 'v5', name: 'Andrés Felipe Castro Navarro', checked: false, action: 'Asignar mentor de Sacerdocio' },
+                    { id: 'v6', name: 'Jorge Eduardo Vargas Quesada', checked: false, action: 'Organizar actividad de barrio' },
+                    { id: 'v7', name: 'Manuel Antonio Gutiérrez Alfaro', checked: false, action: 'Contactar con presidente de cuórum' },
+                    { id: 'v8', name: 'Francisco Javier Pérez González', checked: false, action: 'Iniciar preparación misional' },
+                    { id: 'v9', name: 'Mauricio Andrés Campos López', checked: false, action: 'Programar entrevista personal' },
+                    { id: 'v10', name: 'Juan Carlos Salazar Mora', checked: false, action: 'Asignar maestro de doctrina' },
+                    { id: 'v11', name: 'Pedro Antonio Benavides Rojas', checked: false, action: 'Organizar actividad de servicio' },
+                    { id: 'v12', name: 'Ricardo Alberto Herrera Castro', checked: false, action: 'Comenzar estudio de escrituras' },
+                    { id: 'v13', name: 'Sergio Alejandro Vargas Umaña', checked: false, action: 'Invitar a reunión de líderes' },
+                    { id: 'v14', name: 'Diego Armando Morales Solís', checked: false, action: 'Asignar compañero de oración' },
+                    { id: 'v15', name: 'Esteban de la Ossa Protti', checked: false, action: 'Contactar con familia para apoyo' }
                 ]
             },
             {
@@ -198,21 +201,21 @@
                 color: 'text-purple-600',
                 bgColor: 'bg-white border-gray-200',
                 people: [
-                    { id: 'l1', name: 'Carlos Alberto Hernández Sánchez', checked: false },
-                    { id: 'l2', name: 'José Luis Ramírez Vargas', checked: false },
-                    { id: 'l3', name: 'Luis Fernando Rojas Mora', checked: false },
-                    { id: 'l4', name: 'Roberto Carlos Solís Zamora', checked: false },
-                    { id: 'l5', name: 'Andrés Felipe Castro Navarro', checked: false },
-                    { id: 'l6', name: 'Jorge Eduardo Vargas Quesada', checked: false },
-                    { id: 'l7', name: 'Manuel Antonio Gutiérrez Alfaro', checked: false },
-                    { id: 'l8', name: 'Ana María González Rodríguez', checked: false },
-                    { id: 'l9', name: 'María Eugenia Jiménez Castro', checked: false },
-                    { id: 'l10', name: 'Carmen Elena Morales Porras', checked: false },
-                    { id: 'l11', name: 'Sandra Patricia Díaz Herrera', checked: false },
-                    { id: 'l12', name: 'Gabriela Isabel Murillo Guzmán', checked: false },
-                    { id: 'l13', name: 'Beatriz Elena Soto Chaves', checked: false },
-                    { id: 'l14', name: 'Ruth Cecilia Leiva Brenes', checked: false },
-                    { id: 'l15', name: 'Patricia María Flores Salazar', checked: false }
+                    { id: 'l1', name: 'Carlos Alberto Hernández Sánchez', checked: false, action: 'Reunir para evaluar progreso' },
+                    { id: 'l2', name: 'José Luis Ramírez Vargas', checked: false, action: 'Ofrecer capacitación adicional' },
+                    { id: 'l3', name: 'Luis Fernando Rojas Mora', checked: false, action: 'Programar entrevista de seguimiento' },
+                    { id: 'l4', name: 'Roberto Carlos Solís Zamora', checked: false, action: 'Asignar mentor de llamamiento' },
+                    { id: 'l5', name: 'Andrés Felipe Castro Navarro', checked: false, action: 'Organizar actividad de enseñanza' },
+                    { id: 'l6', name: 'Jorge Eduardo Vargas Quesada', checked: false, action: 'Evaluar necesidades de apoyo' },
+                    { id: 'l7', name: 'Manuel Antonio Gutiérrez Alfaro', checked: false, action: 'Programar reunión de consejo' },
+                    { id: 'l8', name: 'Ana María González Rodríguez', checked: false, action: 'Asignar compañera de ministerio' },
+                    { id: "l9', name: 'María Eugenia Jiménez Castro', checked: false, action: 'Organizar actividad de Relief Society' },
+                    { id: 'l10', name: 'Carmen Elena Morales Porras', checked: false, action: 'Ofrecer recursos de enseñanza' },
+                    { id: 'l11', name: 'Sandra Patricia Díaz Herrera', checked: false, action: 'Programar actividad de servicio' },
+                    { id: 'l12', name: 'Gabriela Isabel Murillo Guzmán', checked: false, action: 'Reunir para establecer metas' },
+                    { id: 'l13', name: 'Beatriz Elena Soto Chaves', checked: false, action: 'Evaluar progreso espiritual' },
+                    { id: 'l14', name: 'Ruth Cecilia Leiva Brenes', checked: false, action: 'Asignar maestra visitadora' },
+                    { id: 'l15', name: 'Patricia María Flores Salazar', checked: false, action: 'Organizar actividad de hermandad' }
                 ]
             },
             {
@@ -223,26 +226,26 @@
                 color: 'text-green-600',
                 bgColor: 'bg-white border-gray-200',
                 people: [
-                    { id: 'a1', name: 'Ana María González Rodríguez', checked: false },
-                    { id: 'a2', name: 'Carlos Alberto Hernández Sánchez', checked: false },
-                    { id: 'a3', name: 'María Eugenia Jiménez Castro', checked: false },
-                    { id: 'a4', name: 'José Luis Ramírez Vargas', checked: false },
-                    { id: 'a5', name: 'Carmen Elena Morales Porras', checked: false },
-                    { id: 'a6', name: 'Luis Fernando Rojas Mora', checked: false },
-                    { id: 'a7', name: 'Sandra Patricia Díaz Herrera', checked: false },
-                    { id: 'a8', name: 'Roberto Carlos Solís Zamora', checked: false },
-                    { id: 'a9', name: 'Gabriela Isabel Murillo Guzmán', checked: false },
-                    { id: 'a10', name: 'Andrés Felipe Castro Navarro', checked: false },
-                    { id: 'a11', name: 'Beatriz Elena Soto Chaves', checked: false },
-                    { id: 'a12', name: 'Jorge Eduardo Vargas Quesada', checked: false },
-                    { id: 'a13', name: 'Ruth Cecilia Leiva Brenes', checked: false },
-                    { id: 'a14', name: 'Manuel Antonio Gutiérrez Alfaro', checked: false },
-                    { id: 'a15', name: 'Patricia María Flores Salazar', checked: false },
-                    { id: 'a16', name: 'Lorena Isabel Monge Umaña', checked: false },
-                    { id: 'a17', name: 'Martiza Azofeifa Alvarado', checked: false },
-                    { id: 'a18', name: 'Grettel Mora Calvo', checked: false },
-                    { id: 'a19', name: 'Karla Rojas Arias', checked: false },
-                    { id: 'a20', name: 'Jessica Morales Cubillo', checked: false }
+                    { id: 'a1', name: 'Ana María González Rodríguez', checked: false, action: 'Invitar a actividad social' },
+                    { id: 'a2', name: 'Carlos Alberto Hernández Sánchez', checked: false, action: 'Organizar actividad de servicio' },
+                    { id: 'a3', name: 'María Eugenia Jiménez Castro', checked: false, action: 'Programar actividad de barrio' },
+                    { id: 'a4', name: 'José Luis Ramírez Vargas', checked: false, action: 'Asignar líder de actividad' },
+                    { id: 'a5', name: 'Carmen Elena Morales Porras', checked: false, action: 'Invitar a clase de estudio' },
+                    { id: 'a6', name: 'Luis Fernando Rojas Mora', checked: false, action: 'Organizar actividad misional' },
+                    { id: 'a7', name: 'Sandra Patricia Díaz Herrera', checked: false, action: 'Programar actividad juvenil' },
+                    { id: 'a8', name: 'Roberto Carlos Solís Zamora', checked: false, action: 'Asignar maestro de actividad' },
+                    { id: 'a9', name: 'Gabriela Isabel Murillo Guzmán', checked: false, action: 'Invitar a conferencia' },
+                    { id: 'a10', name: 'Andrés Felipe Castro Navarro', checked: false, action: 'Organizar proyecto de servicio' },
+                    { id: 'a11', name: 'Beatriz Elena Soto Chaves', checked: false, action: 'Programar actividad familiar' },
+                    { id: 'a12', name: 'Jorge Eduardo Vargas Quesada', checked: false, action: 'Asignar coordinador de eventos' },
+                    { id: 'a13', name: 'Ruth Cecilia Leiva Brenes', checked: false, action: 'Organizar actividad de mujeres' },
+                    { id: 'a14', name: 'Manuel Antonio Gutiérrez Alfaro', checked: false, action: 'Invitar a actividad deportiva' },
+                    { id: 'a15', name: 'Patricia María Flores Salazar', checked: false, action: 'Programar actividad cultural' },
+                    { id: 'a16', name: 'Lorena Isabel Monge Umaña', checked: false, action: 'Asignar maestra de música' },
+                    { id: 'a17', name: 'Martiza Azofeifa Alvarado', checked: false, action: 'Organizar actividad de jóvenes' },
+                    { id: 'a18', name: 'Grettel Mora Calvo', checked: false, action: 'Programar actividad de fin de semana' },
+                    { id: 'a19', name: 'Karla Rojas Arias', checked: false, action: 'Invitar a actividad de testimonios' },
+                    { id: 'a20', name: 'Jessica Morales Cubillo', checked: false, action: 'Organizar actividad de bienvenida' }
                 ]
             }
         ];
@@ -377,22 +380,30 @@
                             <div class="h-80 overflow-y-auto scrollbar-thin pr-4">
                                 <div class="space-y-2">
                                     ${category.people.map(person => `
-                                        <div class="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-50 transition-colors checkbox-custom">
+                                        <div class="flex items-start space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors checkbox-custom">
                                             <input 
                                                 type="checkbox" 
                                                 id="${category.id}-${person.id}"
                                                 ${person.checked ? 'checked' : ''}
                                                 onchange="handlePersonCheck('${category.id}', '${person.id}', this.checked)"
-                                                class="h-4 w-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
+                                                class="h-4 w-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500 mt-1"
                                             />
-                                            <label 
-                                                for="${category.id}-${person.id}"
-                                                class="flex-1 text-sm font-medium cursor-pointer leading-relaxed text-gray-700"
-                                            >
-                                                ${person.name}
-                                            </label>
+                                            <div class="flex-1">
+                                                <label 
+                                                        for="${category.id}-${person.id}"
+                                                        class="flex-1 text-sm font-medium cursor-pointer leading-relaxed text-gray-700"
+                                                >
+                                                    <div class="font-semibold">${person.name}</div>
+                                                    ${person.action ? `
+                                                        <div class="text-xs text-blue-600 mt-1 bg-blue-50 px-2 py-1 rounded">
+                                                            <i class="fas fa-tasks text-xs mr-1"></i>
+                                                            ${person.action}
+                                                        </div>
+                                                    ` : ''}
+                                                </label>
+                                            </div>
                                             ${person.checked ? `
-                                                <i class="fas fa-check-circle text-green-600 text-sm flex-shrink-0"></i>
+                                                <i class="fas fa-check-circle text-green-600 text-sm flex-shrink-0 mt-1"></i>
                                             ` : ''}
                                         </div>
                                     `).join('')}
@@ -424,4 +435,5 @@
     </script>
 </body>
 </html>
+
 
