@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rescate Celestial - Sistema de Seguimiento Individual</title>
+    <title>Ministrar a Nuevos Conversos</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -25,7 +25,7 @@
             transition: all 0.2s ease;
         }
         .checkbox-custom:hover {
-            transform: scale(1.05);
+            transform: scale(1.02);
         }
         .fade-in {
             animation: fadeIn 0.3s ease-in;
@@ -34,66 +34,65 @@
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
+        .card-shadow {
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+        }
+        .card-shadow:hover {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        .progress-bar {
+            transition: width 0.3s ease;
+        }
     </style>
 </head>
-<body class="bg-gray-50 h-screen flex flex-col">
-    <!-- Header -->
-    <header class="bg-gradient-to-r from-blue-600 to-cyan-600 text-white p-6 shadow-lg">
+<body class="bg-gray-50 min-h-screen flex flex-col">
+    <!-- Header AMBIANDO, ESTILO MÍNIMO -->
+    <header class="bg-white border-b border-gray-200 p-6 shadow-sm">
         <div class="max-w-7xl mx-auto">
-            <div class="flex items-center justify-between">
-                <div class="flex items-center gap-4">
-                    <div class="p-3 bg-white/20 rounded-lg backdrop-blur-sm">
-                        <i class="fas fa-users text-2xl"></i>
-                    </div>
-                    <div>
-                        <h1 class="text-3xl font-bold">Rescate Celestial</h1>
-                        <p class="text-blue-100 text-lg">Sistema de Seguimiento Individual - Estaca Cartago</p>
-                    </div>
-                </div>
-                <div class="text-right">
-                    <div class="text-2xl font-bold" id="totalProgress">0%</div>
-                    <div class="text-blue-100 text-sm">Progreso General</div>
-                    <div class="text-blue-200 text-xs mt-1" id="lastSaved">
-                        Guardado: --
-                    </div>
+            <div class="text-center">
+                <h1 class="text-2xl font-bold text-gray-800 mb-2">
+                    Ministrar a Nuevos Conversos
+                </h1>
+                <p class="text-gray-600 text-sm">
+                    Estaca Cartago - Diciembre 2024
+                </p>
+                <div class="text-gray-500 text-xs mt-2" id="lastSaved">
+                    Guardado: --
                 </div>
             </div>
         </div>
     </header>
 
-    <!-- Main Content -->
+    <!-- Main Content - ESTILO MÍNIMO -->
     <main class="flex-1 p-6">
         <div class="max-w-7xl mx-auto">
-            <!-- Progress Overview -->
-            <div class="bg-white rounded-lg shadow-md p-6 mb-6">
-                <div class="flex items-center gap-2 mb-4">
-                    <i class="fas fa-check-circle text-green-600 text-xl"></i>
-                    <h2 class="text-xl font-semibold">Resumen de Progreso</h2>
+            <!-- Progress Overview - MÍNIMO -->
+            <div class="bg-white rounded-lg border border-gray-200 p-6 mb-6 card-shadow">
+                <div class="text-center mb-4">
+                    <h2 class="text-lg font-semibold text-gray-800 mb-2">
+                        Progreso General
+                    </h2>
+                    <div class="text-3xl font-bold text-blue-600 mb-2">
+                        <span id="totalProgress">0%</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-3">
+                        <div class="bg-blue-600 h-3 rounded-full progress-bar" id="totalProgressBar" style="width: 0%"></div>
+                    </div>
                 </div>
-                <div class="space-y-4">
-                    <div>
-                        <div class="flex justify-between mb-2">
-                            <span class="text-sm font-medium">Progreso General</span>
-                            <span class="text-sm font-bold" id="totalProgressText">0%</span>
-                        </div>
-                        <div class="w-full bg-gray-200 rounded-full h-3">
-                            <div class="bg-blue-600 h-3 rounded-full transition-all duration-300" id="totalProgressBar" style="width: 0%"></div>
-                        </div>
-                    </div>
-                    <div class="grid grid-cols-2 md:grid-cols-5 gap-4" id="categoryProgress">
-                        <!-- Category progress will be inserted here -->
-                    </div>
+                
+                <div class="grid grid-cols-2 md:grid-cols-5 gap-4" id="categoryProgress">
+                    <!-- Category progress will be inserted here -->
                 </div>
             </div>
 
-            <!-- Categories Grid -->
-            <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6" id="categoriesGrid">
+            <!-- Categories Grid - ESTILO MÍNIMO -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="categoriesGrid">
                 <!-- Categories will be inserted here -->
             </div>
 
-            <!-- Action Buttons -->
-            <div class="mt-8 flex justify-center gap-4">
-                <button onclick="resetProgress()" class="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors duration-200 flex items-center gap-2">
+            <!-- Action Buttons - MÍNIMO -->
+            <div class="mt-8 flex justify-center">
+                <button onclick="resetProgress()" class="px-6 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors duration-200 flex items-center gap-2">
                     <i class="fas fa-circle"></i>
                     Reiniciar Progreso
                 </button>
@@ -101,13 +100,13 @@
         </div>
     </main>
 
-    <!-- Footer -->
-    <footer class="bg-white border-t mt-auto">
+    <!-- Footer - MÍNIMO -->
+    <footer class="bg-white border-t border-gray-200 mt-auto">
         <div class="max-w-7xl mx-auto px-6 py-4">
             <div class="text-center text-sm text-gray-600">
-                <p>© 2024 Estaca Cartago - Rescate Celestial</p>
+                <p>© 2024 Estaca Cartago</p>
                 <p class="text-xs mt-1">
-                    Sistema de seguimiento individual para la ministración de nuevos conversos
+                    Sistema de seguimiento para ministrar a nuevos conversos
                 </p>
             </div>
         </div>
@@ -122,7 +121,7 @@
                 description: 'Personas que no han asistido a los servicios dominicales',
                 icon: 'fa-calendar',
                 color: 'text-red-600',
-                bgColor: 'bg-red-50 border-red-200',
+                bgColor: 'bg-white border-gray-200',
                 people: [
                     { id: 'd1', name: 'Ana María González Rodríguez', checked: false },
                     { id: 'd2', name: 'Carlos Alberto Hernández Sánchez', checked: false },
@@ -143,11 +142,11 @@
             },
             {
                 id: 'hermanas',
-                title: 'Hermanas sin Ministrantes Asignados',
+                title: 'Hermanas sin Ministrantes',
                 description: 'Hermanas que necesitan ministrantes asignados',
                 icon: 'fa-users',
                 color: 'text-yellow-600',
-                bgColor: 'bg-yellow-50 border-yellow-200',
+                bgColor: 'bg-white border-gray-200',
                 people: [
                     { id: 'h1', name: 'Ana María González Rodríguez', checked: false },
                     { id: 'h2', name: 'María Eugenia Jiménez Castro', checked: false },
@@ -168,11 +167,11 @@
             },
             {
                 id: 'varones',
-                title: 'Varones Aún sin Ser Ordenados',
+                title: 'Varones sin Ser Ordenados',
                 description: 'Hermanos varones que aún no han sido ordenados al Sacerdocio',
                 icon: 'fa-award',
                 color: 'text-blue-600',
-                bgColor: 'bg-blue-50 border-blue-200',
+                bgColor: 'bg-white border-gray-200',
                 people: [
                     { id: 'v1', name: 'Carlos Alberto Hernández Sánchez', checked: false },
                     { id: 'v2', name: 'José Luis Ramírez Vargas', checked: false },
@@ -197,7 +196,7 @@
                 description: 'Hermanos que tienen un llamamiento en la Iglesia',
                 icon: 'fa-user-check',
                 color: 'text-purple-600',
-                bgColor: 'bg-purple-50 border-purple-200',
+                bgColor: 'bg-white border-gray-200',
                 people: [
                     { id: 'l1', name: 'Carlos Alberto Hernández Sánchez', checked: false },
                     { id: 'l2', name: 'José Luis Ramírez Vargas', checked: false },
@@ -222,7 +221,7 @@
                 description: 'Participación en actividades del mes',
                 icon: 'fa-bullseye',
                 color: 'text-green-600',
-                bgColor: 'bg-green-50 border-green-200',
+                bgColor: 'bg-white border-gray-200',
                 people: [
                     { id: 'a1', name: 'Ana María González Rodríguez', checked: false },
                     { id: 'a2', name: 'Carlos Alberto Hernández Sánchez', checked: false },
@@ -321,7 +320,6 @@
         function updateProgress() {
             const totalProgress = getTotalProgress();
             document.getElementById('totalProgress').textContent = `${totalProgress}%`;
-            document.getElementById('totalProgressText').textContent = `${totalProgress}%`;
             document.getElementById('totalProgressBar').style.width = `${totalProgress}%`;
 
             // Actualizar progreso por categoría
@@ -330,7 +328,7 @@
                 const progress = calculateProgress(category.people);
                 return `
                     <div class="text-center">
-                        <div class="text-2xl font-bold ${category.color}">
+                        <div class="text-lg font-bold ${category.color}">
                             ${progress}%
                         </div>
                         <div class="text-xs text-gray-600 mt-1">
@@ -349,14 +347,14 @@
                 const checkedCount = category.people.filter(person => person.checked).length;
 
                 return `
-                    <div class="${category.bgColor} border rounded-lg shadow-md fade-in">
+                    <div class="bg-white border border-gray-200 rounded-lg card-shadow fade-in">
                         <div class="p-4 pb-3">
                             <div class="flex items-center justify-between mb-2">
                                 <div class="flex items-center gap-2">
                                     <div class="${category.color}">
                                         <i class="fas ${category.icon} text-lg"></i>
                                     </div>
-                                    <span class="text-lg font-semibold">${category.title}</span>
+                                    <span class="text-lg font-semibold text-gray-800">${category.title}</span>
                                 </div>
                                 <span class="bg-gray-200 text-gray-700 px-2 py-1 rounded-full text-xs ml-2">
                                     ${checkedCount}/${category.people.length}
@@ -371,15 +369,15 @@
                                     <span class="text-xs font-bold">${progress}%</span>
                                 </div>
                                 <div class="w-full bg-gray-200 rounded-full h-2">
-                                    <div class="bg-blue-600 h-2 rounded-full transition-all duration-300" style="width: ${progress}%"></div>
+                                    <div class="bg-blue-600 h-2 rounded-full progress-bar" style="width: ${progress}%"></div>
                                 </div>
                             </div>
                         </div>
                         <div class="p-4 pt-0">
-                            <div class="h-96 overflow-y-auto scrollbar-thin pr-4">
+                            <div class="h-80 overflow-y-auto scrollbar-thin pr-4">
                                 <div class="space-y-2">
                                     ${category.people.map(person => `
-                                        <div class="flex items-center space-x-3 p-2 rounded-lg hover:bg-white/50 transition-colors checkbox-custom">
+                                        <div class="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-50 transition-colors checkbox-custom">
                                             <input 
                                                 type="checkbox" 
                                                 id="${category.id}-${person.id}"
@@ -389,7 +387,7 @@
                                             />
                                             <label 
                                                 for="${category.id}-${person.id}"
-                                                class="flex-1 text-sm font-medium cursor-pointer leading-relaxed"
+                                                class="flex-1 text-sm font-medium cursor-pointer leading-relaxed text-gray-700"
                                             >
                                                 ${person.name}
                                             </label>
@@ -426,3 +424,4 @@
     </script>
 </body>
 </html>
+
